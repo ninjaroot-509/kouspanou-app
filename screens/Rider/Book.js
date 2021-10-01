@@ -22,10 +22,9 @@ import {
   setComand
 } from '../../Components/Common/Auth/Sessions';
 import axios from 'axios';
-
-let { width, height } = Dimensions.get('window');
-const ASPECT_RATIO = width / height;
-const API_KEY = 'AIzaSyABvjR0skZrJYvGQVse00YNGo9k5xi8Wyo';
+import Geocoder from 'react-native-geocoding';
+Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
+const { width, height } = Dimensions.get('window');
 
 const Book = ({ navigation, route }) => {
   const { params } = route;
@@ -35,6 +34,10 @@ const Book = ({ navigation, route }) => {
   const [wallet, isLoadingW, setWallets] = useWallets();
   const [pay, setPay] = useState(false);
   const [done, setDone] = useState(false);
+  const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
+  const ASPECT_RATIO = width / height;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
   useEffect(() => {
     if (!user.details || user.details.length === 0) {
@@ -58,8 +61,6 @@ const Book = ({ navigation, route }) => {
     const pk = user?.details?.id;
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({
-      longitude: user?.details?.longitude,
-      latitude: user?.details?.latitude,
       destination_id: zone.id,
       payMN: true,
     });
@@ -89,8 +90,6 @@ const Book = ({ navigation, route }) => {
     const pk = user?.details?.id;
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({
-      longitude: user?.details?.longitude,
-      latitude: user?.details?.latitude,
       destination_id: zone.id,
       payMN: false,
     });
@@ -120,12 +119,32 @@ const Book = ({ navigation, route }) => {
       <MapView
         style={styles.map}
         region={{
-          ...latLng,
-          latitudeDelta: 0.6,
-          longitudeDelta: 0.6,
+          latitude: user?.details?.latitude
+            ? user?.details?.latitude
+            : 18.652248,
+          longitude: user?.details?.longitude
+            ? user?.details?.longitude
+            : -72.2949,
+          latitudeDelta: LONGITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA
         }}
         provider={PROVIDER_GOOGLE}
         customMapStyle={customMapStyle}>
+          <MapViewDirections
+              origin={{
+                latitude: user?.details?.latitude
+                  ? user?.details?.latitude
+                  : 18.652248,
+                longitude: user?.details?.longitude
+                  ? user?.details?.longitude
+                  : -72.2949,
+              }}
+              destination={latLng}
+              apikey={API_KEY}
+              strokeWidth={3}
+              strokeColor="#143fff"
+              optimizeWaypoints={true}
+            />
         <MapView.Marker title="votre destination" coordinate={latLng} />
         <MapView.Marker
           title="votre position"
@@ -147,7 +166,7 @@ const Book = ({ navigation, route }) => {
         }}>
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={{width: 35, height: 35, backgroundColor: '#ff8612', alignItems: 'center', justifyContent: 'center', borderRadius: 50, elevation: 4}}>
               <Feather name="x" size={24} style={styles.iconBlack} />
             </TouchableOpacity>
           </View>
@@ -167,18 +186,11 @@ const Book = ({ navigation, route }) => {
               paddingHorizontal: 40,
               paddingVertical: 10,
             }}>
-            <Text
+              <View
               style={{
-                color: '#001',
-                fontSize: 17,
-                fontWeight: '500',
-                marginBottom: 10,
-              }}>
-              recherche en cours..
-            </Text>
-            <View
-              style={{
-                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: 100
               }}>
               <ActivityIndicator
                 animating={done}
@@ -187,6 +199,16 @@ const Book = ({ navigation, route }) => {
                 style={{ alignItems: 'center' }}
               />
             </View>
+            <Text
+              style={{
+                color: '#001',
+                fontSize: 17,
+                fontWeight: '500',
+                marginBottom: 35,
+              }}>
+              recherche en cours..
+            </Text>
+            
           </View>
         ) : (
           <>
@@ -195,11 +217,11 @@ const Book = ({ navigation, route }) => {
                 backgroundColor: '#fff',
                 alignItems: 'center',
                 paddingHorizontal: 40,
-                paddingVertical: 10,
+                paddingVertical: 15,
               }}>
               <Text
                 style={{
-                  color: '#8a8c95',
+                  color: '#ff8612',
                   fontSize: 20,
                   fontWeight: '500',
                   marginBottom: 10,
@@ -210,7 +232,7 @@ const Book = ({ navigation, route }) => {
                 style={{
                   flexDirection: 'row',
                 }}>
-                <Text style={{ fontWeight: 'bold', color: '#8a8c95' }}>
+                <Text style={{ fontWeight: 'bold', color: '#ff8612' }}>
                   Note:{' '}
                 </Text>
                 <Text style={{ color: '#8a8c95' }}>
@@ -231,15 +253,17 @@ const Book = ({ navigation, route }) => {
                 style={{
                   backgroundColor: '#e9e9eb',
                   paddingHorizontal: 20,
-                  paddingVertical: 20,
+                  paddingVertical: 15,
                   width: width / 2,
                   alignItems: 'center',
                   borderRightColor: '#f5f5f6',
                   borderRightWidth: 1,
+                  elevation: 2
                 }}>
                 <Text
                   style={{
-                    color: pay ? '#cacaca' : '#003',
+                    color: pay ? '#cacaca' : '#000',
+                    opacity: 0.7,
                     fontSize: 13,
                     fontWeight: '500',
                   }}>
@@ -251,15 +275,17 @@ const Book = ({ navigation, route }) => {
                 style={{
                   backgroundColor: '#e9e9eb',
                   paddingHorizontal: 20,
-                  paddingVertical: 20,
+                  paddingVertical: 15,
                   width: width / 2,
                   alignItems: 'center',
                   borderLeftColor: '#f5f5f6',
                   borderLeftWidth: 1,
+                  elevation: 2
                 }}>
                 <Text
                   style={{
-                    color: pay ? '#cacaca' : '#003',
+                    color: pay ? '#cacaca' : '#000',
+                    opacity: 0.7,
                     fontSize: 13,
                     fontWeight: '500',
                   }}>
@@ -284,9 +310,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 12
   },
   iconBlack: {
-    color: '#525361',
+    color: '#fff',
   },
   map: {
     width: '100%',

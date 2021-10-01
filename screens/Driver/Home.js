@@ -26,9 +26,12 @@ import { setmergeItemUser } from '../../Components/Common/Auth/Sessions';
 import customMapStyle from '../Rider/mapstyle.json';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import MapViewDirections from 'react-native-maps-directions';
+import * as Location from 'expo-location';
+import Geocoder from 'react-native-geocoding';
 
-const{height,width} = Dimensions.get('window')
-
+const { width, height } = Dimensions.get('window');
+Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
 const Home = ({ navigation }) => {
   const [demande, setDemande] = useState([]);
   const [temp, setTemp] = useState(0);
@@ -36,6 +39,10 @@ const Home = ({ navigation }) => {
   const [modal, setModal] = useState(false);
   const [user, isLoadingUser, setUsers] = useUsers();
   const [wallet, isLoadingW, setWallets] = useWallets();
+  const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
+  const ASPECT_RATIO = width / height;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
   useEffect(() => {
     if (!wallet.details || wallet.details.length === 0) {
@@ -65,6 +72,43 @@ const Home = ({ navigation }) => {
       setDemande(res);
     });
   };
+
+  const [latLng, setLatLng] = useState({
+    latitude: user?.details?.latitude,
+    longitude: user?.details?.longitude,
+  });
+
+  useEffect(() => {
+    Location.installWebGeolocationPolyfill();
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        if (position.length !== 0) {
+          Geocoder.from(position.coords.latitude,position.coords.longitude).then(json => {
+            let addressComponent = json.results[0].formatted_address;    
+              request.postUserLocation({
+                pk: user?.details?.id,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                place_name: addressComponent
+              })
+              .then((res) => setUsers())
+              .catch((err) => {
+                console.log("une erreur, Impossible d'obtenir les donnees require!");
+              });
+          })
+          setLatLng( position.coords.latitude, position.coords.longitude );
+        }
+      },
+      () => {
+        console.log("une erreur, Impossible d'obtenir votre position actuelle");
+      },
+      {
+        timeout: 2000,
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+      }
+    );
+  }, []);
 
   const renderFooter = () => {
     if (demande.length != 0) {
@@ -198,29 +242,40 @@ const Home = ({ navigation }) => {
             <Text style={{ fontSize: 13, color: '#001', fontWeight: 'bold' }}>{wallet?.details?.montant} HTG</Text>
           </View>
         </TouchableOpacity>
-          <View style={{ alignItems: 'center', justifyContent: 'center', position: 'absolute', top: 20 }}>
-            <TouchableOpacity
-              style={styles.changeusertype}
-              onPress={() => setModal(true)}>
-              <View
-                style={{
-                  padding: 5,
-                  backgroundColor: '#143fff',
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <MaterialCommunityIcons
-                  name="van-passenger"
-                  size={20}
-                  style={{ color: '#fff' }}
-                />
-              </View>
-              <View style={{ margin: 3 }}>
-                <Text style={{ fontSize: 13, color: '#001' }}>Chauffeur</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={{borderRadius: 45,
+              position: 'absolute',
+              flexDirection: 'row',
+              top: 20,
+              marginHorizontal: 15,
+              backgroundColor: '#fff',
+              padding: 6,
+              elevation: 3,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 5 },
+              shadowOpacity: 0.2,
+              shadowRadius: 6.17,
+              justifyContent: 'center',
+              alignItems: 'center',}}
+            onPress={() => setModal(true)}>
+            <View
+              style={{
+                padding: 5,
+                backgroundColor: '#143fff',
+                borderRadius: 20,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <MaterialCommunityIcons
+                name="van-passenger"
+                size={20}
+                style={{ color: '#fff' }}
+              />
+            </View>
+            <View style={{ margin: 3 }}>
+              <Text style={{ fontSize: 13, color: '#001' }}>Chauffeur</Text>
+            </View>
+          </TouchableOpacity>
         </View>
         <ScrollView>
           <FlatList
@@ -250,9 +305,9 @@ const Home = ({ navigation }) => {
                           size={22}
                           style={{ color: '#ff8612' }}
                         />
-                        <View style={{ left: 5 }}>
-                          <Text style={{ opacity: 0.8 }}>
-                            {item.destination}
+                        <View style={{ marginHorizontal: 5, width: 205 }}>
+                          <Text style={{ opacity: 0.8 }} numberOfLines={1}>
+                            {item.client_position_name}
                           </Text>
                         </View>
                       </View>
@@ -262,7 +317,7 @@ const Home = ({ navigation }) => {
                           flexDirection: 'row',
                           justifyContent: 'center',
                         }}>
-                        <View style={{ left: 5 }}>
+                        <View style={{ marginHorizontal: 5 }}>
                           <Text
                             style={{ color: '#ff8612', fontWeight: '500' }}>
                             {moment(item.created_on).fromNow()}
@@ -280,17 +335,30 @@ const Home = ({ navigation }) => {
                       }}
                       provider={PROVIDER_GOOGLE}
                       initialRegion={{
-                        latitude: item.latitude,
-                        longitude: item.longitude,
-                        latitudeDelta: 0.9,
-                        longitudeDelta: 0.9,
+                        latitude: item.client_latitude,
+                        longitude: item.client_longitude,
+                        latitudeDelta: LONGITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA,
                       }}
-                      pitchEnabled={false} rotateEnabled={false} scrollEnabled={true} zoomEnabled={true}
                       customMapStyle={customMapStyle}>
+                        <MapViewDirections
+                          origin={{
+                            latitude: item.client_latitude,
+                            longitude: item.client_longitude,
+                          }}
+                          destination={{
+                            latitude: item.destination_latitude,
+                            longitude: item.destination_longitude,
+                          }}
+                          apikey={API_KEY}
+                          strokeWidth={3}
+                          strokeColor="#143fff"
+                          optimizeWaypoints={true}
+                        />
                       <Marker
                         coordinate={{
-                          latitude: item.latitude,
-                          longitude: item.longitude,
+                          latitude: item.client_latitude,
+                          longitude: item.client_longitude,
                         }}
                         title={'Position actuelle du client'}
                       />

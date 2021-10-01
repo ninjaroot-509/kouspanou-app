@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
+  Dimensions
 } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 // import { useNavigation } from '@react-navigation/native';
@@ -23,6 +24,9 @@ import useUsers from '../../src/state/user/hooks/useUsers';
 import request from '../../Components/Common/HttpRequests';
 import { setmergeItemUser } from '../../Components/Common/Auth/Sessions';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
+import Geocoder from 'react-native-geocoding';
+Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
+const { width, height } = Dimensions.get('window');
 
 const MapButton = ({ icon, ...props }) => {
   return (
@@ -66,6 +70,10 @@ const Home1 = ({ navigation }) => {
   const [modal, setModal] = useState(false);
   const [user, isLoadingUser, setUsers] = useUsers();
   const [wallet, isLoadingW, setWallets] = useWallets();
+  const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
+  const ASPECT_RATIO = width / height;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
   useEffect(() => {
     if (!wallet.details || wallet.details.length === 0) {
@@ -109,20 +117,23 @@ const Home1 = ({ navigation }) => {
   useEffect(() => {
     Location.installWebGeolocationPolyfill();
     navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude } }) => {
-        setTimeout(() => {
-          request
-            .postUserLocation({
-              pk: user?.details?.id,
-              latitude: latitude,
-              longitude: longitude,
-            })
-            .then((res) => setUsers())
-            .catch((err) => {
-              console.log("une erreur, Impossible d'obtenir votre position actuelle");
-            });
-        }, 10000);
-        setLatLng({ latitude, longitude });
+      async (position) => {
+        if (position.length !== 0) {
+          Geocoder.from(position.coords.latitude,position.coords.longitude).then(json => {
+            let addressComponent = json.results[0].formatted_address;    
+              request.postUserLocation({
+                pk: user?.details?.id,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                place_name: addressComponent
+              })
+              .then((res) => setUsers())
+              .catch((err) => {
+                console.log("une erreur, Impossible d'obtenir les donnees require!");
+              });
+          })
+          setLatLng( position.coords.latitude, position.coords.longitude );
+        }
       },
       () => {
         console.log("une erreur, Impossible d'obtenir votre position actuelle");
@@ -177,10 +188,10 @@ const Home1 = ({ navigation }) => {
           mapRef = map;
         }}
         style={styles.map}
-        region={{
+        initialRegion={{
           ...latLng,
-          latitudeDelta: 0.0843,
-          longitudeDelta: 0.0134,
+          latitudeDelta: LONGITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
         }}
         provider={PROVIDER_GOOGLE}
         customMapStyle={customMapStyle}>
@@ -263,7 +274,7 @@ const Home1 = ({ navigation }) => {
         style={{borderRadius: 45,
           position: 'absolute',
           flexDirection: 'row',
-          top: 50,
+          top: 40,
           left: 0,
           marginHorizontal: 15,
           backgroundColor: '#fff',
@@ -324,7 +335,7 @@ const Home1 = ({ navigation }) => {
           style={styles.button}
           onPress={() => navigation.navigate('Pickup')}>
           <Text style={{ fontSize: 10, color: '#001' }}>
-            Depuis: votre position
+            Depuis: votre position actuelle!
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View
@@ -378,7 +389,7 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     position: 'absolute',
     flexDirection: 'row',
-    top: 50,
+    top: 40,
     backgroundColor: '#fff',
     padding: 6,
     elevation: 3,

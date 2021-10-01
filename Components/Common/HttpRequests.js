@@ -45,9 +45,9 @@ const postInfo = (pk, last_name, first_name) =>
     .then((res) => res.data);
 const postUserOnline = (pk) => axios.post(`${url}onlines/?pk=${pk}`);
 
-const postUserLocation = (pk, latitude, longitude) =>
+const postUserLocation = (pk, latitude, longitude, place_name) =>
   axios.post(
-    `${url}users-locations/?pk=${pk.pk}&latitude=${pk.latitude}&longitude=${pk.longitude}`
+    `${url}users-locations/?pk=${pk.pk}&latitude=${pk.latitude}&longitude=${pk.longitude}&place_name=${pk.place_name}`
   );
 
 const postUserType = (pk, is_driver, is_passenger) =>

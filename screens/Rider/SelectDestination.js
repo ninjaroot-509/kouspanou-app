@@ -15,144 +15,55 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createFilter } from 'react-native-search-filter';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-const listEmptyComponent = () => {
+const SelectDestination = ({ navigation }) => {  
+  const handleChoose = (item) => {
+    navigation.navigate('Book', { zone: item })
+  }
   return (
-    <View>
-      <Text>no result</Text>
-    </View>
-  );
-};
-const SelectDestination = ({ navigation }) => {
-  const [zone, isLoading, setListZones] = useZones();
-  const [searchTerm, setSearchTerm] = useState('');
+    <KeyboardAwareScrollView style={styles.container}>
+      <SafeAreaView>
+        <View style={styles.card}>
+          <View style={styles.drop}>
+            <Text style={styles.dropText}>Rechercher ici</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+              <Feather name="x" size={24} style={{ color: '#8c8d95' }} />
+            </TouchableOpacity>
+          </View>
 
-  const handleClear = () => {
-    setSearchTerm('');
-  };
-
-  useEffect(() => {
-    if (!zone.list || zone.list.length === 0) {
-      setListZones();
-    }
-  }, [zone, setListZones]);
-
-  const filteredData = zone?.list?.filter(createFilter(searchTerm, ['name']));
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator
-          animating={isLoading}
-          color="#ff8612"
-          size="large"
-          style={{ alignItems: 'center' }}
-        />
-      </View>
-    );
-  } else {
-    return (
-      <KeyboardAwareScrollView style={styles.container}>
-        <SafeAreaView>
-          <View style={styles.card}>
-            <View style={styles.drop}>
-              <Text style={styles.dropText}>Rechercher ici</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-                <Feather name="x" size={24} style={{ color: '#8c8d95' }} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.bottomCard}>
-              <View style={styles.bottomCardPin}>
-                <View style={styles.dotCover}>
-                  <View style={styles.dot} />
-                </View>
-
-                <Text style={{ color: '#9fa1a7', fontSize: 16 }}>
-                  Votre position
-                </Text>
+          <View style={styles.bottomCard}>
+            <View style={styles.bottomCardPin}>
+              <View style={styles.dotCover}>
+                <View style={styles.dot} />
               </View>
-            </View>
 
-            <View style={styles.search}>
-              <View style={styles.inputWrapper}>
-                <Fontisto
-                  name="map-marker-alt"
-                  size={20}
-                  style={{ color: '#ff4858', marginRight: 17 }}
-                />
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="ou allez vous?"
-                  placeholderTextColor="#9fa1a7"
-                  value={searchTerm}
-                  onChangeText={(term) => {
-                    setSearchTerm(term);
-                  }}
-                />
-              </View>
-              {searchTerm !== '' ? (
-                <TouchableOpacity
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: 5,
-                  }}
-                  activeOpacity={0.6}
-                  onPress={handleClear}>
-                  <Feather name="x" size={20} style={{ color: '#8c8d95' }} />
-                </TouchableOpacity>
-              ) : (
-                <></>
-              )}
+              <Text style={{ color: '#9fa1a7', fontSize: 16 }}>
+                votre position actuelle!
+              </Text>
             </View>
           </View>
-        </SafeAreaView>
-        <View style={styles.contentWrapper}>
-          <Text style={styles.bigTitle}>Listes des resultats</Text>
-          {searchTerm !== '' ? (
-            <View style={{ marginBottom: 20 }}>
-              <FlatList
-                scrollEnabled={true}
-                horizontal={false}
-                showsVerticalScrollIndicator={true}
-                removeClippedSubviews={true}
-                ListEmptyComponent={listEmptyComponent}
-                data={filteredData}
-                keyExtractor={({ id }, index) => id}
-                renderItem={({ item }) => {
-                  return (
-                    <View style={styles.recentWrapper}>
-                      <View style={{}}>
-                        <Text style={styles.recentTitle}>{item.name}</Text>
-                      </View>
-                      <View>
-                        <TouchableOpacity
-                          onPress={() =>
-                            navigation.navigate('Book', { zone: item })
-                          }
-                          style={styles.buttonCircle}>
-                          <Feather
-                            name="arrow-right"
-                            size={20}
-                            style={{ color: '#fff' }}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  );
+
+          <View style={styles.search}>
+            <View style={styles.inputWrapper}>
+              <GooglePlacesAutocomplete
+                placeholder='Où allez vous!?'
+                onPress={(data, details = null) => {
+                  console.log(data, details);
+                }}
+                query={{
+                  key: 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc',
+                  language: 'fr',
+                  components: 'country:ht'
                 }}
               />
             </View>
-          ) : (
-            <View>
-              <Text>Rechercher pour continuer!</Text>
-            </View>
-          )}
+          </View>
         </View>
-      </KeyboardAwareScrollView>
-    );
-  }
-};
+      </SafeAreaView>
+    </KeyboardAwareScrollView>
+  );
+}
 
 export default SelectDestination;
 
@@ -186,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     borderColor: '#efefef',
-    borderWidth: 2,
+    borderWidth: 1.2,
   },
   inputWrapper: {
     flexDirection: 'row',
