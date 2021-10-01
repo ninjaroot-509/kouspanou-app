@@ -48,9 +48,12 @@ const SelectDestination = ({ navigation }) => {
             <View style={styles.inputWrapper}>
               <GooglePlacesAutocomplete
                 placeholder='Où allez vous!?'
-                onPress={(data, details = null) => {
-                  console.log(data, details);
-                }}
+                minLength={2}
+                autoFocus={true}
+                returnKeyType={'default'}
+                fetchDetails={true}
+                onPress={(data, details = null) => {console.warn(details)}}
+                GooglePlacesDetailsQuery={{ fields: 'geometry', }}
                 query={{
                   key: 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc',
                   language: 'fr',
@@ -100,8 +103,8 @@ const styles = StyleSheet.create({
     borderWidth: 1.2,
   },
   inputWrapper: {
-    flexDirection: 'row',
     justifyContent: 'center',
+    flexDirection: 'row'
   },
   dot: {
     width: 8,
