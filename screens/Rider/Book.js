@@ -52,8 +52,8 @@ const Book = ({ navigation, route }) => {
   }, [setWallets, wallet]);
 
   const [latLng, setLatLng] = useState({
-    latitude: zone.latitude,
-    longitude: zone.longitude,
+    latitude: zone.geometry.location.lat,
+    longitude: zone.geometry.location.lng,
   });
 
   const handlePayNM = () => {
@@ -61,7 +61,9 @@ const Book = ({ navigation, route }) => {
     const pk = user?.details?.id;
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({
-      destination_id: zone.id,
+      place_name: zone.formatted_address,
+      longitude: zone.geometry.location.lng,
+      latitude: zone.geometry.location.lat,
       payMN: true,
     });
     axios
@@ -90,7 +92,9 @@ const Book = ({ navigation, route }) => {
     const pk = user?.details?.id;
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({
-      destination_id: zone.id,
+      place_name: zone.formatted_address,
+      longitude: zone.geometry.location.lng,
+      latitude: zone.geometry.location.lat,
       payMN: false,
     });
     axios
@@ -226,7 +230,7 @@ const Book = ({ navigation, route }) => {
                   fontWeight: '500',
                   marginBottom: 10,
                 }}>
-                {zone.name}
+                {zone.formatted_address}
               </Text>
               <View
                 style={{
