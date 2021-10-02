@@ -29,6 +29,10 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import MapViewDirections from 'react-native-maps-directions';
 import * as Location from 'expo-location';
 import Geocoder from 'react-native-geocoding';
+import {
+  getComand,
+  setComand
+} from '../../Components/Common/Auth/Sessions';
 
 const { width, height } = Dimensions.get('window');
 Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
@@ -401,7 +405,7 @@ const Home = ({ navigation }) => {
                       <View>
                         <TouchableOpacity
                         onPress={() =>
-                          navigation.navigate('BidDriver', { biddetail: item })
+                          setComand(item).then((res)=> navigation.replace('SplashScreen'))
                         }
                           style={{
                             padding: 7,

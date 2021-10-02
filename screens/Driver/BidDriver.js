@@ -38,12 +38,12 @@ import axios from 'axios';
 
 import useUsers from '../../src/state/user/hooks/useUsers';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
+import useBidDetails from '../../src/state/biddetail/hooks/useBidDetails';
 
 const BidRider = ({ navigation, route }) => {
-  const { params } = route;
-  const { biddetail } = params;
   const [user, isLoading, setUsers] = useUsers();
   const [wallet, isLoadingW, setWallets] = useWallets();
+  const [biddetail, isLoadingB, setBidDetails] = useBidDetails();
   const [stop, setStop] = useState(false)
   const [temp, setTemp] = useState(0);
   const pk = user?.details?.id
@@ -60,6 +60,14 @@ const BidRider = ({ navigation, route }) => {
     }
   }, [setUsers, user]);
 
+  useEffect(() => {
+    if (!stop) {
+      setBidDetails();
+      if (biddetail?.details || biddetail?.details?.length !== 0) {
+        setStop(true)
+      }
+    }
+  }, [setBidDetails, biddetail]);
 
   useEffect(() => {
     setInterval(() => {
@@ -68,8 +76,8 @@ const BidRider = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    if (biddetail || biddetail.length !== 0) {
-      request.getBidPrix(pk, biddetail.id).then((res)=> {
+    if (biddetail.details || biddetail?.details.length !== 0) {
+      request.getBidPrix(pk, biddetail?.details?.id).then((res)=> {
         setBid(res)
       })
     }
@@ -77,12 +85,12 @@ const BidRider = ({ navigation, route }) => {
   
   
   const handleSubmitPrix = () => {
-    if (biddetail && prix && send == false) {
+    if (biddetail?.details && prix && send == false) {
       setSend(true)
-      if (biddetail.client === pk) {
+      if (biddetail?.details?.client === pk) {
         const config = { headers: { 'Content-Type': 'application/json' } };
         const body = JSON.stringify({
-          id_trip: biddetail.id,
+          id_trip: biddetail?.details?.id,
           prix: prix,
         });
         axios
@@ -101,7 +109,7 @@ const BidRider = ({ navigation, route }) => {
       } else {
         const config = { headers: { 'Content-Type': 'application/json' } };
         const body = JSON.stringify({
-          id_trip: biddetail.id,
+          id_trip: biddetail?.details?.id,
           prix: prix,
         });
         axios
@@ -121,13 +129,24 @@ const BidRider = ({ navigation, route }) => {
     }
   }
 
-  // const handleQuit = () => {
-  //   removeComand().then((suc)=> {
-  //     navigation.replace('SplashScreen');
-  //   })
-  // }
+  const handleQuit = () => {
+    const config = { headers: { 'Content-Type': 'application/json' } };
+    const body = JSON.stringify({
+      id_trip: biddetail?.details?.id,
+    });
+    axios
+      .post(
+        `https://crazy-taxi.quizapay.com/api/driver-quits/?pk=${pk}`, 
+        body,
+        config
+      ).then((res)=> {
+        removeComand().then((suc)=> {
+          navigation.replace('SplashScreen');
+        })
+    })
+  }
 
-  if (biddetail || biddetail.length !== 0) {
+  if (biddetail?.details || biddetail?.details?.length !== 0) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -142,7 +161,7 @@ const BidRider = ({ navigation, route }) => {
             </TouchableOpacity>
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
               <Text style={{ fontWeight: 'bold', color: '#001', fontSize: 19 }}>
-              {biddetail.user_first_name}
+              {biddetail?.details?.user_first_name}
               </Text>
               <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <View
@@ -156,11 +175,30 @@ const BidRider = ({ navigation, route }) => {
                 />
               </View>
               <Text style={{ fontWeight: 'bold', color: '#001', fontSize: 19 }}>
-                {biddetail.destination}
+                {biddetail?.details?.destination}
               </Text>
             </View>
             <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              Alert.alert(
+                  'Quitter cette espace!',
+                  "Es-tu sûr? De vouloir quitter l'espace?",
+                  [
+                    {
+                      text: 'Annuler',
+                      onPress: () => {
+                        return null;
+                      },
+                    },
+                    {
+                      text: 'Confirmer',
+                      onPress: () => handleQuit()
+                    },
+                  ],
+                  {cancelable: false},
+                );
+              
+            }}
               style={{
                 borderWidth: 1,
                 borderColor: '#143fff',
@@ -289,9 +327,9 @@ const BidRider = ({ navigation, route }) => {
           <View style={{alignItems: 'center'}}>
           <View style={styles.send}>
             <TextInput
-              placeholder={biddetail.client === pk ? "Donner vos instructions..." : "Soumettre votre prix..."}
-              keyboardType={biddetail.client === pk ? 'default' : 'numeric'}
-              maxLength={biddetail.client === pk ? 250 : 4}
+              placeholder={biddetail?.details?.client === pk ? "Donner vos instructions..." : "Soumettre votre prix..."}
+              keyboardType={biddetail?.details?.client === pk ? 'default' : 'numeric'}
+              maxLength={biddetail?.details?.client === pk ? 250 : 4}
               onChangeText={(prix) => setPrix(prix)}
               value={prix}
               returnKeyType="next"

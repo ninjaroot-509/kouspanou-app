@@ -109,11 +109,6 @@ function HomeStackDriver() {
         name="Home"
         component={HomeDriver}
       />
-      <Stack.Screen
-        options={{ headerShown: false }}
-        name="BidDriver"
-        component={BidDriver}
-      />
     </Stack.Navigator>
   );
 }
@@ -294,11 +289,11 @@ const AppStart = () => {
           options={{ headerShown: false }}
         />
         {/* page BidDriver */}
-        {/* <Stack.Screen
+        <Stack.Screen
           name="BidDriver"
           component={BidDriver}
           options={{ headerShown: false }}
-        /> */}
+        />
         {/* page Out */}
         <Stack.Screen
           name="Out"
