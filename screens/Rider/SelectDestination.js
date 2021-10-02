@@ -15,7 +15,8 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createFilter } from 'react-native-search-filter';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+// import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import PlacesInput from 'react-native-places-input';
 
 const SelectDestination = ({ navigation }) => {  
   const handleChoose = (item) => {
@@ -46,18 +47,18 @@ const SelectDestination = ({ navigation }) => {
 
           <View style={styles.search}>
             <View style={styles.inputWrapper}>
-              <GooglePlacesAutocomplete
-                placeholder='Où allez vous!?'
-                minLength={2}
-                autoFocus={true}
-                returnKeyType={'default'}
-                fetchDetails={true}
-                onPress={(data, details = null) => {console.warn(details)}}
-                GooglePlacesDetailsQuery={{ fields: 'geometry', }}
-                query={{
-                  key: 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc',
-                  language: 'fr',
-                  components: 'country:ht'
+              <PlacesInput
+                googleApiKey="AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc"
+                placeHolder={'Où allez vous!?'}
+                language={'fr-FR'}
+                queryCountries={['ht']}
+                onSelect={(place) => {
+                  console.log(place)
+                  // handleChoose({item: place})
+                }}
+                stylesList={{
+                  borderColor: '#dedede',
+                  borderBottomWidth: 1,
                 }}
               />
             </View>

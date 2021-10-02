@@ -39,11 +39,11 @@ const Login = ({ navigation }) => {
           .then((res) => {
             setUserSession(res.data.token, res.data.user).then((res) => {
               navigation.replace('SplashScreen');
-              console.log('Bienvenue ' + res.data.user.phone);
             }); // LOGIN OK redirect
             setLoad(false);
           })
           .catch((err) => {
+            console.warn(err);
             alert(err);
             setLoad(false);
           });

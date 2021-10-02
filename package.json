@@ -16,11 +16,11 @@
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
     "axios": "*",
-    "expo": "^40.0.0",
-    "expo-constants": "~9.3.3",
+    "expo": "^1.0.0",
+    "expo-constants": "^11.0.1",
     "expo-linear-gradient": "~8.4.0",
     "expo-location": "~10.0.0",
-    "expo-notifications": "~0.8.2",
+    "expo-notifications": "^0.12.3",
     "expo-status-bar": "~1.0.3",
     "moment": "*",
     "native-base": "*",
@@ -45,14 +45,15 @@
     "react-native-pager-view": "5.0.12",
     "react-native-paper": "3.6.0",
     "react-native-phone-number-input": "*",
-    "react-native-reanimated": "~1.13.0",
+    "react-native-places-input": "^1.1.7",
+    "react-native-reanimated": "^2.2.2",
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "~2.15.2",
     "react-native-search-filter": "*",
     "react-native-svg": "12.1.0",
     "react-native-tab-view": "*",
     "react-native-vector-icons": "*",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "^0.17.5"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0"
