@@ -6,25 +6,17 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
 } from 'react-native';
-import useZones from '../../src/state/zone/hooks/useZones';
 import Feather from 'react-native-vector-icons/Feather';
-import Fontisto from 'react-native-vector-icons/Fontisto';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { createFilter } from 'react-native-search-filter';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-// import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import PlacesInput from 'react-native-places-input';
 
-const SelectDestination = ({ navigation }) => {  
+const SelectDestination = ({ navigation }) => {
   const handleChoose = (item) => {
-    navigation.navigate('Book', { zone: item })
-  }
+    navigation.navigate('Book', { zone: item });
+  };
   return (
-    <KeyboardAwareScrollView style={styles.container}>
-      <SafeAreaView>
+    <View style={styles.container}>
+      <View>
         <View style={styles.card}>
           <View style={styles.drop}>
             <Text style={styles.dropText}>Rechercher ici</Text>
@@ -46,27 +38,39 @@ const SelectDestination = ({ navigation }) => {
           </View>
 
           <View style={styles.search}>
-            <View style={styles.inputWrapper}>
-              <PlacesInput
-                googleApiKey="AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc"
-                placeHolder={'Où allez vous!?'}
-                language={'fr-FR'}
-                queryCountries={['ht']}
-                onSelect={(place) => {
-                  handleChoose({item: place.result})
-                }}
-                stylesList={{
-                  borderColor: '#dedede',
-                  borderBottomWidth: 1,
-                }}
-              />
-            </View>
+            <PlacesInput
+              googleApiKey="AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc"
+              placeHolder={'Où allez vous!?'}
+              language={'fr-FR'}
+              queryCountries={['ht']}
+              onSelect={(place) => {
+                // handleChoose({ item: place.result });
+                console.log(place);
+              }}
+              stylesList={{
+                borderColor: '#dedede',
+                borderBottomWidth: 1,
+              }}
+              stylesContainer={{
+                position: 'relative',
+                alignSelf: 'stretch',
+                margin: 0,
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                shadowOpacity: 0,
+                borderColor: '#dedede',
+                borderWidth: 0.4,
+                marginBottom: 10,
+              }}
+            />
           </View>
         </View>
-      </SafeAreaView>
-    </KeyboardAwareScrollView>
+      </View>
+    </View>
   );
-}
+};
 
 export default SelectDestination;
 
@@ -94,17 +98,8 @@ const styles = StyleSheet.create({
   },
   search: {
     padding: 7,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    borderRadius: 8,
-    borderColor: '#efefef',
-    borderWidth: 1.2,
-  },
-  inputWrapper: {
     justifyContent: 'center',
-    flexDirection: 'row'
   },
   dot: {
     width: 8,
@@ -123,10 +118,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 4,
   },
-  inputText: {
-    fontWeight: '600',
-    width: 220,
-  },
   bottomCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -136,38 +127,5 @@ const styles = StyleSheet.create({
   bottomCardPin: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  buttonCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 50,
-    backgroundColor: '#143fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  contentWrapper: {
-    paddingHorizontal: 20,
-    padding: 15,
-  },
-  bigTitle: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    color: '#ff8612',
-    marginBottom: 20,
-  },
-  recentWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  recentTitle: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    color: '#3a3b4b',
-    marginBottom: 5,
-  },
-  recentSubtitle: {
-    color: '#aaabb1',
   },
 });

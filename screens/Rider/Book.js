@@ -52,8 +52,8 @@ const Book = ({ navigation, route }) => {
   }, [setWallets, wallet]);
 
   const [latLng, setLatLng] = useState({
-    latitude: zone.geometry.location.lat,
-    longitude: zone.geometry.location.lng,
+    latitude: zone.item.geometry.location.lat,
+    longitude: zone.item.geometry.location.lng,
   });
 
   const handlePayNM = () => {
@@ -61,9 +61,9 @@ const Book = ({ navigation, route }) => {
     const pk = user?.details?.id;
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({
-      place_name: zone.formatted_address,
-      longitude: zone.geometry.location.lng,
-      latitude: zone.geometry.location.lat,
+      place_name: zone.item.formatted_address,
+      longitude: zone.item.geometry.location.lng,
+      latitude: zone.item.geometry.location.lat,
       payMN: true,
     });
     axios
@@ -92,9 +92,9 @@ const Book = ({ navigation, route }) => {
     const pk = user?.details?.id;
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({
-      place_name: zone.formatted_address,
-      longitude: zone.geometry.location.lng,
-      latitude: zone.geometry.location.lat,
+      place_name: zone.item.formatted_address,
+      longitude: zone.item.geometry.location.lng,
+      latitude: zone.item.geometry.location.lat,
       payMN: false,
     });
     axios
@@ -230,7 +230,7 @@ const Book = ({ navigation, route }) => {
                   fontWeight: '500',
                   marginBottom: 10,
                 }}>
-                {zone.formatted_address}
+                {zone.item.formatted_address}
               </Text>
               <View
                 style={{
