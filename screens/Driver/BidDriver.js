@@ -173,9 +173,10 @@ const BidRider = ({ navigation, route }) => {
   const handleAcceptPost = () => {
     let datatrip = {
       is_active: true,
+      arrival: false,
+      complete: false,
       driver: pk,
-      driver_longitude: user?.details?.longitude,
-      driver_latitude: user?.details?.latitude,
+      client: userChoose?.client,
     };
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({

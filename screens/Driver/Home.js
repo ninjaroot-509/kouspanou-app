@@ -174,7 +174,7 @@ const Home = ({ navigation }) => {
                 Changer Type compte
               </Text>
             </View>
-            <View style={{ padding: 17, alignItems: 'center' }}>
+            <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
               <Text style={{ textAlign: 'justify' }}>
                 Hello {user?.details?.first_name}, Confirmez que vous voulez
                 changer votre compte de type chauffeur en type passager.

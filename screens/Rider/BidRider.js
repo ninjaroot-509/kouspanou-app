@@ -98,9 +98,10 @@ const BidRider = ({ navigation }) => {
         .then((res) => {
           let datatrip = {
             is_active: true,
+            arrival: false,
+            complete: false,
             driver: userChoose?.driver,
-            driver_longitude: userChoose?.driver_longitude,
-            driver_latitude: userChoose?.driver_latitude,
+            client: pk,
           };
           if (res.data.is_comfirm == true) {
             setmergeItemComand(datatrip).then((res) => {
