@@ -33,12 +33,14 @@ import {
   getUser,
   getComand,
   removeComand,
+  setmergeItemComand
 } from '../../Components/Common/Auth/Sessions';
 import axios from 'axios';
 
 import useUsers from '../../src/state/user/hooks/useUsers';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
 import useBidDetails from '../../src/state/biddetail/hooks/useBidDetails';
+import Modal from 'react-native-modal';
 
 const BidRider = ({ navigation, route }) => {
   const [user, isLoading, setUsers] = useUsers();
@@ -50,6 +52,8 @@ const BidRider = ({ navigation, route }) => {
   const [prix, setPrix] = useState('');
   const [send, setSend] = useState(false);
   const [bid, setBid] = useState([]);
+  const [userWinModal, setUserWinModal] = useState(false);
+  const [userAcceptDone, setUserAcceptDone] = useState(false);
 
   const { height, width } = Dimensions.get('window');
 
@@ -80,10 +84,27 @@ const BidRider = ({ navigation, route }) => {
         setBid(res);
       });
     }
+
+    if (userAcceptDone == true) {
+      const config = { headers: { 'Content-Type': 'application/json' } };
+      axios
+        .get(
+          `https://crazy-taxi.quizapay.com/api/driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}`,
+          config
+        )
+        .then((res) => {
+          if (res.is_win == true) {
+            setUserWinModal(true);
+          }
+        })
+        .catch((err) => {
+          alert("une erreur s'est produite");
+        });
+    }
   }, [temp]);
 
   const handleSubmitPrix = () => {
-    if (biddetail?.details && prix && send == false) {
+    if (biddetail?.details && prix && send == false && userAcceptDone == false) {
       setSend(true);
       if (biddetail?.details?.client === pk) {
         const config = { headers: { 'Content-Type': 'application/json' } };
@@ -149,9 +170,95 @@ const BidRider = ({ navigation, route }) => {
       });
   };
 
+  const handleAcceptPost = () => {
+    let datatrip = {
+      is_active: true,
+      driver: pk,
+      driver_longitude: user?.details?.longitude,
+      driver_latitude: user?.details?.latitude,
+    };
+    const config = { headers: { 'Content-Type': 'application/json' } };
+    const body = JSON.stringify({
+      id_trip: biddetail?.details?.id,
+    });
+    if (userAcceptDone === false) {
+      axios
+        .post(
+          `https://crazy-taxi.quizapay.com/api/driver-accept/?pk=${pk}`,
+          body,
+          config
+        )
+        .then((res) => {
+          setUserAcceptDone(true);
+          setmergeItemComand(datatrip).then((res) => {
+            navigation.replace('SplashScreen');
+          });
+        })
+        .catch((err) => {
+          alert("une erreur s'est produite");
+        });
+    }
+  };
+
   if (biddetail?.details || biddetail?.details?.length !== 0) {
     return (
       <View style={styles.container}>
+        <Modal
+          isVisible={userWinModal}
+          onRequestClose={() => setUserWinModal(false)}
+          onBackButtonPress={() => setUserWinModal(false)}>
+          <View
+            style={{
+              backgroundColor: 'white',
+              height: 200,
+              alignItems: 'center',
+              borderRadius: 10,
+            }}>
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ color: '#000', fontWeight: 'bold' }}>
+                Comfirmation
+              </Text>
+            </View>
+            <View style={{ padding: 17, alignItems: 'center' }}>
+              <Text style={{ textAlign: 'justify' }}>
+                Hello {user?.details?.first_name}, Confirmez que vous voulez
+                changer votre compte de type passager en type chauffeur.
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <TouchableOpacity
+                style={{
+                  margin: 5,
+                  backgroundColor: '#cacaca',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 8,
+                  height: 45,
+                  width: 100,
+                }}
+                onPress={() => setUserWinModal(false)}>
+                <Text style={{ color: '#000' }}>Annuler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleAcceptPost}
+                style={{
+                  margin: 5,
+                  backgroundColor: '#ff8612',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 8,
+                  height: 45,
+                  width: 100,
+                }}>
+                <Text style={{ color: '#fff' }}>Comfirmer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <View style={styles.header}>
           <View style={styles.headertitle}>
             <TouchableOpacity
@@ -253,16 +360,16 @@ const BidRider = ({ navigation, route }) => {
                                 padding: 15,
                                 maxWidth: 190,
                               }}>
-                                <Text
-                                  style={{
-                                    color: '#fff',
-                                    fontSize: 13,
-                                    fontWeight: 'bold',
-                                  }}
-                                  numberOfLines={1}
-                                  ellipsizeMode="tail">
-                                  Moi
-                                </Text>
+                              <Text
+                                style={{
+                                  color: '#fff',
+                                  fontSize: 13,
+                                  fontWeight: 'bold',
+                                }}
+                                numberOfLines={1}
+                                ellipsizeMode="tail">
+                                Moi
+                              </Text>
                               <Text
                                 style={{
                                   padding: 5,

@@ -48,41 +48,6 @@ const Signup = ({ navigation }) => {
     { key: 'driver', title: 'Chauffeur' },
   ]);
 
-  const handleSignupSubmit = () => {
-    if (load === false) {
-      setLoad(true);
-      if (phone === '' || password === '' || password2 === '') {
-        alert('Remplissez tous les champs!');
-        setLoad(false);
-      } else if (password !== password2) {
-        alert('Les mots de passe ne correspondent pas!');
-        setLoad(false);
-      } else {
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
-          phone: tel,
-          password,
-          is_driver,
-          is_passenger,
-        });
-        axios
-          .post(
-            'https://crazy-taxi.quizapay.com/api/auth/register',
-            body,
-            config
-          )
-          .then((res) => {
-            setUserSession(res.data.token, res.data.user); // Signup OK redirect
-            console.log('Bienvenue ' + '' + res.data.user.phone);
-            navigation.replace('SplashScreen');
-          })
-          .catch((err) => {
-            setLoad(false);
-            console.log(err);
-          });
-      }
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -102,13 +67,13 @@ const Signup = ({ navigation }) => {
         </View>
         <View style={{ alignItems: 'center' }}>
           <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#001' }}>
-            Signup
+            Inscrivez-vous
           </Text>
           <Text style={{ fontSize: 18, color: '#001' }}>
-            Hello, welcome back
+            Hello, bon retour
           </Text>
           <Text style={{ fontSize: 18, color: '#001' }}>
-            Happy to see you again!
+            Content de te revoir!
           </Text>
         </View>
       </View>

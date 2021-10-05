@@ -8,11 +8,13 @@ import Login from '../Views/Login';
 import Signup from '../Views/Signup';
 import CompleteI from '../Views/CompleteI';
 import BidRider from '../screens/Rider/BidRider';
+import BidRiderTrafic from '../screens/Rider/BidRiderTrafic';
 import Home1 from '../screens/Rider/Home1';
 import Pickup from '../screens/Rider/SelectDestination';
 import Book from '../screens/Rider/Book';
 import HomeDriver from '../screens/Driver/Home';
 import BidDriver from '../screens/Driver/BidDriver';
+import BidDriverTrafic from '../screens/Driver/BidDriverTrafic';
 import Profile from '../screens/Rider/Profile';
 import Explore from '../screens/Rider/Explore';
 import Notification from '../screens/Rider/Notification';
@@ -281,16 +283,28 @@ const AppStart = () => {
           component={MyTabDriver}
           options={{ headerShown: false }}
         />
-        {/* page BidRider */}
+        {/* page BidRider */}BidRiderTrafic
         <Stack.Screen
           name="BidRider"
           component={BidRider}
+          options={{ headerShown: false }}
+        />
+        {/* page BidRiderTrafic */}
+        <Stack.Screen
+          name="BidRiderTrafic"
+          component={BidRiderTrafic}
           options={{ headerShown: false }}
         />
         {/* page BidDriver */}
         <Stack.Screen
           name="BidDriver"
           component={BidDriver}
+          options={{ headerShown: false }}
+        />
+        {/* page BidDriverTrafic */}
+        <Stack.Screen
+          name="BidDriverTrafic"
+          component={BidDriverTrafic}
           options={{ headerShown: false }}
         />
         {/* page Out */}

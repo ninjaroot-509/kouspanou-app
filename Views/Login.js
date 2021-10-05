@@ -72,13 +72,13 @@ const Login = ({ navigation }) => {
           </View>
           <View style={{ alignItems: 'center' }}>
             <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#001' }}>
-              Login
+              Connexion
             </Text>
             <Text style={{ fontSize: 18, color: '#001' }}>
-              Hello, welcome back
+              Hello, bon retour
             </Text>
             <Text style={{ fontSize: 18, color: '#001' }}>
-              Happy to see you again!
+              Content de te revoir!
             </Text>
           </View>
         </View>

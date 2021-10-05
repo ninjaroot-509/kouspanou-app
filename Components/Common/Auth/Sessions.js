@@ -9,6 +9,15 @@ export const setComand = async (comand) => {
   }
 };
 
+export const setmergeItemComand = async (comand) => {
+  try {
+    AsyncStorage.mergeItem('comand', JSON.stringify(comand));
+  } catch (error) {
+    console.log('mergeItem error ', error);
+    return null;
+  }
+};
+
 export const getComand = async () => {
   const jsonValue = await AsyncStorage.getItem('comand');
   return jsonValue != null ? JSON.parse(jsonValue) : null;

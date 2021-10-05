@@ -49,7 +49,11 @@ const SplashScreen = ({ navigation }) => {
                   if (valueComd === null) {
                     navigation.replace('DrawerNavigationRoutes');
                   } else {
-                    navigation.replace('BidRider');
+                    if (valueComd.is_active === true) {
+                      navigation.replace('BidRider');
+                    } else {
+                      navigation.replace('BidRiderTrafic');
+                    }
                   }
                 });
               } else if (res.is_passenger === false && res.is_driver === true) {
@@ -57,7 +61,11 @@ const SplashScreen = ({ navigation }) => {
                   if (valueComd === null) {
                     navigation.replace('NavigationRoutesDriver');
                   } else {
-                    navigation.replace('BidDriver');
+                    if (valueComd.is_active === true) {
+                      navigation.replace('BidDriver');
+                    } else {
+                      navigation.replace('BidDriverTrafic');
+                    }
                   }
                 });
               } else {

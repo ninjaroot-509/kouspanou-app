@@ -35,6 +35,7 @@ import {
   getUser,
   getComand,
   removeComand,
+  setmergeItemComand
 } from '../../Components/Common/Auth/Sessions';
 import axios from 'axios';
 
@@ -55,6 +56,7 @@ const BidRider = ({ navigation }) => {
   const [bid, setBid] = useState([]);
   const [userChoose, setUserChoose] = useState();
   const [userChooseModal, setUserChooseModal] = useState(false);
+  const [userChooseDone, setUserChooseDone] = useState(false);
 
   const { height, width } = Dimensions.get('window');
 
@@ -84,6 +86,31 @@ const BidRider = ({ navigation }) => {
       request.getBidPrix(pk, biddetail?.details?.id).then((res) => {
         setBid(res);
       });
+    }
+
+    if (userChooseDone === true) {
+      const config = { headers: { 'Content-Type': 'application/json' } };
+      axios
+        .get(
+          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}&id_driver=${userChoose?.driver}`,
+          config
+        )
+        .then((res) => {
+          let datatrip = {
+            is_active: true,
+            driver: userChoose?.driver,
+            driver_longitude: userChoose?.driver_longitude,
+            driver_latitude: userChoose?.driver_latitude,
+          };
+          if (res.data.is_comfirm == true) {
+            setmergeItemComand(datatrip).then((res) => {
+              navigation.replace('SplashScreen');
+            });
+          }
+        })
+        .catch((err) => {
+          alert("une erreur s'est produite");
+        });
     }
   }, [temp]);
 
@@ -142,11 +169,11 @@ const BidRider = ({ navigation }) => {
     });
   };
 
-  const handleChoosePost = (id_driver) => {
+  const handleChoosePost = () => {
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({
       id_trip: biddetail?.details?.id,
-      id_driver: id_driver,
+      id_driver: userChoose?.driver,
     });
     axios
       .post(
@@ -155,17 +182,15 @@ const BidRider = ({ navigation }) => {
         config
       )
       .then((res) => {
-        // setUserChoose(id_driver)
-      })
-      .catch((err) => {
-        alert("une erreur s'est produite");
+        setUserChooseDone(true);
+        setUserChooseModal(false);
       });
-  }
+  };
 
   const handleChoose = (id_driver) => {
-    setUserChoose(id_driver)
-    setUserChooseModal(true)
-  }
+    setUserChoose(id_driver);
+    setUserChooseModal(true);
+  };
 
   if (biddetail?.details || biddetail?.details?.length !== 0) {
     return (
@@ -183,7 +208,7 @@ const BidRider = ({ navigation }) => {
             }}>
             <View style={{ marginTop: 20 }}>
               <Text style={{ color: '#000', fontWeight: 'bold' }}>
-                {userChoose.user_first_name}
+                {userChoose?.user_first_name}
               </Text>
             </View>
             <View style={{ padding: 17, alignItems: 'center' }}>
@@ -207,14 +232,14 @@ const BidRider = ({ navigation }) => {
                   height: 45,
                   width: 100,
                 }}
-                onPress={() => setModal(false)}>
+                onPress={() => setUserChooseModal(false)}>
                 <Text style={{ color: '#000' }}>Annuler</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleChange}
+                onPress={handleChoosePost}
                 style={{
                   margin: 5,
-                  backgroundColor: change === false ? '#ff8612' : '#cacaca',
+                  backgroundColor: '#ff8612',
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 8,
@@ -422,13 +447,13 @@ const BidRider = ({ navigation }) => {
                                 </Text>
                                 {biddetail?.details?.client === pk && (
                                   <TouchableOpacity
-                                    onPress={handleChoose(item)}
+                                    onPress={() => handleChoose(item)}
                                     style={{
                                       width: 20,
                                       height: 20,
                                       alignItems: 'center',
                                       justifyContent: 'center',
-                                      backgroundColor: '#143fff',
+                                      backgroundColor: '#ff9612',
                                       borderRadius: 18,
                                       marginHorizontal: 10,
                                     }}>
