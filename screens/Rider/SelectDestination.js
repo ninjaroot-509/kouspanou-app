@@ -44,8 +44,7 @@ const SelectDestination = ({ navigation }) => {
               language={'fr-FR'}
               queryCountries={['ht']}
               onSelect={(place) => {
-                // handleChoose({ item: place.result });
-                console.log(place);
+                handleChoose({ item: place.result });
               }}
               stylesList={{
                 borderColor: '#dedede',

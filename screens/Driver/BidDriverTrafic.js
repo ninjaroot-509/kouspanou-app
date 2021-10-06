@@ -9,25 +9,27 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
-import mapstyle from './mapstyle.json';
 import Feather from 'react-native-vector-icons/Feather';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import MapViewDirections from 'react-native-maps-directions';
 import Svg, { Polygon } from 'react-native-svg';
 import request from '../../Components/Common/HttpRequests';
 import useUsers from '../../src/state/user/hooks/useUsers';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
-import customMapStyle from './mapstyle.json';
+import customMapStyle from '../Rider/mapstyle.json';
 import {
   getComand,
-  setComand
+  setComand,
+  setmergeItemComand,
 } from '../../Components/Common/Auth/Sessions';
 import axios from 'axios';
 import Modal from 'react-native-modal';
+import Geocoder from 'react-native-geocoding';
 
 Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
 const { width, height } = Dimensions.get('window');
 
-const App = () => {
+const App = ({ navigation }) => {
   const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
@@ -49,9 +51,9 @@ const App = () => {
 
   useEffect(() => {
     if (biddetail.length === 0) {
-        getComand.then((res)=> {
-            setBiddetail(res)
-        })
+      getComand.then((res) => {
+        setBiddetail(res);
+      });
     }
   });
 
@@ -63,66 +65,71 @@ const App = () => {
 
   useEffect(() => {
     if (biddetail.length !== 0) {
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        if (arrive == true) {
-            axios
-              .get(
-                `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}&id_driver=${userChoose?.driver}`,
-                config
-              )
-              .then((res) => {
-                let datatrip = {
-                  arrival: true,
-                };
-                if (res.data.is_arrivale_comfirm == true) {
-                  setmergeItemComand(datatrip).then((res) => {
-                    navigation.replace('SplashScreen');
-                  });
-                }
-              })
-              .catch((err) => {
-                alert("une erreur s'est produite");
+      const config = { headers: { 'Content-Type': 'application/json' } };
+      if (arrive == true) {
+        axios
+          .get(
+            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}&id_driver=${userChoose?.driver}`,
+            config
+          )
+          .then((res) => {
+            let datatrip = {
+              arrival: true,
+            };
+            if (res.data.is_arrivale_comfirm == true) {
+              setmergeItemComand(datatrip).then((res) => {
+                navigation.replace('SplashScreen');
               });
-        }
+            }
+          })
+          .catch((err) => {
+            alert("une erreur s'est produite");
+          });
+      }
 
-        if (arriveEnd == true) {
-            axios
-              .get(
-                `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}&id_driver=${userChoose?.driver}`,
-                config
-              )
-              .then((res) => {
-                let datatrip = {
-                    complete: true,
-                };
-                if (res.data.is_complete_comfirm == true) {
-                  setmergeItemComand(datatrip).then((res) => {
-                    navigation.replace('SplashScreen');
-                  });
-                }
-              })
-              .catch((err) => {
-                alert("une erreur s'est produite");
+      if (arriveEnd == true) {
+        axios
+          .get(
+            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}&id_driver=${userChoose?.driver}`,
+            config
+          )
+          .then((res) => {
+            let datatrip = {
+              complete: true,
+            };
+            if (res.data.is_complete_comfirm == true) {
+              setmergeItemComand(datatrip).then((res) => {
+                navigation.replace('SplashScreen');
               });
-        }
+            }
+          })
+          .catch((err) => {
+            alert("une erreur s'est produite");
+          });
+      }
     }
-
   }, [temp]);
 
   const [latLng, setLatLng] = useState({
     latitudeDelta: LONGITUDE_DELTA,
     longitudeDelta: LONGITUDE_DELTA,
-    latitude: biddetail?.arrival == true? biddetail?.destination_latitude : client?.latitude,
-    longitude: biddetail?.arrival == true? biddetail?.destination_longitude : client?.longitude,
+    latitude:
+      biddetail?.arrival == true
+        ? biddetail?.destination_latitude
+        : client?.latitude,
+    longitude:
+      biddetail?.arrival == true
+        ? biddetail?.destination_longitude
+        : client?.longitude,
   });
 
   const handleArriv = () => {
-      if (biddetail?.arrival == true) {
-        setArriveEnd(true)
-      } else {
-          setArrive(true)
-      }
-  }
+    if (biddetail?.arrival == true) {
+      setArriveEnd(true);
+    } else {
+      setArrive(true);
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -139,12 +146,15 @@ const App = () => {
           }}>
           <View style={{ marginTop: 20 }}>
             <Text style={{ color: '#000', fontWeight: 'bold' }}>
-              {biddetail?.arrival == true? 'Deja arriver!?' : 'Vous avez trouver le passager !?'}
+              {biddetail?.arrival == true
+                ? 'Deja arriver!?'
+                : 'Vous avez trouver le passager !?'}
             </Text>
           </View>
           <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
             <Text style={{ textAlign: 'justify' }}>
-              Hello user, Confirmez que vous êtes {biddetail?.arrival == true? 'deja arriver' : 'avec le passager'}
+              Hello user, Confirmez que vous êtes{' '}
+              {biddetail?.arrival == true ? 'deja arriver' : 'avec le passager'}
             </Text>
           </View>
           <View
@@ -166,7 +176,7 @@ const App = () => {
               <Text style={{ color: '#000' }}>Annuler</Text>
             </TouchableOpacity>
             <TouchableOpacity
-            onPress={handleArriv}
+              onPress={handleArriv}
               style={{
                 margin: 5,
                 backgroundColor: '#ff8612',
@@ -185,7 +195,7 @@ const App = () => {
         <MapViewDirections
           origin={{
             latitude: user?.details?.latitude,
-            longitude: user?.details?.longitude
+            longitude: user?.details?.longitude,
           }}
           destination={latLng}
           apikey={API_KEY}
@@ -193,11 +203,17 @@ const App = () => {
           strokeColor="#143fff"
           optimizeWaypoints={true}
         />
-        <MapView.Marker title="votre position actuelle" coordinate={{
+        <MapView.Marker
+          title="votre position actuelle"
+          coordinate={{
             latitude: user?.details?.latitude,
-            longitude: user?.details?.longitude
-          }} />
-        <MapView.Marker title="position actuelle du client" coordinate={latLng} />
+            longitude: user?.details?.longitude,
+          }}
+        />
+        <MapView.Marker
+          title="position actuelle du client"
+          coordinate={latLng}
+        />
       </MapView>
 
       <View

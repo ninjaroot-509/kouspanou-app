@@ -43,6 +43,11 @@ import useUsers from '../../src/state/user/hooks/useUsers';
 import useBidDetails from '../../src/state/biddetail/hooks/useBidDetails';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
 import Modal from 'react-native-modal';
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import customMapStyle from './mapstyle.json';
+import Geocoder from 'react-native-geocoding';
+Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
+import MapViewDirections from 'react-native-maps-directions';
 
 const BidRider = ({ navigation }) => {
   const [user, isLoading, setUsers] = useUsers();
@@ -57,6 +62,14 @@ const BidRider = ({ navigation }) => {
   const [userChoose, setUserChoose] = useState();
   const [userChooseModal, setUserChooseModal] = useState(false);
   const [userChooseDone, setUserChooseDone] = useState(false);
+  const [viewMore, setViewMore] = useState(false);
+  const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
+  const ASPECT_RATIO = width / height;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+  const handleView = () => {
+    setViewMore(!viewMore);
+  };
 
   const { height, width } = Dimensions.get('window');
 
@@ -190,7 +203,9 @@ const BidRider = ({ navigation }) => {
 
   const handleChoose = (id_driver) => {
     setUserChoose(id_driver);
-    setUserChooseModal(true);
+    setTimeout(() => {
+      setUserChooseModal(true);
+    }, 500);
   };
 
   if (biddetail?.details || biddetail?.details?.length !== 0) {
@@ -198,59 +213,207 @@ const BidRider = ({ navigation }) => {
       <View style={styles.container}>
         <Modal
           isVisible={userChooseModal}
-          onRequestClose={() => setUserChooseModal(false)}
-          onBackButtonPress={() => setUserChooseModal(false)}>
+          onRequestClose={() => {
+            setUserChooseModal(false)
+            setViewMore(false)
+          }}
+          onBackButtonPress={() => {
+            setUserChooseModal(false)
+              setViewMore(false)
+          }}>
+
+          <View
+          style={{
+            backgroundColor: 'white',
+            height: 380,
+            alignItems: 'center',
+            borderRadius: 10,
+          }}>
+          <View style={{ position: 'absolute', top: -50 }}>
+            <Image
+              style={{ width: 100, height: 100, borderRadius: 50 }}
+              source={{
+                uri:
+                  'https://crazy-taxi.quizapay.com/' + userChoose?.user_photo,
+              }}
+            />
+          </View>
+          <View style={{ paddingTop: 52, alignItems: 'center', width: 100 }}>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontWeight: 'bold',
+                color: '#002',
+              }}>
+              {userChoose?.user_first_name} {userChoose?.user_last_name}
+            </Text>
+            <TouchableOpacity onPress={handleView}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: '#ff8612',
+                  textDecorationColor: 'underline',
+                }}>
+                {viewMore === true ? 'Voir moins' : 'Voir plus'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{}}>
+            {viewMore === true ? (
+              <View style={{ height: 205 }}>
+                <FlatList
+                  style={{ bottom: 0, top: 20 }}
+                  horizontal={true}
+                  data={[
+                    {
+                      id: 1,
+                      image: 'https://crazy-taxi.quizapay.com/' + userChoose?.user_photo,
+                    },
+                    {
+                      id: 2,
+                      image: 'https://crazy-taxi.quizapay.com/' + userChoose?.user_photo,
+                    }
+                  ]}
+                  keyExtractor={({ id }, index) => id}
+                  renderItem={({ item }) => {
+                    return (
+                      <View style={{ paddingHorizontal: 6 }}>
+                        <View style={{}}>
+                          <Image
+                            style={{ width: 190, height: 180, borderRadius: 5 }}
+                            source={{
+                              uri: item.image,
+                            }}
+                          />
+                        </View>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+            ) : (
+              <>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    padding: 10,
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                    }}>
+                    <FontAwesome
+                      name="map-marker"
+                      size={22}
+                      style={{ color: '#ff8612' }}
+                    />
+                    <View style={{ marginHorizontal: 5, width: 205 }}>
+                      <Text style={{ opacity: 0.8 }} numberOfLines={1}>
+                      {userChoose?.driver_place_name}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                    }}>
+                    <View style={{ marginHorizontal: 5 }}>
+                      <Text style={{ color: '#ff8612', fontWeight: '500' }}>
+                        3 minutes
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <MapView
+                  style={{
+                    width: 310,
+                    height: 150,
+                    justifyContent: 'center',
+                    alignSelf: 'center',
+                    borderRadius: 30,
+                  }}
+                  provider={PROVIDER_GOOGLE}
+                  customMapStyle={customMapStyle}
+                  region={{
+                    longitude: userChoose?.driver_longitude, 
+                    latitude: userChoose?.driver_latitude, 
+                    latitudeDelta: LONGITUDE_DELTA, 
+                    longitudeDelta: LONGITUDE_DELTA
+                  }}>
+                  <MapViewDirections
+                    origin={{
+                      longitude: userChoose?.driver_longitude, 
+                      latitude: userChoose?.driver_latitude
+                    }}
+                    destination={{
+                      longitude: user?.details?.longitude, 
+                      latitude: user?.details?.latitude
+                    }}
+                    apikey={API_KEY}
+                    strokeWidth={3}
+                    strokeColor="#143fff"
+                    optimizeWaypoints={true}
+                  />
+                  <Marker
+                    coordinate={{
+                      longitude: userChoose?.driver_longitude, 
+                      latitude: userChoose?.driver_latitude
+                    }}
+                    title={'Position actuelle du chauffeur'}
+                  />
+                  <Marker
+                    coordinate={{
+                      longitude: user?.details?.longitude, 
+                      latitude: user?.details?.latitude
+                    }}
+                    title={'Votre position actuelle'}
+                  />
+                </MapView>
+              </>
+            )}
+          </View>
           <View
             style={{
-              backgroundColor: 'white',
-              height: 200,
-              alignItems: 'center',
-              borderRadius: 10,
+              paddingTop: 15,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
             }}>
-            <View style={{ marginTop: 20 }}>
-              <Text style={{ color: '#000', fontWeight: 'bold' }}>
-                {userChoose?.user_first_name}
-              </Text>
-            </View>
-            <View style={{ padding: 17, alignItems: 'center' }}>
-              <Text style={{ textAlign: 'justify' }}>
-                Hello {user?.details?.first_name}, Confirmez que vous voulez
-                changer votre compte de type passager en type chauffeur.
-              </Text>
-            </View>
-            <View
+            <TouchableOpacity
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                margin: 5,
+                backgroundColor: '#cacaca',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 8,
+                height: 45,
+                width: 100,
+              }}
+              onPress={() => {
+                setModal(false);
+                setUserChooseModal(false);
               }}>
-              <TouchableOpacity
-                style={{
-                  margin: 5,
-                  backgroundColor: '#cacaca',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  height: 45,
-                  width: 100,
-                }}
-                onPress={() => setUserChooseModal(false)}>
-                <Text style={{ color: '#000' }}>Annuler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleChoosePost}
-                style={{
-                  margin: 5,
-                  backgroundColor: '#ff8612',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  height: 45,
-                  width: 100,
-                }}>
-                <Text style={{ color: '#fff' }}>Comfirmer</Text>
-              </TouchableOpacity>
-            </View>
+              <Text style={{ color: '#002' }}>Annuler</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+            onPress={handleChoosePost}
+              style={{
+                margin: 5,
+                backgroundColor: '#ff8612',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 8,
+                height: 45,
+                width: 100,
+              }}>
+              <Text style={{ color: '#fff' }}>Comfirmer</Text>
+            </TouchableOpacity>
           </View>
+        </View>
+
         </Modal>
         <View style={styles.header}>
           <View style={styles.headertitle}>

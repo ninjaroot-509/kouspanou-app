@@ -283,7 +283,7 @@ const AppStart = () => {
           component={MyTabDriver}
           options={{ headerShown: false }}
         />
-        {/* page BidRider */}BidRiderTrafic
+        {/* page BidRider */}
         <Stack.Screen
           name="BidRider"
           component={BidRider}
