@@ -35,7 +35,6 @@ const App = ({ navigation }) => {
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-
   const [temp, setTemp] = useState(0);
   const [modal, setModal] = useState(false);
   const [arrive, setArrive] = useState(false);
@@ -43,6 +42,7 @@ const App = ({ navigation }) => {
   const [biddetail, setBiddetail] = useState([]);
   const [driver, setDriver] = useState([]);
   const [user, isLoading, setUsers] = useUsers();
+  const pk = user?.details?.id;
 
   useEffect(() => {
     if (!user.details || user.details.length === 0) {
@@ -52,7 +52,7 @@ const App = ({ navigation }) => {
 
   useEffect(() => {
     if (biddetail.length === 0) {
-      getComand.then((res) => {
+      getComand().then((res) => {
         setBiddetail(res);
       });
     }
@@ -67,9 +67,23 @@ const App = ({ navigation }) => {
   useEffect(() => {
     if (biddetail.length !== 0) {
       const config = { headers: { 'Content-Type': 'application/json' } };
+
+      axios.get(
+        `https://crazy-taxi.quizapay.com/api/get-driver/?pk=${pk}&id_driver=${biddetail?.driver}`,
+        config
+      )
+      .then((res) => {
+        if (res) {
+          setDriver(res.data);
+        }
+      })
+      .catch((err) => {
+        alert("une erreur s'est produite");
+      });
+
       axios
         .get(
-          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${driver?.id}`,
+          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
           config
         )
         .then((res) => {
@@ -83,7 +97,7 @@ const App = ({ navigation }) => {
 
       axios
         .get(
-          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${driver?.id}`,
+          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
           config
         )
         .then((res) => {
@@ -98,8 +112,6 @@ const App = ({ navigation }) => {
   }, [temp]);
 
   const [latLng, setLatLng] = useState({
-    latitudeDelta: LONGITUDE_DELTA,
-    longitudeDelta: LONGITUDE_DELTA,
     latitude:
       biddetail?.arrival == true
         ? biddetail?.destination_latitude
@@ -108,6 +120,8 @@ const App = ({ navigation }) => {
       biddetail?.arrival == true
         ? biddetail?.destination_longitude
         : driver?.longitude,
+    latitudeDelta: 0.03,
+    longitudeDelta: 0.03,
   });
 
   const handleArriv = () => {
@@ -128,124 +142,106 @@ const App = ({ navigation }) => {
     }
   };
 
-  return (
-    <View style={{ flex: 1 }}>
-      <Modal
-        isVisible={modal}
-        onRequestClose={() => setModal(false)}
-        onBackButtonPress={() => setModal(false)}>
-        <View
-          style={{
-            backgroundColor: 'white',
-            height: 200,
-            alignItems: 'center',
-            borderRadius: 10,
-          }}>
-          <View style={{ marginTop: 20 }}>
-            <Text style={{ color: '#000', fontWeight: 'bold' }}>
-              {biddetail?.arrival == true
-                ? 'Deja arriver!?'
-                : 'Vous avez trouver le Chauffeur !?'}
-            </Text>
-          </View>
-          <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
-            <Text style={{ textAlign: 'justify' }}>
-              Hello user, Confirmez que vous êtes{' '}
-              {biddetail?.arrival == true
-                ? 'deja arriver'
-                : 'avec le Chauffeur'}
-            </Text>
-          </View>
+  if (biddetail.length !== 0 && driver.length !== 0) {
+    return (
+      <View style={{ flex: 1 }}>
+        <Modal
+          isVisible={modal}
+          onRequestClose={() => setModal(false)}
+          onBackButtonPress={() => setModal(false)}>
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
+              backgroundColor: 'white',
+              height: 200,
+              alignItems: 'center',
+              borderRadius: 10,
             }}>
-            <TouchableOpacity
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ color: '#000', fontWeight: 'bold' }}>
+                {biddetail?.arrival == true
+                  ? 'Deja arriver!?'
+                  : 'Vous avez trouver le Chauffeur !?'}
+              </Text>
+            </View>
+            <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
+              <Text style={{ textAlign: 'justify' }}>
+                Hello user, Confirmez que vous êtes{' '}
+                {biddetail?.arrival == true
+                  ? 'deja arriver'
+                  : 'avec le Chauffeur'}
+              </Text>
+            </View>
+            <View
               style={{
-                margin: 5,
-                backgroundColor: '#cacaca',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 8,
-                height: 45,
-                width: 100,
-              }}
-              onPress={() => setModal(false)}>
-              <Text style={{ color: '#000' }}>Annuler</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleArriv}
-              style={{
-                margin: 5,
-                backgroundColor: '#ff8612',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 8,
-                height: 45,
-                width: 100,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
               }}>
-              <Text style={{ color: '#fff' }}>Comfirmer</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  margin: 5,
+                  backgroundColor: '#cacaca',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 8,
+                  height: 45,
+                  width: 100,
+                }}
+                onPress={() => setModal(false)}>
+                <Text style={{ color: '#000' }}>Annuler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleArriv}
+                style={{
+                  margin: 5,
+                  backgroundColor: '#ff8612',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 8,
+                  height: 45,
+                  width: 100,
+                }}>
+                <Text style={{ color: '#fff' }}>Comfirmer</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
-      <MapView style={styles.map} region={latLng} provider={PROVIDER_GOOGLE}>
-        <MapViewDirections
-          origin={{
-            latitude: user?.details?.latitude,
-            longitude: user?.details?.longitude,
-          }}
-          destination={latLng}
-          apikey={API_KEY}
-          strokeWidth={3}
-          strokeColor="#143fff"
-          optimizeWaypoints={true}
-        />
-        <MapView.Marker
-          title="votre position actuelle"
-          coordinate={{
-            latitude: user?.details?.latitude,
-            longitude: user?.details?.longitude,
-          }}
-        />
-        <MapView.Marker
-          title="position actuelle du chauffeur"
-          coordinate={latLng}
-        />
-      </MapView>
-
-      <View
-        style={{
-          position: 'absolute',
-          flex: 1,
-          bottom: 50,
-          right: 45,
-        }}>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => setModal(true)}
-              style={{
-                width: 55,
-                height: 55,
-                backgroundColor: '#ff8612',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 50,
-                elevation: 4,
-              }}>
-              <Ionicons
-                name="arrow-forward"
-                size={24}
-                style={styles.iconBlack}
-              />
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
+        </Modal>
+        <MapView style={styles.map} initialRegion={latLng} provider={PROVIDER_GOOGLE}>
+          <MapViewDirections
+            origin={{
+              latitude: user?.details?.latitude,
+              longitude: user?.details?.longitude,
+            }}
+            destination={latLng}
+            apikey={API_KEY}
+            strokeWidth={3}
+            strokeColor="#143fff"
+            optimizeWaypoints={true}
+          />
+          <MapView.Marker
+            title="votre position actuelle"
+            coordinate={{
+              latitude: user?.details?.latitude,
+              longitude: user?.details?.longitude,
+            }}
+          />
+          <MapView.Marker
+            title="position actuelle du chauffeur"
+            coordinate={latLng}
+          />
+        </MapView>
       </View>
-    </View>
-  );
+    );
+  } else {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
+        <ActivityIndicator
+          color="#ff8612"
+          size="large"
+          style={{ alignItems: 'center' }}
+        />
+      </View>
+    )
+  }
 };
 
 const styles = StyleSheet.create({

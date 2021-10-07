@@ -45,8 +45,6 @@ import useWallets from '../../src/state/wallet/hooks/useWallets';
 import Modal from 'react-native-modal';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import customMapStyle from './mapstyle.json';
-import Geocoder from 'react-native-geocoding';
-Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
 import MapViewDirections from 'react-native-maps-directions';
 
 const BidRider = ({ navigation }) => {
@@ -110,7 +108,7 @@ const BidRider = ({ navigation }) => {
         )
         .then((res) => {
           let datatrip = {
-            is_active: true,
+            is_active: false,
             arrival: false,
             complete: false,
             driver: userChoose?.driver,
@@ -129,7 +127,7 @@ const BidRider = ({ navigation }) => {
   }, [temp]);
 
   const handleSubmitPrix = () => {
-    if (biddetail?.details && prix && send == false) {
+    if (biddetail?.details && prix && send == false && userChooseDone == false) {
       setSend(true);
       if (biddetail?.details?.client === pk) {
         const config = { headers: { 'Content-Type': 'application/json' } };
@@ -189,17 +187,19 @@ const BidRider = ({ navigation }) => {
       id_trip: biddetail?.details?.id,
       id_driver: userChoose?.driver,
     });
-    axios
-      .post(
-        `https://crazy-taxi.quizapay.com/api/driver-choose/?pk=${pk}`,
-        body,
-        config
-      )
-      .then((res) => {
-        setUserChooseDone(true);
-        setUserChooseModal(false);
-      });
-  };
+    if (userChooseDone === false) {
+        axios
+          .post(
+            `https://crazy-taxi.quizapay.com/api/driver-choose/?pk=${pk}`,
+            body,
+            config
+          )
+          .then((res) => {
+            setUserChooseDone(true);
+            setUserChooseModal(false);
+          });
+      };
+    }
 
   const handleChoose = (id_driver) => {
     setUserChoose(id_driver);
@@ -337,21 +337,21 @@ const BidRider = ({ navigation }) => {
                     borderRadius: 30,
                   }}
                   provider={PROVIDER_GOOGLE}
-                  customMapStyle={customMapStyle}
-                  region={{
-                    longitude: userChoose?.driver_longitude, 
+                  initialRegion={{
                     latitude: userChoose?.driver_latitude, 
-                    latitudeDelta: LONGITUDE_DELTA, 
-                    longitudeDelta: LONGITUDE_DELTA
-                  }}>
+                    longitude: userChoose?.driver_longitude, 
+                    latitudeDelta: 0.03, 
+                    longitudeDelta: 0.03
+                  }}
+                  customMapStyle={customMapStyle}>
                   <MapViewDirections
                     origin={{
-                      longitude: userChoose?.driver_longitude, 
-                      latitude: userChoose?.driver_latitude
+                      latitude: userChoose?.driver_latitude,
+                      longitude: userChoose?.driver_longitude
                     }}
                     destination={{
-                      longitude: user?.details?.longitude, 
-                      latitude: user?.details?.latitude
+                      latitude: user?.details?.latitude,
+                      longitude: user?.details?.longitude
                     }}
                     apikey={API_KEY}
                     strokeWidth={3}
@@ -360,15 +360,15 @@ const BidRider = ({ navigation }) => {
                   />
                   <Marker
                     coordinate={{
+                      latitude: userChoose?.driver_latitude,
                       longitude: userChoose?.driver_longitude, 
-                      latitude: userChoose?.driver_latitude
                     }}
                     title={'Position actuelle du chauffeur'}
                   />
                   <Marker
                     coordinate={{
+                      latitude: user?.details?.latitude,
                       longitude: user?.details?.longitude, 
-                      latitude: user?.details?.latitude
                     }}
                     title={'Votre position actuelle'}
                   />
@@ -393,7 +393,7 @@ const BidRider = ({ navigation }) => {
                 width: 100,
               }}
               onPress={() => {
-                setModal(false);
+                setViewMore(false);
                 setUserChooseModal(false);
               }}>
               <Text style={{ color: '#002' }}>Annuler</Text>
@@ -425,7 +425,7 @@ const BidRider = ({ navigation }) => {
                 style={{ color: '#143fff' }}
               />
             </TouchableOpacity>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <View style={{ flexDirection: 'row' }}>
               <Text style={{ fontWeight: 'bold', color: '#001', fontSize: 19 }}>
                 {biddetail?.details?.user_first_name}
               </Text>
@@ -609,7 +609,7 @@ const BidRider = ({ navigation }) => {
                                   ellipsizeMode="tail">
                                   {item.user_first_name} {item.user_last_name}
                                 </Text>
-                                {biddetail?.details?.client === pk && (
+                                {biddetail?.details?.client === pk && userChooseDone === false && (
                                   <TouchableOpacity
                                     onPress={() => handleChoose(item)}
                                     style={{
@@ -645,6 +645,7 @@ const BidRider = ({ navigation }) => {
             </View>
             <View style={{ height: 100 }} />
           </ScrollView>
+          {!userChooseDone && (
           <View style={{ alignItems: 'center' }}>
             <View style={styles.send}>
               <TextInput
@@ -680,6 +681,7 @@ const BidRider = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
+          )}
         </View>
       </View>
     );
