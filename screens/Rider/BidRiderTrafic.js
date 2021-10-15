@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
-import mapstyle from './mapstyle.json';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MapViewDirections from 'react-native-maps-directions';
@@ -25,12 +24,9 @@ import {
 } from '../../Components/Common/Auth/Sessions';
 import axios from 'axios';
 import Modal from 'react-native-modal';
-import Geocoder from 'react-native-geocoding';
-
-Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
 const { width, height } = Dimensions.get('window');
 
-const App = ({ navigation }) => {
+const BidRiderTrafic = ({ navigation }) => {
   const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
@@ -39,19 +35,22 @@ const App = ({ navigation }) => {
   const [modal, setModal] = useState(false);
   const [arrive, setArrive] = useState(false);
   const [arriveEnd, setArriveEnd] = useState(false);
+  const [stop, setStop] = useState(false);
+  const [stop1, setStop1] = useState(true);
+  const [stop2, setStop2] = useState(false);
   const [biddetail, setBiddetail] = useState([]);
   const [driver, setDriver] = useState([]);
   const [user, isLoading, setUsers] = useUsers();
   const pk = user?.details?.id;
 
   useEffect(() => {
-    if (!user.details || user.details.length === 0) {
+    if (!user?.details || user?.details?.length === 0) {
       setUsers();
     }
   }, [setUsers, user]);
 
   useEffect(() => {
-    if (biddetail.length === 0) {
+    if (biddetail?.length === 0) {
       getComand().then((res) => {
         setBiddetail(res);
       });
@@ -65,49 +64,60 @@ const App = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (biddetail.length !== 0) {
+    if (biddetail?.length !== 0) {
       const config = { headers: { 'Content-Type': 'application/json' } };
 
-      axios.get(
-        `https://crazy-taxi.quizapay.com/api/get-driver/?pk=${pk}&id_driver=${biddetail?.driver}`,
-        config
-      )
-      .then((res) => {
-        if (res) {
-          setDriver(res.data);
-        }
-      })
-      .catch((err) => {
-        alert("une erreur s'est produite");
-      });
+      if (stop2 == false) {
+        axios
+          .get(
+            `https://crazy-taxi.quizapay.com/api/get-driver/?pk=${pk}&id_driver=${biddetail?.driver}`,
+            config
+          )
+          .then((res) => {
+            if (res) {
+              setDriver(res.data);
+            }
+          })
+          .catch((err) => {
+            alert("une erreur s'est produite");
+          });
+      }
 
-      axios
-        .get(
-          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
-          config
-        )
-        .then((res) => {
-          if (res.data.is_arrivale == true) {
-            setModal(true);
-          }
-        })
-        .catch((err) => {
-          alert("une erreur s'est produite");
-        });
+      if (stop == false) {
+        axios
+          .get(
+            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
+            config
+          )
+          .then((res) => {
+            if (res.data.is_arrivale == true) {
+              setStop(true);
+              setStop1(false);
+              setModal(true);
+            }
+          })
+          .catch((err) => {
+            alert("une erreur s'est produite");
+          });
+      }
 
-      axios
-        .get(
-          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
-          config
-        )
-        .then((res) => {
-          if (res.data.is_complete == true) {
-            setModal(true);
-          }
-        })
-        .catch((err) => {
-          alert("une erreur s'est produite");
-        });
+      if (stop1 == false) {
+        axios
+          .get(
+            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
+            config
+          )
+          .then((res) => {
+            if (res.data.is_complete == true) {
+              setStop1(true);
+              setStop2(true);
+              setModal(true);
+            }
+          })
+          .catch((err) => {
+            alert("une erreur s'est produite");
+          });
+      }
     }
   }, [temp]);
 
@@ -142,7 +152,7 @@ const App = ({ navigation }) => {
     }
   };
 
-  if (biddetail.length !== 0 && driver.length !== 0) {
+  if (biddetail?.length !== 0 && driver?.length !== 0) {
     return (
       <View style={{ flex: 1 }}>
         <Modal
@@ -205,7 +215,10 @@ const App = ({ navigation }) => {
             </View>
           </View>
         </Modal>
-        <MapView style={styles.map} initialRegion={latLng} provider={PROVIDER_GOOGLE}>
+        <MapView
+          style={styles.map}
+          initialRegion={latLng}
+          provider={PROVIDER_GOOGLE}>
           <MapViewDirections
             origin={{
               latitude: user?.details?.latitude,
@@ -233,14 +246,20 @@ const App = ({ navigation }) => {
     );
   } else {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#fff',
+        }}>
         <ActivityIndicator
           color="#ff8612"
           size="large"
           style={{ alignItems: 'center' }}
         />
       </View>
-    )
+    );
   }
 };
 
@@ -248,19 +267,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 12,
-  },
-  iconBlack: {
-    color: '#fff',
-  },
   map: {
     width: width,
     height: height,
   },
 });
 
-export default App;
+export default BidRiderTrafic;
