@@ -64,8 +64,8 @@ const Login = ({ navigation }) => {
           <View style={{}}>
             <Image
               style={{
-                width: 100,
-                height: 100,
+                width: 200,
+                height: 200,
               }}
               source={require('../assets/logo.png')}
             />
@@ -74,10 +74,10 @@ const Login = ({ navigation }) => {
             <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#001' }}>
               Connexion
             </Text>
-            <Text style={{ fontSize: 18, color: '#001' }}>
+            <Text style={{ fontSize: 17, color: '#001' }}>
               Hello, bon retour
             </Text>
-            <Text style={{ fontSize: 18, color: '#001' }}>
+            <Text style={{ fontSize: 17, color: '#001' }}>
               Content de te revoir!
             </Text>
           </View>
@@ -94,6 +94,7 @@ const Login = ({ navigation }) => {
               height: 44,
               borderRadius: 7,
             }}
+            textContainerStyle={{ borderRadius: 7 }}
             withShadow
             ref={phoneInput}
             defaultValue={phone}
@@ -121,12 +122,13 @@ const Login = ({ navigation }) => {
             style={styles.input}
             returnKeyType="next"
           />
-          <View style={{ alignSelf: 'flex-end', padding: 8, paddingTop: 14 }}>
+          <View style={{ alignSelf: 'flex-end', padding: 8, paddingTop: 10 }}>
             <Text
               style={{
-                fontSize: 11,
+                fontSize: 13,
                 color: '#001',
                 textAlign: 'right',
+                textDecorationLine: 'underline',
               }}>
               Mot de passe oublié
             </Text>

@@ -72,13 +72,11 @@ const Book = ({ navigation, route }) => {
         body,
         config
       )
-      .then((res) => {
-        setTimeout(() => {          
-          setComand(res.data).then((i)=> {
-            navigation.replace('SplashScreen');
-          })
-          setDone(false)
-        }, 900);
+      .then((res) => {     
+        setComand(res.data).then((i)=> {
+          navigation.replace('SplashScreen');
+        })
+        setDone(false)
       })
       .catch((err) => {
         alert("une erreur", "une erreur s'est produite, si persiste veuillez nous contacter", err);
@@ -97,25 +95,25 @@ const Book = ({ navigation, route }) => {
       latitude: zone.item.geometry.location.lat,
       payMN: false,
     });
-    axios
-      .post(
-        `https://crazy-taxi.quizapay.com/api/trips/?pk=${pk}`,
-        body,
-        config
-      )
-      .then((res) => {
-        setTimeout(() => {          
+    if (done === false) {
+      axios
+        .post(
+          `https://crazy-taxi.quizapay.com/api/trips/?pk=${pk}`,
+          body,
+          config
+        )
+        .then((res) => {
           setComand(res.data).then((i)=> {
             navigation.replace('SplashScreen');
           })
           setDone(false)
-        }, 900);
-      })
-      .catch((err) => {
-        alert("une erreur", "une erreur s'est produite, si persiste veuillez nous contacter", err);
-        console.log(err)
-        setDone(false)
-      })
+        })
+        .catch((err) => {
+          alert("une erreur", "une erreur s'est produite, si persiste veuillez nous contacter", err);
+          console.log(err)
+          setDone(false)
+        })
+    }
   };
 
   return (
@@ -135,6 +133,7 @@ const Book = ({ navigation, route }) => {
         provider={PROVIDER_GOOGLE}
         customMapStyle={customMapStyle}>
           <MapViewDirections
+          lineDashPattern={[0]}
               origin={{
                 latitude: user?.details?.latitude
                   ? user?.details?.latitude
@@ -182,53 +181,20 @@ const Book = ({ navigation, route }) => {
           width,
           bottom: 0,
         }}>
-        {done ? (
-          <View
-            style={{
-              backgroundColor: '#fff',
-              alignItems: 'center',
-              paddingHorizontal: 40,
-              paddingVertical: 10,
-            }}>
-              <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: 100
-              }}>
-              <ActivityIndicator
-                animating={done}
-                color="#ff8612"
-                size="large"
-                style={{ alignItems: 'center' }}
-              />
-            </View>
-            <Text
-              style={{
-                color: '#001',
-                fontSize: 17,
-                fontWeight: '500',
-                marginBottom: 35,
-              }}>
-              recherche en cours..
-            </Text>
-            
-          </View>
-        ) : (
           <>
             <View
               style={{
                 backgroundColor: '#fff',
                 alignItems: 'center',
                 paddingHorizontal: 40,
-                paddingVertical: 15,
+                paddingVertical: 12,
               }}>
               <Text
                 style={{
                   color: '#ff8612',
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: '500',
-                  marginBottom: 10,
+                  padding: 5,
                 }}>
                 {zone.item.formatted_address}
               </Text>
@@ -239,66 +205,49 @@ const Book = ({ navigation, route }) => {
                 <Text style={{ fontWeight: 'bold', color: '#ff8612' }}>
                   Note:{' '}
                 </Text>
-                <Text style={{ color: '#8a8c95' }}>
+                <Text style={{ color: '#8a8c95', fontSize: 13.5 }}>
                   Ceci est une estimation approximative, à partir de votre
-                  emplacement actuel et de votre destination finale, veuillez
-                  choisir votre moyen de paiement tout en bas!
+                  emplacement actuel et de votre destination finale, veuillez accepter
+                  pour continuer!
                 </Text>
               </View>
             </View>
 
             <View
               style={{
-                flexDirection: 'row',
                 alignItems: 'center',
               }}>
               <TouchableOpacity
                 onPress={handlePay}
                 style={{
-                  backgroundColor: '#e9e9eb',
+                  backgroundColor: '#f2a65c',
                   paddingHorizontal: 20,
-                  paddingVertical: 15,
-                  width: width / 2,
+                  paddingVertical: 14,
+                  width: width,
                   alignItems: 'center',
-                  borderRightColor: '#f5f5f6',
-                  borderRightWidth: 1,
-                  elevation: 2
+                  elevation: 2,
+                  justifyContent: 'center'
                 }}>
+                  {!done ? (
                 <Text
                   style={{
-                    color: pay ? '#cacaca' : '#000',
-                    opacity: 0.7,
-                    fontSize: 13,
+                    color: pay ? '#cacaca' : '#fff',
+                    fontSize: 15,
                     fontWeight: '500',
                   }}>
-                  Portefeuille
+                  Accepter et continuer
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handlePayNM}
-                style={{
-                  backgroundColor: '#e9e9eb',
-                  paddingHorizontal: 20,
-                  paddingVertical: 15,
-                  width: width / 2,
-                  alignItems: 'center',
-                  borderLeftColor: '#f5f5f6',
-                  borderLeftWidth: 1,
-                  elevation: 2
-                }}>
-                <Text
-                  style={{
-                    color: pay ? '#cacaca' : '#000',
-                    opacity: 0.7,
-                    fontSize: 13,
-                    fontWeight: '500',
-                  }}>
-                  Payer Cash
-                </Text>
+                  ) : (
+                    <ActivityIndicator
+                      animating={done}
+                      color="#fff"
+                      size="small"
+                      style={{ alignItems: 'center' }}
+                    />
+                  )}
               </TouchableOpacity>
             </View>
           </>
-        )}
       </View>
     </View>
   );
@@ -314,14 +263,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 12
+    paddingTop: 5
   },
   iconBlack: {
     color: '#fff',
   },
   map: {
     width: '100%',
-    height: '70%',
+    height: height / 1.4,
   },
 });
 

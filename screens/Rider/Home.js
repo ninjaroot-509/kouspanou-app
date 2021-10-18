@@ -140,7 +140,7 @@ const App = () => {
                   Verification
                 </Text>
               </View>
-              <View style={{ padding: 20 }}>
+              <View style={{ padding: 20, width: 200, alignItems: 'center' }}>
                 <Text>
                   Comfirmez que vous etes effectivement pickup que vous voulez
                   aller a {dropoff}

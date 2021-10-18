@@ -17,69 +17,53 @@ import useUsers from '../src/state/user/hooks/useUsers';
 const SplashScreen = ({ navigation }) => {
   //State for ActivityIndicator animation
   const [animating, setAnimating] = useState(true);
-  const [temp, setTemp] = useState(0);
-  const [user, isLoading, setUsers] = useUsers();
 
   useEffect(() => {
-    if (!user.details || user.details.length === 0) {
-      setUsers();
-    }
-  }, [temp]);
-
-  useEffect(() => {
-    setInterval(() => {
-      setTemp((prevTemp) => prevTemp + 1);
-    }, 3000);
-  }, []);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setAnimating(false);
-      //Check if user_id is set or not
-      //If not then send for Authentication
-      //else send to Home Screen Auth
-      getToken().then((value) => {
-        if (value === null) {
-          navigation.replace('OnBoard');
-        } else {
-          getUser().then((res) => {
-            if (res.is_complete === true) {
-              if (res.is_passenger === true && res.is_driver === false) {
-                getComand().then((valueComd) => {
-                  if (valueComd === null) {
-                    navigation.replace('DrawerNavigationRoutes');
+    setAnimating(false);
+    //Check if user_id is set or not
+    //If not then send for Authentication
+    //else send to Home Screen Auth
+    getToken().then((value) => {
+      if (value === null) {
+        navigation.replace('OnBoard');
+      } else {
+        getUser().then((res) => {
+          if (res.is_complete === true) {
+            if (res.is_passenger === true && res.is_driver === false) {
+              getComand().then((valueComd) => {
+                if (valueComd === null) {
+                  navigation.replace('DrawerNavigationRoutes');
+                } else {
+                  if (valueComd.is_active === true) {
+                    navigation.replace('BidRider');
                   } else {
-                    if (valueComd.is_active === true) {
-                      navigation.replace('BidRider');
-                    } else {
-                      navigation.replace('BidRiderTrafic');
-                    }
+                    navigation.replace('BidRiderTrafic');
                   }
-                });
-              } else if (res.is_passenger === false && res.is_driver === true) {
-                getComand().then((valueComd) => {
-                  if (valueComd === null) {
-                    navigation.replace('NavigationRoutesDriver');
+                }
+              });
+            } else if (res.is_passenger === false && res.is_driver === true) {
+              getComand().then((valueComd) => {
+                if (valueComd === null) {
+                  navigation.replace('NavigationRoutesDriver');
+                } else {
+                  if (valueComd.is_active === true) {
+                    navigation.replace('BidDriver');
                   } else {
-                    if (valueComd.is_active === true) {
-                      navigation.replace('BidDriver');
-                    } else {
-                      navigation.replace('BidDriverTrafic');
-                    }
+                    navigation.replace('BidDriverTrafic');
                   }
-                });
-              } else {
-                navigation.replace('Out');
-              }
-            } else if (res.is_complete === false) {
-              navigation.replace('CompleteI');
+                }
+              });
             } else {
-              navigation.replace('SplashScreen');
+              navigation.replace('Out');
             }
-          });
-        }
-      });
-    }, 2000);
+          } else if (res.is_complete === false) {
+            navigation.replace('CompleteI');
+          } else {
+            navigation.replace('SplashScreen');
+          }
+        });
+      }
+    });
   });
 
   return (

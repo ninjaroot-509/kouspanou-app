@@ -9,7 +9,9 @@ import {
   Image,
   KeyboardAvoidingView,
   ActivityIndicator,
+  Dimensions
 } from 'react-native';
+const { width, height } = Dimensions.get('window');
 import Constants from 'expo-constants';
 import { FontAwesome } from 'react-native-vector-icons';
 import { setmergeItemUser } from '../Components/Common/Auth/Sessions';
@@ -77,7 +79,8 @@ const CompleteI = ({ navigation }) => {
     );
   } else {
     return (
-      <KeyboardAwareScrollView style={styles.container}>
+      <KeyboardAwareScrollView style={{backgroundColor: '#fff'}}>
+      <View style={styles.container}>
         <View
           style={{
             alignItems: 'center',
@@ -92,13 +95,16 @@ const CompleteI = ({ navigation }) => {
             source={require('../assets/logo.png')}
           />
         </View>
-        <View>
+        <View style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           <View style={{ padding: 20 }}>
             <TextInput
               onChangeText={(last_name) => setLastName(last_name)}
               value={last_name}
               placeholder={'Entrer Votre Nom'}
-              placeholderTextColor={'#ff8612'}
+              placeholderTextColor={'#cacaca'}
               style={styles.input}
               returnKeyType="next"
             />
@@ -106,7 +112,7 @@ const CompleteI = ({ navigation }) => {
               onChangeText={(first_name) => setFirstName(first_name)}
               value={first_name}
               placeholder={'Entrez Votre Prenom'}
-              placeholderTextColor={'#ff8612'}
+              placeholderTextColor={'#cacaca'}
               style={styles.input}
               returnKeyType="next"
             />
@@ -127,6 +133,7 @@ const CompleteI = ({ navigation }) => {
             )}
           </View>
         </View>
+        </View>
       </KeyboardAwareScrollView>
     );
   }
@@ -135,12 +142,12 @@ export default CompleteI;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
   input: {
-    width: 270,
+    width: width / 1.2,
     height: 44,
     padding: 12,
     borderRadius: 25,
@@ -159,7 +166,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   button: {
-    width: 270,
+    width: width / 1.2,
     height: 44,
     padding: 12,
     borderRadius: 25,
@@ -177,7 +184,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   button1: {
-    width: 270,
+    width: width / 1.2,
     height: 44,
     padding: 12,
     borderRadius: 25,

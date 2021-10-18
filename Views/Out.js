@@ -17,10 +17,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { FontAwesome } from 'react-native-vector-icons';
 import { getUser, removeUserSession } from '../Components/Common/Auth/Sessions';
 
-export default function Stats({ navigation }) {
-  React.useEffect(() => {
-    getUser().then((res) => console.log('tes ' + res.username));
-  });
+export default function Out({ navigation }) {
 
   return (
     <View style={styles.container}>
@@ -29,7 +26,7 @@ export default function Stats({ navigation }) {
         size="large"
         style={{ alignItems: 'center' }}
       />
-      <Text style={{ padding: 17 }}>Oupps!, une erreur s'est produite.</Text>
+      <Text style={{ padding: 17, paddingVertical: 30 }}>Oupps!, une erreur s'est produite.</Text>
       <TouchableOpacity
         onPress={() => {
           Alert.alert(

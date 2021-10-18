@@ -206,11 +206,12 @@ const BidRider = ({ navigation }) => {
     }
   };
 
-  const handleChoose = (id_driver) => {
-    setUserChoose(id_driver);
-    setTimeout(() => {
+  const handleChoose = (item) => {
+    console.log(item)
+    if (userChoose?.length !== 0) {
+      setUserChoose(item);
       setUserChooseModal(true);
-    }, 1000);
+    }
   };
 
   if (biddetail?.details || biddetail?.details?.length !== 0) {
@@ -307,9 +308,7 @@ const BidRider = ({ navigation }) => {
                 <>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      padding: 10,
+                      paddingHorizontal: 10,
                     }}>
                     <View
                       style={{
@@ -321,21 +320,9 @@ const BidRider = ({ navigation }) => {
                         size={22}
                         style={{ color: '#ff8612' }}
                       />
-                      <View style={{ marginHorizontal: 5, width: 205 }}>
+                      <View style={{ padding: 5 }}>
                         <Text style={{ opacity: 0.8 }} numberOfLines={1}>
                           {userChoose?.driver_place_name}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                      }}>
-                      <View style={{ marginHorizontal: 5 }}>
-                        <Text style={{ color: '#ff8612', fontWeight: '500' }}>
-                          3 minutes
                         </Text>
                       </View>
                     </View>
@@ -349,7 +336,7 @@ const BidRider = ({ navigation }) => {
                       borderRadius: 30,
                     }}
                     provider={PROVIDER_GOOGLE}
-                    initialRegion={{
+                    region={{
                       latitude: userChoose?.driver_latitude,
                       longitude: userChoose?.driver_longitude,
                       latitudeDelta: 0.03,
@@ -357,6 +344,7 @@ const BidRider = ({ navigation }) => {
                     }}
                     customMapStyle={customMapStyle}>
                     <MapViewDirections
+                    lineDashPattern={[0]}
                       origin={{
                         latitude: userChoose?.driver_latitude,
                         longitude: userChoose?.driver_longitude,
@@ -368,7 +356,6 @@ const BidRider = ({ navigation }) => {
                       apikey={API_KEY}
                       strokeWidth={3}
                       strokeColor="#143fff"
-                      optimizeWaypoints={true}
                     />
                     <Marker
                       coordinate={{
@@ -428,40 +415,33 @@ const BidRider = ({ navigation }) => {
         </Modal>
         <View style={styles.header}>
           <View style={styles.headertitle}>
-            <TouchableOpacity
-              style={{ justifyContent: 'center', alignItems: 'center' }}>
-              <FontAwesome
-                name="pencil-square-o"
-                size={20}
-                style={{ color: '#143fff' }}
-              />
-            </TouchableOpacity>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={{ fontWeight: 'bold', color: '#001', fontSize: 19 }}>
+            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ fontWeight: 'bold', color: '#001', fontSize: 18 }}>
                 {biddetail?.details?.user_first_name}
               </Text>
+            </View>
               <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <View
                   style={{
-                    width: 8,
-                    height: 8,
+                    width: 9,
+                    height: 9,
                     backgroundColor: '#ff8612',
                     borderRadius: 20,
-                    marginHorizontal: 8,
                   }}
                 />
               </View>
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  color: '#001',
-                  fontSize: 19,
-                  width: 150,
-                }}
-                numberOfLines={1}>
-                {biddetail?.details?.destination_place_name}
-              </Text>
-            </View>
+              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    color: '#001',
+                    fontSize: 18,
+                    width: 200,
+                  }}
+                  numberOfLines={1}>
+                  {biddetail?.details?.destination_place_name}
+                </Text>
+              </View>
             <TouchableOpacity
               onPress={() => {
                 Alert.alert(
@@ -492,8 +472,8 @@ const BidRider = ({ navigation }) => {
                 style={{
                   fontWeight: '500',
                   color: '#143fff',
-                  fontSize: 13,
-                  padding: 8,
+                  fontSize: 12,
+                  padding: 5,
                 }}>
                 Quitter
               </Text>
@@ -527,12 +507,14 @@ const BidRider = ({ navigation }) => {
                                   borderTopLeftRadius: 12,
                                   padding: 15,
                                   maxWidth: 190,
+                                  elevation: 1.5
                                 }}>
                                 <Text
                                   style={{
                                     color: '#fff',
                                     fontSize: 13,
                                     fontWeight: 'bold',
+                                    textAlign: 'left'
                                   }}
                                   numberOfLines={1}
                                   ellipsizeMode="tail">
@@ -540,9 +522,10 @@ const BidRider = ({ navigation }) => {
                                 </Text>
                                 <Text
                                   style={{
-                                    padding: 5,
+                                    padding: 2,
                                     color: '#fff',
                                     fontSize: 15,
+                                    textAlign: 'left'
                                   }}>
                                   {item.message ? item.message : item.prix}{' '}
                                   {item.message ? '' : 'HTG'}
@@ -552,7 +535,7 @@ const BidRider = ({ navigation }) => {
                                 style={{
                                   padding: 5,
                                   color: '#143fff',
-                                  fontSize: 15,
+                                  fontSize: 12,
                                 }}>
                                 {moment(item.updated_on).fromNow()}
                               </Text>
@@ -596,6 +579,8 @@ const BidRider = ({ navigation }) => {
                                 }}
                               />
                             </View>
+                            <View>
+
                             <View
                               style={{
                                 backgroundColor: '#143fff',
@@ -604,6 +589,7 @@ const BidRider = ({ navigation }) => {
                                 borderTopRightRadius: 12,
                                 padding: 15,
                                 maxWidth: 190,
+                                elevation: 1.5
                               }}>
                               <View
                                 style={{
@@ -639,12 +625,21 @@ const BidRider = ({ navigation }) => {
                               </View>
                               <Text
                                 style={{
-                                  padding: 5,
+                                  padding: 2,
                                   color: '#fff',
                                   fontSize: 15,
                                 }}>
                                 {item.message ? item.message : item.prix}{' '}
                                 {item.message ? '' : 'HTG'}
+                              </Text>
+                            </View>
+                            <Text
+                                style={{
+                                  padding: 5,
+                                  color: '#143fff',
+                                  fontSize: 12,
+                                }}>
+                                {moment(item.updated_on).fromNow()}
                               </Text>
                             </View>
                           </View>
@@ -664,7 +659,7 @@ const BidRider = ({ navigation }) => {
                   placeholder={
                     biddetail?.details?.client === pk
                       ? 'Donner vos instructions...'
-                      : 'Soumettre votre prix...'
+                      : 'Soumettre votre prix en gourdes..'
                   }
                   keyboardType={
                     biddetail?.details?.client === pk ? 'default' : 'numeric'
@@ -716,6 +711,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingTop: Constants.statusBarHeight,
     alignItems: 'center',
+    top: 0
   },
   header: {
     justifyContent: 'center',

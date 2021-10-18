@@ -170,14 +170,14 @@ const Home = ({ navigation }) => {
               borderRadius: 10,
             }}>
             <View style={{ marginTop: 20 }}>
-              <Text style={{ color: '#000', fontWeight: 'bold' }}>
+              <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18 }}>
                 Changer Type compte
               </Text>
             </View>
-            <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
-              <Text style={{ textAlign: 'justify' }}>
+            <View style={{ padding: 15, paddingHorizontal: 10, alignItems: 'center', width: 300 }}>
+              <Text style={{ textAlign: 'center' }}>
                 Hello {user?.details?.first_name}, Confirmez que vous voulez
-                changer votre compte de type chauffeur en type passager.
+                changer votre compte de type passager en type passager.
               </Text>
             </View>
             <View
@@ -346,6 +346,7 @@ const Home = ({ navigation }) => {
                       }}
                       customMapStyle={customMapStyle}>
                         <MapViewDirections
+                          lineDashPattern={[0]}
                           origin={{
                             latitude: item.client_latitude,
                             longitude: item.client_longitude,

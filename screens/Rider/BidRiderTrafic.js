@@ -36,8 +36,6 @@ const BidRiderTrafic = ({ navigation }) => {
   const [arrive, setArrive] = useState(false);
   const [arriveEnd, setArriveEnd] = useState(false);
   const [stop, setStop] = useState(false);
-  const [stop1, setStop1] = useState(true);
-  const [stop2, setStop2] = useState(false);
   const [biddetail, setBiddetail] = useState([]);
   const [driver, setDriver] = useState([]);
   const [user, isLoading, setUsers] = useUsers();
@@ -60,14 +58,14 @@ const BidRiderTrafic = ({ navigation }) => {
   useEffect(() => {
     setInterval(() => {
       setTemp((prevTemp) => prevTemp + 1);
-    }, 7000);
+    }, 30000);
   }, []);
 
   useEffect(() => {
     if (biddetail?.length !== 0) {
       const config = { headers: { 'Content-Type': 'application/json' } };
 
-      if (stop2 == false) {
+      if (stop == false) {
         axios
           .get(
             `https://crazy-taxi.quizapay.com/api/get-driver/?pk=${pk}&id_driver=${biddetail?.driver}`,
@@ -83,7 +81,7 @@ const BidRiderTrafic = ({ navigation }) => {
           });
       }
 
-      if (stop == false) {
+      if (biddetail?.arrival == false) {
         axios
           .get(
             `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
@@ -91,8 +89,6 @@ const BidRiderTrafic = ({ navigation }) => {
           )
           .then((res) => {
             if (res.data.is_arrivale == true) {
-              setStop(true);
-              setStop1(false);
               setModal(true);
             }
           })
@@ -101,7 +97,7 @@ const BidRiderTrafic = ({ navigation }) => {
           });
       }
 
-      if (stop1 == false) {
+      if (biddetail?.arrival == true && biddetail?.complete == false) {
         axios
           .get(
             `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
@@ -109,9 +105,8 @@ const BidRiderTrafic = ({ navigation }) => {
           )
           .then((res) => {
             if (res.data.is_complete == true) {
-              setStop1(true);
-              setStop2(true);
               setModal(true);
+              setStop(true)
             }
           })
           .catch((err) => {
@@ -120,19 +115,6 @@ const BidRiderTrafic = ({ navigation }) => {
       }
     }
   }, [temp]);
-
-  const [latLng, setLatLng] = useState({
-    latitude:
-      biddetail?.arrival == true
-        ? biddetail?.destination_latitude
-        : driver?.latitude,
-    longitude:
-      biddetail?.arrival == true
-        ? biddetail?.destination_longitude
-        : driver?.longitude,
-    latitudeDelta: 0.03,
-    longitudeDelta: 0.03,
-  });
 
   const handleArriv = () => {
     if (biddetail?.arrival == true) {
@@ -217,29 +199,59 @@ const BidRiderTrafic = ({ navigation }) => {
         </Modal>
         <MapView
           style={styles.map}
-          initialRegion={latLng}
-          provider={PROVIDER_GOOGLE}>
+          region={{
+            latitude:
+              biddetail?.arrival == true
+                ? biddetail?.destination_latitude
+                : driver?.latitude,
+            longitude:
+              biddetail?.arrival == true
+                ? biddetail?.destination_longitude
+                : driver?.longitude,
+            latitudeDelta: 0.03,
+            longitudeDelta: 0.03,
+          }}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={customMapStyle}>
           <MapViewDirections
+          lineDashPattern={[0]}
             origin={{
               latitude: user?.details?.latitude,
               longitude: user?.details?.longitude,
             }}
-            destination={latLng}
+            destination={{
+              latitude:
+                biddetail?.arrival == true
+                  ? biddetail?.destination_latitude
+                  : driver?.latitude,
+              longitude:
+                biddetail?.arrival == true
+                  ? biddetail?.destination_longitude
+                  : driver?.longitude,
+            }}
             apikey={API_KEY}
             strokeWidth={3}
             strokeColor="#143fff"
-            optimizeWaypoints={true}
           />
-          <MapView.Marker
+          <Marker
             title="votre position actuelle"
             coordinate={{
               latitude: user?.details?.latitude,
               longitude: user?.details?.longitude,
             }}
           />
-          <MapView.Marker
+          <Marker
             title="position actuelle du chauffeur"
-            coordinate={latLng}
+            coordinate={{
+              latitude:
+                biddetail?.arrival == true
+                  ? biddetail?.destination_latitude
+                  : driver?.latitude,
+              longitude:
+                biddetail?.arrival == true
+                  ? biddetail?.destination_longitude
+                  : driver?.longitude,
+            }}
           />
         </MapView>
       </View>
@@ -269,7 +281,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: width,
-    height: height,
+    height: height + height / 1.2,
   },
 });
 

@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
-  Dimensions
+  Dimensions,
+  StatusBar
 } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 // import { useNavigation } from '@react-navigation/native';
@@ -65,6 +66,7 @@ const MapButton = ({ icon, ...props }) => {
 
 const Home1 = ({ navigation }) => {
   const [temp, setTemp] = useState(0);
+  const [temp1, setTemp1] = useState(0);
   const [loadDriver, setLoadDriver] = useState(true);
   const [change, setChange] = useState(false);
   const [modal, setModal] = useState(false);
@@ -94,6 +96,12 @@ const Home1 = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    setInterval(() => {
+      setTemp1((prevTemp1) => prevTemp1 + 1);
+    }, 220000);
+  }, []);
+
+  useEffect(() => {
     setLoadDriver(true);
   }, [temp]);
 
@@ -120,12 +128,11 @@ const Home1 = ({ navigation }) => {
       async (position) => {
         if (position.length !== 0) {
           Geocoder.from(position.coords.latitude,position.coords.longitude).then(json => {
-            let addressComponent = json.results[0].formatted_address;    
               request.postUserLocation({
                 pk: user?.details?.id,
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
-                place_name: addressComponent
+                place_name: json.results[0].formatted_address
               })
               .then((res) => setUsers())
               .catch((err) => {
@@ -144,7 +151,7 @@ const Home1 = ({ navigation }) => {
         maximumAge: 1000,
       }
     );
-  }, []);
+  }, [temp1]);
 
   const centerMap = () => {
     mapRef?.animateToRegion(
@@ -183,6 +190,7 @@ const Home1 = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <StatusBar translucent backgroundColor="transparent" />
       <MapView
         ref={(map) => {
           mapRef = map;
@@ -226,12 +234,12 @@ const Home1 = ({ navigation }) => {
             borderRadius: 10,
           }}>
           <View style={{ marginTop: 20 }}>
-            <Text style={{ color: '#000', fontWeight: 'bold' }}>
+            <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18 }}>
               Changer Type compte
             </Text>
           </View>
-          <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
-            <Text style={{ textAlign: 'justify' }}>
+          <View style={{ padding: 15, paddingHorizontal: 10, alignItems: 'center', width: 300 }}>
+            <Text style={{ textAlign: 'center' }}>
               Hello {user?.details?.first_name}, Confirmez que vous voulez
               changer votre compte de type passager en type chauffeur.
             </Text>
@@ -298,7 +306,7 @@ const Home1 = ({ navigation }) => {
           />
         </View>
         <View style={{ margin: 3 }}>
-          <Text style={{ fontSize: 13, color: '#001', fontWeight: 'bold' }}>{wallet?.details?.montant} HTG</Text>
+          <Text style={{ fontSize: 13, color: '#001', fontWeight: '700' }}>{wallet?.details?.montant} HTG</Text>
         </View>
       </TouchableOpacity>
 
