@@ -187,14 +187,14 @@ const Book = ({ navigation, route }) => {
                 backgroundColor: '#fff',
                 alignItems: 'center',
                 paddingHorizontal: 40,
-                paddingVertical: 12,
+                paddingVertical: 14,
               }}>
               <Text
                 style={{
                   color: '#ff8612',
                   fontSize: 18,
                   fontWeight: '500',
-                  padding: 5,
+                  padding: 8,
                 }}>
                 {zone.item.formatted_address}
               </Text>

@@ -10,7 +10,8 @@ import {
   ScrollView,
   FlatList,
   Image,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Constants from 'expo-constants';
@@ -41,6 +42,7 @@ const Home = ({ navigation }) => {
   const [temp, setTemp] = useState(0);
   const [change, setChange] = useState(false);
   const [modal, setModal] = useState(false);
+  const [positionDone, setPositionDone] = useState(false);
   const [user, isLoadingUser, setUsers] = useUsers();
   const [wallet, isLoadingW, setWallets] = useWallets();
   const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
@@ -100,7 +102,8 @@ const Home = ({ navigation }) => {
                 console.log("une erreur, Impossible d'obtenir les donnees require!");
               });
           })
-          setLatLng( position.coords.latitude, position.coords.longitude );
+          // setLatLng( position.coords.latitude, position.coords.longitude );
+          setPositionDone(true)
         }
       },
       () => {
@@ -155,281 +158,294 @@ const Home = ({ navigation }) => {
         });
     }
   };
-  return (
-    <>
-      <View style={styles.container}>
-        <Modal
-          isVisible={modal}
-          onRequestClose={() => setModal(false)}
-          onBackButtonPress={() => setModal(false)}>
-          <View
-            style={{
-              backgroundColor: 'white',
-              height: 200,
-              alignItems: 'center',
-              borderRadius: 10,
-            }}>
-            <View style={{ marginTop: 20 }}>
-              <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18 }}>
-                Changer Type compte
-              </Text>
-            </View>
-            <View style={{ padding: 15, paddingHorizontal: 10, alignItems: 'center', width: 300 }}>
-              <Text style={{ textAlign: 'center' }}>
-                Hello {user?.details?.first_name}, Confirmez que vous voulez
-                changer votre compte de type passager en type passager.
-              </Text>
-            </View>
+  if (positionDone === true) {
+    return (
+      <>
+        <View style={styles.container}>
+          <Modal
+            isVisible={modal}
+            onRequestClose={() => setModal(false)}
+            onBackButtonPress={() => setModal(false)}>
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                backgroundColor: 'white',
+                height: 200,
+                alignItems: 'center',
+                borderRadius: 10,
               }}>
-              <TouchableOpacity
+              <View style={{ marginTop: 20 }}>
+                <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18 }}>
+                  Changer Type compte
+                </Text>
+              </View>
+              <View style={{ padding: 15, paddingHorizontal: 10, alignItems: 'center', width: 300 }}>
+                <Text style={{ textAlign: 'center' }}>
+                  Hello {user?.details?.first_name}, Confirmez que vous voulez
+                  changer votre compte de type passager en type passager.
+                </Text>
+              </View>
+              <View
                 style={{
-                  margin: 5,
-                  backgroundColor: '#cacaca',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  height: 45,
-                  width: 100,
-                }}
-                onPress={() => setModal(false)}>
-                <Text style={{ color: '#000' }}>Annuler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleChange}
-                style={{
-                  margin: 5,
-                  backgroundColor: change === false ? '#ff8612' : '#cacaca',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  height: 45,
-                  width: 100,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
                 }}>
-                <Text style={{ color: '#fff' }}>Comfirmer</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    margin: 5,
+                    backgroundColor: '#cacaca',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 8,
+                    height: 45,
+                    width: 100,
+                  }}
+                  onPress={() => setModal(false)}>
+                  <Text style={{ color: '#000' }}>Annuler</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleChange}
+                  style={{
+                    margin: 5,
+                    backgroundColor: change === false ? '#ff8612' : '#cacaca',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 8,
+                    height: 45,
+                    width: 100,
+                  }}>
+                  <Text style={{ color: '#fff' }}>Comfirmer</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
-        <View style={{alignItems: 'center'}}>
-        <TouchableOpacity
-          style={{borderRadius: 45,
-            position: 'absolute',
-            flexDirection: 'row',
-            top: 20,
-            left: 0,
-            marginHorizontal: 15,
-            backgroundColor: '#fff',
-            padding: 10,
-            elevation: 3,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 5 },
-            shadowOpacity: 0.2,
-            shadowRadius: 6.17,
-            justifyContent: 'center',
-            alignItems: 'center',}}>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Fontisto
-              name="wallet"
-              size={18}
-              style={{ color: '#ff9612', marginHorizontal: 3 }}
-            />
-          </View>
-          <View style={{ margin: 3 }}>
-            <Text style={{ fontSize: 13, color: '#001', fontWeight: 'bold' }}>{wallet?.details?.montant} HTG</Text>
-          </View>
-        </TouchableOpacity>
+          </Modal>
+          <View style={{alignItems: 'center', flexDirection: 'row'}}>
           <TouchableOpacity
             style={{borderRadius: 45,
-              position: 'absolute',
               flexDirection: 'row',
-              top: 20,
               marginHorizontal: 15,
               backgroundColor: '#fff',
-              padding: 6,
+              padding: 10,
               elevation: 3,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 5 },
               shadowOpacity: 0.2,
               shadowRadius: 6.17,
               justifyContent: 'center',
-              alignItems: 'center',}}
-            onPress={() => setModal(true)}>
+              alignItems: 'center',}}>
             <View
               style={{
-                padding: 5,
-                backgroundColor: '#143fff',
-                borderRadius: 20,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <MaterialCommunityIcons
-                name="van-passenger"
-                size={20}
-                style={{ color: '#fff' }}
+              <Fontisto
+                name="wallet"
+                size={18}
+                style={{ color: '#ff9612', marginHorizontal: 3 }}
               />
             </View>
             <View style={{ margin: 3 }}>
-              <Text style={{ fontSize: 13, color: '#001' }}>Chauffeur</Text>
+              <Text style={{ fontSize: 13, color: '#001', fontWeight: 'bold' }}>{wallet?.details?.montant} HTG</Text>
             </View>
           </TouchableOpacity>
-        </View>
-        <ScrollView>
-          <FlatList
-            style={{ paddingVertical: 40, paddingTop: 65 }}
-            horizontal={false}
-            data={demande}
-            keyExtractor={({ key }, index) => key}
-            enableEmptySections={true}
-            ListFooterComponent={renderFooter}
-            renderItem={({ item }) => {
-              return (
-                <View style={{ alignItems: 'center', paddingVertical: 10 }}>
-                  <Card style={styles.box}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        padding: 10,
-                      }}>
+            <TouchableOpacity
+              style={{borderRadius: 45,
+                flexDirection: 'row',
+                marginHorizontal: 15,
+                backgroundColor: '#fff',
+                padding: 6,
+                elevation: 3,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 5 },
+                shadowOpacity: 0.2,
+                shadowRadius: 6.17,
+                justifyContent: 'center',
+                alignItems: 'center',}}
+              onPress={() => setModal(true)}>
+              <View
+                style={{
+                  padding: 5,
+                  backgroundColor: '#143fff',
+                  borderRadius: 20,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <MaterialCommunityIcons
+                  name="van-passenger"
+                  size={20}
+                  style={{ color: '#fff' }}
+                />
+              </View>
+              <View style={{ margin: 3 }}>
+                <Text style={{ fontSize: 13, color: '#001' }}>Chauffeur</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <ScrollView>
+            <FlatList
+              style={{ paddingVertical: 40, paddingTop: 65 }}
+              horizontal={false}
+              data={demande}
+              keyExtractor={({ key }, index) => key}
+              enableEmptySections={true}
+              ListFooterComponent={renderFooter}
+              renderItem={({ item }) => {
+                return (
+                  <View style={{ alignItems: 'center', paddingVertical: 10 }}>
+                    <Card style={styles.box}>
                       <View
                         style={{
                           flexDirection: 'row',
-                          justifyContent: 'center',
-                        }}>
-                        <FontAwesome
-                          name="map-marker"
-                          size={22}
-                          style={{ color: '#ff8612' }}
-                        />
-                        <View style={{ marginHorizontal: 5, width: 205 }}>
-                          <Text style={{ opacity: 0.8 }} numberOfLines={1}>
-                            {item.client_position_name}
-                          </Text>
-                        </View>
-                      </View>
-
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                        }}>
-                        <View style={{ marginHorizontal: 5 }}>
-                          <Text
-                            style={{ color: '#ff8612', fontWeight: '500' }}>
-                            {moment(item.created_on).fromNow()}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <MapView
-                      style={{
-                        width: 320,
-                        height: 150,
-                        justifyContent: 'center',
-                        alignSelf: 'center',
-                        borderRadius: 10
-                      }}
-                      provider={PROVIDER_GOOGLE}
-                      initialRegion={{
-                        latitude: item.client_latitude,
-                        longitude: item.client_longitude,
-                        latitudeDelta: LONGITUDE_DELTA,
-                        longitudeDelta: LONGITUDE_DELTA,
-                      }}
-                      customMapStyle={customMapStyle}>
-                        <MapViewDirections
-                          lineDashPattern={[0]}
-                          origin={{
-                            latitude: item.client_latitude,
-                            longitude: item.client_longitude,
-                          }}
-                          destination={{
-                            latitude: item.destination_latitude,
-                            longitude: item.destination_longitude,
-                          }}
-                          apikey={API_KEY}
-                          strokeWidth={3}
-                          strokeColor="#143fff"
-                          optimizeWaypoints={true}
-                        />
-                      <Marker
-                        coordinate={{
-                          latitude: item.client_latitude,
-                          longitude: item.client_longitude,
-                        }}
-                        title={'Position actuelle du client'}
-                      />
-                      <Marker
-                        coordinate={{
-                          latitude: item.destination_latitude,
-                          longitude: item.destination_longitude,
-                        }}
-                        title={'Destination du client'}
-                      />
-                    </MapView>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        padding: 7,
-                      }}>
-                      <View
-                        style={{
-                          justifyContent: 'center',
-                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: 10,
                         }}>
                         <View
                           style={{
                             flexDirection: 'row',
                             justifyContent: 'center',
                           }}>
-                          <MaterialCommunityIcons
-                            name="cash-marker"
+                          <FontAwesome
+                            name="map-marker"
                             size={22}
                             style={{ color: '#ff8612' }}
                           />
-                          <View style={{ left: 5 }}>
-                            <Text style={{ opacity: 0.8 }}>
-                              {item.is_peye_nan_men === true? 'Paiement en cash' : 'Paiement via portefeuille'}
+                          <View style={{ marginHorizontal: 5, width: 205 }}>
+                            <Text style={{ opacity: 0.8 }} numberOfLines={1}>
+                              {item.client_position_name}
+                            </Text>
+                          </View>
+                        </View>
+  
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                          }}>
+                          <View style={{ marginHorizontal: 5 }}>
+                            <Text
+                              style={{ color: '#ff8612', fontWeight: '500' }}>
+                              {moment(item.created_on).fromNow()}
                             </Text>
                           </View>
                         </View>
                       </View>
-                      <View>
-                        <TouchableOpacity
-                        onPress={() =>
-                          setComand(item).then((res)=> navigation.replace('SplashScreen'))
-                        }
+                      <MapView
+                        style={{
+                          width: 320,
+                          height: 150,
+                          justifyContent: 'center',
+                          alignSelf: 'center',
+                          borderRadius: 10
+                        }}
+                        provider={PROVIDER_GOOGLE}
+                        initialRegion={{
+                          latitude: item.client_latitude,
+                          longitude: item.client_longitude,
+                          latitudeDelta: LONGITUDE_DELTA,
+                          longitudeDelta: LONGITUDE_DELTA,
+                        }}
+                        customMapStyle={customMapStyle}>
+                          <MapViewDirections
+                            lineDashPattern={[0]}
+                            origin={{
+                              latitude: item.client_latitude,
+                              longitude: item.client_longitude,
+                            }}
+                            destination={{
+                              latitude: item.destination_latitude,
+                              longitude: item.destination_longitude,
+                            }}
+                            apikey={API_KEY}
+                            strokeWidth={3}
+                            strokeColor="#143fff"
+                            optimizeWaypoints={true}
+                          />
+                        <Marker
+                          coordinate={{
+                            latitude: item.client_latitude,
+                            longitude: item.client_longitude,
+                          }}
+                          title={'Position actuelle du client'}
+                        />
+                        <Marker
+                          coordinate={{
+                            latitude: item.destination_latitude,
+                            longitude: item.destination_longitude,
+                          }}
+                          title={'Destination du client'}
+                        />
+                      </MapView>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          padding: 7,
+                        }}>
+                        <View
                           style={{
-                            padding: 7,
-                            backgroundColor: '#ff8612',
-                            borderRadius: 20,
-                            alignItems: 'center',
                             justifyContent: 'center',
+                            alignItems: 'center',
                           }}>
-                          <Text style={{ color: '#fff', fontSize: 15 }}>
-                            Envoyer un prix
-                          </Text>
-                        </TouchableOpacity>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                            }}>
+                            <MaterialCommunityIcons
+                              name="cash-marker"
+                              size={22}
+                              style={{ color: '#ff8612' }}
+                            />
+                            <View style={{ left: 5 }}>
+                              <Text style={{ opacity: 0.8 }}>
+                                {item.is_peye_nan_men === true? 'Paiement en cash' : 'Paiement via portefeuille'}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                        <View>
+                          <TouchableOpacity
+                          onPress={() =>
+                            setComand(item).then((res)=> navigation.replace('SplashScreen'))
+                          }
+                            style={{
+                              padding: 7,
+                              backgroundColor: '#ff8612',
+                              borderRadius: 20,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}>
+                            <Text style={{ color: '#fff', fontSize: 15 }}>
+                              Envoyer un prix
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-                    </View>
-                  </Card>
-                </View>
-              );
-            }}
-          />
-        </ScrollView>
+                    </Card>
+                  </View>
+                );
+              }}
+            />
+          </ScrollView>
+        </View>
+      </>
+    );
+  } else { 
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#fff',
+        }}>
+        <ActivityIndicator
+          color="#ff8612"
+          size="large"
+          style={{ alignItems: 'center' }}
+        />
       </View>
-    </>
-  );
+    )
+  }
 };
 
 export default Home;

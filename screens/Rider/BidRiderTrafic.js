@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Feather from 'react-native-vector-icons/Feather';
@@ -21,6 +22,7 @@ import {
   getComand,
   setComand,
   setmergeItemComand,
+  removeComand
 } from '../../Components/Common/Auth/Sessions';
 import axios from 'axios';
 import Modal from 'react-native-modal';
@@ -134,9 +136,49 @@ const BidRiderTrafic = ({ navigation }) => {
     }
   };
 
+  const handleQuit = () => {
+    removeComand().then((suc) => {
+      navigation.replace('SplashScreen');
+    });
+  };
+
   if (biddetail?.length !== 0 && driver?.length !== 0) {
     return (
       <View style={{ flex: 1 }}>
+        <View style={{
+              position: 'absolute',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+          <View
+            style={{
+              paddingVertical: 50,
+              paddingHorizontal: 30,
+            }}>
+                <TouchableOpacity onPress={() => {
+                    Alert.alert(
+                      'Quitter le trafic!',
+                      "Es-tu sûr? De vouloir quitter le trafic maintenant?",
+                      [
+                        {
+                          text: 'Annuler',
+                          onPress: () => {
+                            return null;
+                          },
+                        },
+                        {
+                          text: 'Confirmer',
+                          onPress: () => handleQuit(),
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  }} 
+                  style={{width: 35, height: 35, backgroundColor: '#ff8612', alignItems: 'center', justifyContent: 'center', borderRadius: 50, elevation: 4}}>
+                  <Feather name="x" size={24} color="#fff" />
+                </TouchableOpacity>
+          </View>
+        </View>
         <Modal
           isVisible={modal}
           onRequestClose={() => setModal(false)}

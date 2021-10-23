@@ -36,6 +36,7 @@
     "react-native-google-places-autocomplete": "*",
     "react-native-interactable-reanimated": "^0.0.8",
     "react-native-keyboard-aware-scroll-view": "*",
+    "react-native-location": "^2.5.0",
     "react-native-maps": "0.28.0",
     "react-native-maps-directions": "*",
     "react-native-modal": "*",
