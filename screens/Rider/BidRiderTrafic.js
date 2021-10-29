@@ -322,8 +322,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    width: width,
-    height: height + height / 1.2,
+    flex: 1
   },
 });
 

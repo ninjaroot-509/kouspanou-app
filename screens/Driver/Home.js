@@ -282,7 +282,7 @@ const Home = ({ navigation }) => {
           </View>
           <ScrollView>
             <FlatList
-              style={{ paddingVertical: 40, paddingTop: 65 }}
+              style={{ paddingVertical: 20 }}
               horizontal={false}
               data={demande}
               keyExtractor={({ key }, index) => key}
@@ -292,11 +292,13 @@ const Home = ({ navigation }) => {
                 return (
                   <View style={{ alignItems: 'center', paddingVertical: 10 }}>
                     <Card style={styles.box}>
+                    <View style={{ alignItems: 'center' }}>
                       <View
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                          padding: 10,
+                          padding: 12,
+                          alignItems: 'center'
                         }}>
                         <View
                           style={{
@@ -308,7 +310,7 @@ const Home = ({ navigation }) => {
                             size={22}
                             style={{ color: '#ff8612' }}
                           />
-                          <View style={{ marginHorizontal: 5, width: 205 }}>
+                          <View style={{ marginHorizontal: 2, width: width / 1.9, alignItems: 'center' }}>
                             <Text style={{ opacity: 0.8 }} numberOfLines={1}>
                               {item.client_position_name}
                             </Text>
@@ -320,8 +322,9 @@ const Home = ({ navigation }) => {
                             flexDirection: 'row',
                             justifyContent: 'center',
                           }}>
-                          <View style={{ marginHorizontal: 5 }}>
+                          <View style={{ marginHorizontal: 5, width: 100, alignItems: 'center' }}>
                             <Text
+                            numberOfLines={1}
                               style={{ color: '#ff8612', fontWeight: '500' }}>
                               {moment(item.created_on).fromNow()}
                             </Text>
@@ -378,7 +381,8 @@ const Home = ({ navigation }) => {
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                          padding: 7,
+                          padding: 8,
+                          alignItems: 'center'
                         }}>
                         <View
                           style={{
@@ -395,20 +399,20 @@ const Home = ({ navigation }) => {
                               size={22}
                               style={{ color: '#ff8612' }}
                             />
-                            <View style={{ left: 5 }}>
+                            <View style={{ paddingHorizontal: 3 }}>
                               <Text style={{ opacity: 0.8 }}>
                                 {item.is_peye_nan_men === true? 'Paiement en cash' : 'Paiement via portefeuille'}
                               </Text>
                             </View>
                           </View>
                         </View>
-                        <View>
+                        <View style={{paddingHorizontal: 3}}>
                           <TouchableOpacity
                           onPress={() =>
                             setComand(item).then((res)=> navigation.replace('SplashScreen'))
                           }
                             style={{
-                              padding: 7,
+                              padding: 8,
                               backgroundColor: '#ff8612',
                               borderRadius: 20,
                               alignItems: 'center',
@@ -420,6 +424,7 @@ const Home = ({ navigation }) => {
                           </TouchableOpacity>
                         </View>
                       </View>
+                  </View>
                     </Card>
                   </View>
                 );
@@ -462,7 +467,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 3,
-    width: width - 30,
+    width: width / 1.1,
     borderRadius: 20,
     shadowColor: '#ff8612',
     shadowOffset: {

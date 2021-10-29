@@ -47,6 +47,7 @@ import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import customMapStyle from './mapstyle.json';
 import MapViewDirections from 'react-native-maps-directions';
 
+const { width, height } = Dimensions.get('window');
 const BidRider = ({ navigation }) => {
   const [user, isLoading, setUsers] = useUsers();
   const [wallet, isLoadingW, setWallets] = useWallets();
@@ -107,7 +108,7 @@ const BidRider = ({ navigation }) => {
           config
         )
         .then((res) => {
-          let datatrip = {
+          const datatrip = {
             is_active: false,
             arrival: false,
             complete: false,
@@ -394,6 +395,7 @@ const BidRider = ({ navigation }) => {
                 onPress={() => {
                   setViewMore(false);
                   setUserChooseModal(false);
+                  setUserChoose()
                 }}>
                 <Text style={{ color: '#002' }}>Annuler</Text>
               </TouchableOpacity>
@@ -436,7 +438,7 @@ const BidRider = ({ navigation }) => {
                     fontWeight: 'bold',
                     color: '#001',
                     fontSize: 18,
-                    width: 200,
+                    width: width / 1.9,
                   }}
                   numberOfLines={1}>
                   {biddetail?.details?.destination_place_name}
@@ -482,7 +484,7 @@ const BidRider = ({ navigation }) => {
         </View>
 
         <View style={styles.body}>
-          <ScrollView style={{ width: '100%' }}>
+          <ScrollView style={{ width: width }}>
             <View style={{}}>
               <FlatList
                 style={{ top: 12 }}
@@ -502,11 +504,9 @@ const BidRider = ({ navigation }) => {
                               <View
                                 style={{
                                   backgroundColor: '#ff8612',
-                                  borderBottomLeftRadius: 12,
-                                  borderBottomRightRadius: 12,
-                                  borderTopLeftRadius: 12,
-                                  padding: 15,
-                                  maxWidth: 190,
+                                  borderRadius: 10,
+                                  padding: 8,
+                                  maxWidth: 210,
                                   elevation: 1.5
                                 }}>
                                 <Text
@@ -548,7 +548,7 @@ const BidRider = ({ navigation }) => {
                                 style={{
                                   width: 40,
                                   height: 40,
-                                  borderRadius: 22,
+                                  borderRadius: 16,
                                 }}
                                 source={{
                                   uri:
@@ -560,7 +560,7 @@ const BidRider = ({ navigation }) => {
                           </View>
                         </View>
                       ) : (
-                        <View style={{ paddingHorizontal: 5, padding: 20 }}>
+                        <View style={{ paddingHorizontal: 5, padding: 10 }}>
                           <View style={{ flexDirection: 'row' }}>
                             <View
                               style={{
@@ -570,7 +570,7 @@ const BidRider = ({ navigation }) => {
                                 style={{
                                   width: 40,
                                   height: 40,
-                                  borderRadius: 22,
+                                  borderRadius: 16,
                                 }}
                                 source={{
                                   uri:
@@ -584,11 +584,9 @@ const BidRider = ({ navigation }) => {
                             <View
                               style={{
                                 backgroundColor: '#143fff',
-                                borderBottomLeftRadius: 12,
-                                borderBottomRightRadius: 12,
-                                borderTopRightRadius: 12,
-                                padding: 15,
-                                maxWidth: 190,
+                                borderRadius: 10,
+                                padding: 8,
+                                maxWidth: 210,
                                 elevation: 1.5
                               }}>
                               <View
@@ -709,13 +707,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Constants.statusBarHeight,
     alignItems: 'center',
-    top: 0
+    paddingTop: Constants.statusBarHeight,
   },
   header: {
     justifyContent: 'center',
-    width: '100%',
+    width: width,
     backgroundColor: '#fff',
     borderBottomWidth: 1.8,
     borderBottomColor: '#00000033',
@@ -724,11 +721,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: 12,
-    top: 0,
-    bottom: 0,
   },
   body: {
-    width: '100%',
+    width: width,
     height: '92%',
   },
   iconbg: {
@@ -741,7 +736,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    bottom: 40,
+    bottom: 25,
     padding: 7,
   },
   sendinput: {
