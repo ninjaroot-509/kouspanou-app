@@ -67,6 +67,7 @@ const BidRiderTrafic = ({ navigation }) => {
     if (biddetail?.length !== 0) {
       const config = { headers: { 'Content-Type': 'application/json' } };
 
+      if (stop == false) {
         axios
           .get(
             `https://crazy-taxi.quizapay.com/api/get-driver/?pk=${pk}&id_driver=${biddetail?.driver}`,
@@ -75,22 +76,6 @@ const BidRiderTrafic = ({ navigation }) => {
           .then((res) => {
             if (res) {
               setDriver(res.data);
-              setUsers()
-            }
-          })
-          .catch((err) => {
-            alert("une erreur s'est produite");
-          });
-
-      if (biddetail?.arrival == false) {
-        axios
-          .get(
-            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
-            config
-          )
-          .then((res) => {
-            if (res.data.is_arrivale == true) {
-              setModal(true);
             }
           })
           .catch((err) => {
@@ -98,16 +83,33 @@ const BidRiderTrafic = ({ navigation }) => {
           });
       }
 
+      if (biddetail?.arrival == true && biddetail?.complete == false) {
+        axios
+          .get(
+            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
+            config
+          )
+          .then((res) => {
+            if (res.data.is_complete == true) {
+              setModal(true);
+            }
+          })
+          .catch((err) => {
+            alert("une erreur s'est produite");
+          });
+      }
     }
   }, [temp]);
 
   const handleArriv = () => {
-    const datatrip = {
-      arrival: true,
-    };
-    setmergeItemComand(datatrip).then((res) => {
-      navigation.replace('SplashScreen');
-    });
+    if (biddetail?.arrival == true) {
+      let datatrip = {
+        complete: true,
+      };
+      setmergeItemComand(datatrip).then((res) => {
+        navigation.replace('SplashScreen');
+      });
+    }
   };
 
   const handleQuit = () => {

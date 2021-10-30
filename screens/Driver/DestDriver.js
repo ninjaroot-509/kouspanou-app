@@ -37,7 +37,6 @@ const BidDriverTrafic = ({ navigation }) => {
   const [temp, setTemp] = useState(0);
   const [modal, setModal] = useState(false);
   const [stop, setStop] = useState(false);
-  const [client, setClient] = useState([]);
   const [biddetail, setBiddetail] = useState([]);
   const [user, isLoading, setUsers] = useUsers();
   const pk = user?.details?.id;
@@ -65,34 +64,21 @@ const BidDriverTrafic = ({ navigation }) => {
   useEffect(() => {
     if (biddetail?.length !== 0) {
       const config = { headers: { 'Content-Type': 'application/json' } };
-
-      axios
-        .get(
-          `https://crazy-taxi.quizapay.com/api/get-driver/?pk=${pk}&id_driver=${biddetail?.client}`,
-          config
-        )
-        .then((res) => {
-          if (res) {
-            setClient(res.data);
-          }
-        })
-        .catch((err) => {
-          alert("une erreur s'est produite");
-        });
-
       const datatrip = {
-        arrival: true,
+        complete: true,
       };
+
         axios
           .get(
             `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
             config
           )
           .then((res) => {
-            if (res.data.is_arrivale_comfirm == true) {
-              setmergeItemComand(datatrip).then((res) => {
-                navigation.replace('SplashScreen');
-              });
+            if (res.data.is_complete_comfirm == true) {
+              // setmergeItemComand(datatrip).then((res) => {
+              //   navigation.replace('SplashScreen');
+              // });
+              setModal(true)
             }
           })
           .catch((err) => {
@@ -114,12 +100,12 @@ const BidDriverTrafic = ({ navigation }) => {
     });
     axios
       .post(
-        `https://crazy-taxi.quizapay.com/api/driver-arrival/?pk=${pk}`,
+        `https://crazy-taxi.quizapay.com/api/driver-end/?pk=${pk}`,
         body,
         config
       )
       .then((res) => {
-        alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour passer à l'étape suivante, svp!!")
+        alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour terminer, Merci!!")
       })
       .catch((err) => {
         alert("une erreur s'est produite", err);
@@ -161,7 +147,7 @@ const BidDriverTrafic = ({ navigation }) => {
             }}
           />
           <Marker
-            title="position actuelle du client"
+            title="Destination du client"
             coordinate={{
               latitude: biddetail?.destination_latitude,
               longitude: biddetail?.destination_longitude
@@ -233,7 +219,7 @@ const BidDriverTrafic = ({ navigation }) => {
                         color: '#fff',
                         fontSize: 16,
                         marginLeft: 10
-                    }}>Arriver</Text>
+                    }}>Terminer</Text>
                     <AntDesignIcons name="right" 
                     style={{fontSize: 18, color: '#fff', opacity: 0.3, marginLeft: 10}}/>
                     <AntDesignIcons

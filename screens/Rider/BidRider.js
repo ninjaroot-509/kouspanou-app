@@ -60,7 +60,6 @@ const BidRider = ({ navigation }) => {
   const [bid, setBid] = useState([]);
   const [userChoose, setUserChoose] = useState();
   const [userChooseModal, setUserChooseModal] = useState(false);
-  const [userChooseDone, setUserChooseDone] = useState(false);
   const [viewMore, setViewMore] = useState(false);
   const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
   const ASPECT_RATIO = width / height;
@@ -100,20 +99,19 @@ const BidRider = ({ navigation }) => {
       });
     }
 
-    if (userChooseDone === true) {
+    if (biddetail?.details?.choose === true) {
       const config = { headers: { 'Content-Type': 'application/json' } };
       axios
         .get(
-          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}&id_driver=${userChoose?.driver}`,
+          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}&id_driver=${biddetail?.details?.driver}`,
           config
         )
         .then((res) => {
           const datatrip = {
-            is_active: false,
             arrival: false,
             complete: false,
-            driver: userChoose?.driver,
             client: pk,
+            is_active: false,
           };
           if (res.data.is_comfirm == true) {
             setmergeItemComand(datatrip).then((res) => {
@@ -122,7 +120,7 @@ const BidRider = ({ navigation }) => {
           }
         })
         .catch((err) => {
-          alert("une erreur s'est produite");
+          alert("une erreur s'est produite ..!");
         });
     }
   }, [temp]);
@@ -132,7 +130,7 @@ const BidRider = ({ navigation }) => {
       biddetail?.details &&
       prix &&
       send == false &&
-      userChooseDone == false
+      biddetail?.details?.choose == false
     ) {
       setSend(true);
       if (biddetail?.details?.client === pk) {
@@ -189,11 +187,15 @@ const BidRider = ({ navigation }) => {
 
   const handleChoosePost = () => {
     const config = { headers: { 'Content-Type': 'application/json' } };
+    const datatrip = {
+      choose: true,
+      driver: userChoose?.driver,
+    };
     const body = JSON.stringify({
       id_trip: biddetail?.details?.id,
       id_driver: userChoose?.driver,
     });
-    if (userChooseDone === false) {
+    if (biddetail?.details?.choose === false) {
       axios
         .post(
           `https://crazy-taxi.quizapay.com/api/driver-choose/?pk=${pk}`,
@@ -201,7 +203,9 @@ const BidRider = ({ navigation }) => {
           config
         )
         .then((res) => {
-          setUserChooseDone(true);
+          setmergeItemComand(datatrip).then((res) => {
+            navigation.replace('SplashScreen');
+          });
           setUserChooseModal(false);
         });
     }
@@ -604,8 +608,7 @@ const BidRider = ({ navigation }) => {
                                   ellipsizeMode="tail">
                                   {item.user_first_name} {item.user_last_name}
                                 </Text>
-                                {biddetail?.details?.client === pk &&
-                                  userChooseDone === false && (
+                                {biddetail?.details?.client === pk && biddetail?.details?.choose == false && (
                                     <TouchableOpacity
                                       onPress={() => handleChoose(item)}
                                       style={{
@@ -650,7 +653,7 @@ const BidRider = ({ navigation }) => {
             </View>
             <View style={{ height: 100 }} />
           </ScrollView>
-          {!userChooseDone && (
+          {biddetail?.details?.choose === false && (
             <View style={{ alignItems: 'center' }}>
               <View style={styles.send}>
                 <TextInput

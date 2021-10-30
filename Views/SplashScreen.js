@@ -37,7 +37,11 @@ const SplashScreen = ({ navigation }) => {
                   if (valueComd.is_active === true) {
                     navigation.replace('BidRider');
                   } else {
-                    navigation.replace('BidRiderTrafic');
+                    if (valueComd.arrival === true) {
+                      navigation.replace('DestRriver');
+                    } else {
+                      navigation.replace('BidRiderTrafic');
+                    }
                   }
                 }
               });
@@ -49,7 +53,11 @@ const SplashScreen = ({ navigation }) => {
                   if (valueComd.is_active === true) {
                     navigation.replace('BidDriver');
                   } else {
-                    navigation.replace('BidDriverTrafic');
+                    if (valueComd.arrival === true) {
+                      navigation.replace('DestDriver');
+                    } else {
+                      navigation.replace('BidDriverTrafic');
+                    }
                   }
                 }
               });

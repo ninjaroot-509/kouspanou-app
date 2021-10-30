@@ -9,6 +9,8 @@ import Signup from '../Views/Signup';
 import CompleteI from '../Views/CompleteI';
 import BidRider from '../screens/Rider/BidRider';
 import BidRiderTrafic from '../screens/Rider/BidRiderTrafic';
+import DestRider from '../screens/Rider/DestRider';
+import DestDriver from '../screens/Driver/DestDriver';
 import Home1 from '../screens/Rider/Home1';
 import Pickup from '../screens/Rider/SelectDestination';
 import Book from '../screens/Rider/Book';
@@ -305,6 +307,18 @@ const AppStart = () => {
         <Stack.Screen
           name="BidDriverTrafic"
           component={BidDriverTrafic}
+          options={{ headerShown: false }}
+        />
+        {/* page DestRider */}
+        <Stack.Screen
+          name="DestRider"
+          component={DestRider}
+          options={{ headerShown: false }}
+        />
+        {/* page DestDriver */}
+        <Stack.Screen
+          name="DestDriver"
+          component={DestDriver}
           options={{ headerShown: false }}
         />
         {/* page Out */}

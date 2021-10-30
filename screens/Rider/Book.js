@@ -19,7 +19,8 @@ import useWallets from '../../src/state/wallet/hooks/useWallets';
 import customMapStyle from './mapstyle.json';
 import {
   getComand,
-  setComand
+  setComand,
+  setmergeItemComand
 } from '../../Components/Common/Auth/Sessions';
 import axios from 'axios';
 import Geocoder from 'react-native-geocoding';
@@ -95,6 +96,9 @@ const Book = ({ navigation, route }) => {
       latitude: zone.item.geometry.location.lat,
       payMN: false,
     });
+    const datatrip = {
+      choose: false
+    };
     if (done === false) {
       axios
         .post(
@@ -104,7 +108,11 @@ const Book = ({ navigation, route }) => {
         )
         .then((res) => {
           setComand(res.data).then((i)=> {
-            navigation.replace('SplashScreen');
+            setTimeout(() => {
+              setmergeItemComand(datatrip).then((res) => {
+                navigation.replace('SplashScreen');
+              })
+            }, 500);
           })
           setDone(false)
         })
