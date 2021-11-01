@@ -109,12 +109,8 @@ const BidDriverTrafic = ({ navigation }) => {
 
   const handleNext = () => {
     const config = { headers: { 'Content-Type': 'application/json' } };
-    const body = JSON.stringify({
-      id_trip: biddetail?.details?.id,
-    });
     axios.post(
-        `https://crazy-taxi.quizapay.com/api/driver-arrival/?pk=${pk}`,
-        body,
+        `https://crazy-taxi.quizapay.com/api/driver-arrival/?pk=${pk}&id_trip=${biddetail?.details?.id}`,
         config
       )
       .then((res) => alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour passer à l'étape suivante, svp!!"))
