@@ -10,6 +10,7 @@ const config = { headers: { 'Content-Type': 'application/json' } };
 
 const getProfile = (pk) =>
   axios.get(`${url}profile/?pk=${pk}`, config).then((res) => res.data);
+const GetUser = (pk) => axios.get(`${url}user/?pk=${pk}`, config).then((res) => res.data);
 const getWallet = (pk) => axios.get(`${url}wallet/?pk=${pk}`, config).then((res) => res.data);
 const getCoin = (pk) =>
   axios.get(`${url}coins/?pk=${pk}`, config).then((res) => res.data);
@@ -93,6 +94,7 @@ const postTrip = (pk, longitude, latitude, destination_id, payMN) =>
           )
 
 export default {
+  GetUser,
   postUserOnline,
   postDriverPrix,
   postUserInstruction,

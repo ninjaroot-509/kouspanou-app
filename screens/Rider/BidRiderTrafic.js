@@ -27,6 +27,7 @@ import {
 import axios from 'axios';
 import Modal from 'react-native-modal';
 const { width, height } = Dimensions.get('window');
+import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 
 const BidRiderTrafic = ({ navigation }) => {
   const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
@@ -119,6 +120,63 @@ const BidRiderTrafic = ({ navigation }) => {
   if (biddetail?.length !== 0 && driver?.length !== 0) {
     return (
       <View style={{ flex: 1 }}>
+        <MapView
+          style={styles.map}
+          region={{
+            latitude:
+              biddetail?.arrival == true
+                ? biddetail?.destination_latitude
+                : driver?.latitude,
+            longitude:
+              biddetail?.arrival == true
+                ? biddetail?.destination_longitude
+                : driver?.longitude,
+            latitudeDelta: 0.03,
+            longitudeDelta: 0.03,
+          }}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={customMapStyle}>
+          <MapViewDirections
+          lineDashPattern={[0]}
+            origin={{
+              latitude: user?.details?.latitude,
+              longitude: user?.details?.longitude,
+            }}
+            destination={{
+              latitude:
+                biddetail?.arrival == true
+                  ? biddetail?.destination_latitude
+                  : driver?.latitude,
+              longitude:
+                biddetail?.arrival == true
+                  ? biddetail?.destination_longitude
+                  : driver?.longitude,
+            }}
+            apikey={API_KEY}
+            strokeWidth={3}
+            strokeColor="#143fff"
+          />
+          <Marker
+            title="votre position actuelle"
+            coordinate={{
+              latitude: user?.details?.latitude,
+              longitude: user?.details?.longitude,
+            }}
+          />
+          <Marker
+            title="position actuelle du chauffeur"
+            coordinate={{
+              latitude:
+                biddetail?.arrival == true
+                  ? biddetail?.destination_latitude
+                  : driver?.latitude,
+              longitude:
+                biddetail?.arrival == true
+                  ? biddetail?.destination_longitude
+                  : driver?.longitude,
+            }}
+          />
+        </MapView>
         <View style={{
               position: 'absolute',
               justifyContent: 'center',
@@ -213,63 +271,6 @@ const BidRiderTrafic = ({ navigation }) => {
             </View>
           </View>
         </Modal>
-        <MapView
-          style={styles.map}
-          region={{
-            latitude:
-              biddetail?.arrival == true
-                ? biddetail?.destination_latitude
-                : driver?.latitude,
-            longitude:
-              biddetail?.arrival == true
-                ? biddetail?.destination_longitude
-                : driver?.longitude,
-            latitudeDelta: 0.03,
-            longitudeDelta: 0.03,
-          }}
-          provider={PROVIDER_GOOGLE}
-          customMapStyle={customMapStyle}>
-          <MapViewDirections
-          lineDashPattern={[0]}
-            origin={{
-              latitude: user?.details?.latitude,
-              longitude: user?.details?.longitude,
-            }}
-            destination={{
-              latitude:
-                biddetail?.arrival == true
-                  ? biddetail?.destination_latitude
-                  : driver?.latitude,
-              longitude:
-                biddetail?.arrival == true
-                  ? biddetail?.destination_longitude
-                  : driver?.longitude,
-            }}
-            apikey={API_KEY}
-            strokeWidth={3}
-            strokeColor="#143fff"
-          />
-          <Marker
-            title="votre position actuelle"
-            coordinate={{
-              latitude: user?.details?.latitude,
-              longitude: user?.details?.longitude,
-            }}
-          />
-          <Marker
-            title="position actuelle du chauffeur"
-            coordinate={{
-              latitude:
-                biddetail?.arrival == true
-                  ? biddetail?.destination_latitude
-                  : driver?.latitude,
-              longitude:
-                biddetail?.arrival == true
-                  ? biddetail?.destination_longitude
-                  : driver?.longitude,
-            }}
-          />
-        </MapView>
       </View>
     );
   } else {

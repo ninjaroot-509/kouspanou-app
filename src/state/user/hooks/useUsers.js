@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStateValue } from '../../index';
+import httpRequest from '../../../../Components/Common/HttpRequests';
 import {getUser} from '../../../../Components/Common/Auth/Sessions';
 
 const SET_USER = 'user/SET_USER';
@@ -10,8 +11,8 @@ const useUsers = () => {
 
   const request = async () => {
     setIsLoading(true);
-
-    const response = await getUser()
+    const user_id = await getUser()
+    const response = await httpRequest.GetUser(user_id.id)
 
     if (response) {
       dispatch({

@@ -112,15 +112,12 @@ const BidDriverTrafic = ({ navigation }) => {
     const body = JSON.stringify({
       id_trip: biddetail?.details?.id,
     });
-    axios
-      .post(
+    axios.post(
         `https://crazy-taxi.quizapay.com/api/driver-arrival/?pk=${pk}`,
         body,
         config
       )
-      .then((res) => {
-        alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour passer à l'étape suivante, svp!!")
-      })
+      .then((res) => alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour passer à l'étape suivante, svp!!"))
       .catch((err) => {
         alert("une erreur s'est produite", err);
       });
@@ -132,8 +129,8 @@ const BidDriverTrafic = ({ navigation }) => {
         <MapView
           style={styles.map}
           region={{
-            latitude: biddetail?.destination_latitude,
-            longitude: biddetail?.destination_longitude,
+            latitude: client?.latitude,
+            longitude:client?.longitude,
             latitudeDelta: 0.028,
             longitudeDelta: 0.028,
           }}
@@ -146,8 +143,8 @@ const BidDriverTrafic = ({ navigation }) => {
               longitude: user?.details?.longitude,
             }}
             destination={{
-              latitude: biddetail?.destination_latitude,
-              longitude: biddetail?.destination_longitude
+              latitude: client?.latitude,
+              longitude:client?.longitude
             }}
             apikey={API_KEY}
             strokeWidth={3}
@@ -163,8 +160,8 @@ const BidDriverTrafic = ({ navigation }) => {
           <Marker
             title="position actuelle du client"
             coordinate={{
-              latitude: biddetail?.destination_latitude,
-              longitude: biddetail?.destination_longitude
+              latitude: client?.latitude,
+              longitude:client?.longitude
             }}
           />
         </MapView>
@@ -212,7 +209,7 @@ const BidDriverTrafic = ({ navigation }) => {
               <TouchableOpacity onPress={() => {
                   Alert.alert(
                     'Confirmez que vous êtes arrivé!',
-                    "Es-tu sûr? Arriver au lieu fixe du client!?",
+                    "Es-tu sûr? Avez-vous déjà trouvé le client!?",
                     [
                       {
                         text: 'Annuler',
@@ -233,7 +230,7 @@ const BidDriverTrafic = ({ navigation }) => {
                         color: '#fff',
                         fontSize: 16,
                         marginLeft: 10
-                    }}>Arriver</Text>
+                    }}>Suivant</Text>
                     <AntDesignIcons name="right" 
                     style={{fontSize: 18, color: '#fff', opacity: 0.3, marginLeft: 10}}/>
                     <AntDesignIcons

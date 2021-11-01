@@ -76,7 +76,7 @@ const Home1 = ({ navigation }) => {
   const [wallet, isLoadingW, setWallets] = useWallets();
   const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
   const ASPECT_RATIO = width / height;
-  const LATITUDE_DELTA = 0.0922;
+  const LATITUDE_DELTA = 0.0955;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
   useEffect(() => {
@@ -136,12 +136,15 @@ const Home1 = ({ navigation }) => {
                 longitude: position.coords.longitude,
                 place_name: json.results[0].formatted_address
               })
-              .then((res) => setUsers())
+              .then((res) => {
+                setTimeout(() => {
+                  setUsers()
+                }, 1000);
+              })
               .catch((err) => {
                 console.log("une erreur, Impossible d'obtenir les donnees require!");
               });
           })
-          // setLatLng( position.coords.latitude, position.coords.longitude );
           setPositionDone(true)
         }
       },
@@ -159,7 +162,8 @@ const Home1 = ({ navigation }) => {
   const centerMap = () => {
     mapRef?.animateToRegion(
       {
-        ...latLng,
+        latitude: user?.details?.latitude,
+        longitude: user?.details?.longitude,
         latitudeDelta: 0.0143,
         longitudeDelta: 0.0134,
       },
@@ -190,7 +194,7 @@ const Home1 = ({ navigation }) => {
         });
     }
   };
-  if (positionDone === true) {
+  if (positionDone === true && user?.details?.latitude) {
     return (
       <View style={styles.container}>
         <StatusBar translucent backgroundColor="transparent" />
@@ -200,14 +204,18 @@ const Home1 = ({ navigation }) => {
           }}
           style={styles.map}
           initialRegion={{
-            ...latLng,
+            latitude: user?.details?.latitude,
+            longitude: user?.details?.longitude,
             latitudeDelta: LONGITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           }}
           provider={PROVIDER_GOOGLE}
           customMapStyle={customMapStyle}>
           <MapView.Marker 
-            title="votre position" coordinate={latLng} 
+            title="votre position" coordinate={{
+              latitude: user?.details?.latitude,
+              longitude: user?.details?.longitude,
+            }}
             tracksViewChanges={true}
             image={require('../../assets/passager.png')}
             width={5}
