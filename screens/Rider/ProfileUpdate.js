@@ -43,7 +43,7 @@ const ProfileUpdate = ({ navigation }) => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Ionicons
                   name="arrow-back"
-                  size={19}
+                  size={20}
                   style={{ color: '#009' }}
                 />
               </TouchableOpacity>

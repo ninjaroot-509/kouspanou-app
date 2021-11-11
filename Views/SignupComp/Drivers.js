@@ -78,7 +78,7 @@ const Signup = () => {
         <PhoneInput
           containerStyle={{
             width: 300,
-            height: 44,
+            height: 50,
             borderRadius: 7,
           }}
           withShadow
@@ -161,7 +161,7 @@ export default Signup;
 const styles = StyleSheet.create({
   input: {
     width: 300,
-    height: 44,
+    height: 50,
     padding: 12,
     borderRadius: 7,
     backgroundColor: '#fff',
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 300,
-    height: 44,
+    height: 50,
     padding: 7,
     borderRadius: 8,
     backgroundColor: '#ff8612',
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   button1: {
     width: 300,
-    height: 44,
+    height: 50,
     padding: 7,
     borderRadius: 8,
     backgroundColor: '#cacaca',

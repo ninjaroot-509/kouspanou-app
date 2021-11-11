@@ -344,8 +344,8 @@ const Home1 = ({ navigation }) => {
         </TouchableOpacity>
         <View style={styles.box}>
           <View style={{ flexDirection: 'row' }}>
-            <MapButton icon={'history'} />
-            <MapButton icon={'money'} />
+            <MapButton icon={'history'} onPress={()=> navigation.navigate('RecentTrip')} />
+            <MapButton icon={'money'} onPress={()=> navigation.navigate('Recharge')} />
           </View>
           <MapButton icon={'map-marker-radius'} onPress={centerMap} />
         </View>

@@ -7,6 +7,8 @@ import Spin from '../Views/Spin';
 import Login from '../Views/Login';
 import Signup from '../Views/Signup';
 import CompleteI from '../Views/CompleteI';
+import Recharge from '../Views/Recharge';
+import RecentTrip from '../Views/RecentTrip';
 import BidRider from '../screens/Rider/BidRider';
 import BidRiderTrafic from '../screens/Rider/BidRiderTrafic';
 import DestRider from '../screens/Rider/DestRider';
@@ -265,6 +267,16 @@ const AppStart = () => {
           options={{ headerShown: false }}
         />
         {/* CompleteI Navigator: Information personelles */}
+        <Stack.Screen
+          name="Recharge"
+          component={Recharge}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RecentTrip"
+          component={RecentTrip}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="CompleteI"
           component={CompleteI}

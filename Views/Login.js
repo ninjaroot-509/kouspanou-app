@@ -54,185 +54,187 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={{}}>
-        <View
-          style={{
-            alignItems: 'center',
-            padding: 10,
-          }}>
-          <View style={{}}>
-            <Image
-              style={{
-                width: 200,
-                height: 200,
-              }}
-              source={require('../assets/logo.png')}
-            />
-          </View>
-          <View style={{ alignItems: 'center' }}>
-            <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#001' }}>
-              Connexion
-            </Text>
-            <Text style={{ fontSize: 17, color: '#001' }}>
-              Hello, bon retour
-            </Text>
-            <Text style={{ fontSize: 17, color: '#001' }}>
-              Content de te revoir!
-            </Text>
-          </View>
-        </View>
-      </View>
-      <View style={{ alignItems: 'center' }}>
-        <View style={{ padding: 5 }}>
-          <Text style={{ fontSize: 13, color: '#001', padding: 7 }}>
-            Telephone
-          </Text>
-          <PhoneInput
-            containerStyle={{
-              width: 300,
-              height: 50,
-              borderRadius: 7,
-            }}
-            textContainerStyle={{ borderRadius: 7 }}
-            withShadow
-            ref={phoneInput}
-            defaultValue={phone}
-            defaultCode="HT"
-            layout="first"
-            onChangeText={(text) => {
-              setPhone(text);
-            }}
-            onChangeFormattedText={(text) => {
-              setFormattedValue(text);
-            }}
-            // autoFocus
-          />
-        </View>
-        <View style={{ padding: 5 }}>
-          <Text style={{ fontSize: 13, color: '#001', padding: 7 }}>
-            Mot de passe
-          </Text>
-          <TextInput
-            onChangeText={(password) => setPassword(password)}
-            value={password}
-            placeholder={'Entrer votre mot de passe'}
-            placeholderTextColor={'#cacaca'}
-            secureTextEntry={true}
-            style={styles.input}
-            returnKeyType="next"
-          />
-          <View style={{ alignSelf: 'flex-end', padding: 8, paddingTop: 10 }}>
-            <Text
-              style={{
-                fontSize: 13,
-                color: '#001',
-                textAlign: 'right',
-                textDecorationLine: 'underline',
-              }}>
-              Mot de passe oublié
-            </Text>
-          </View>
-        </View>
-        <View style={{ padding: 7 }}>
-          {load === false ? (
-            <TouchableOpacity style={styles.button} onPress={handleLoginSubmit}>
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                Connecter
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.button1}>
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                Connecter
-              </Text>
-            </View>
-          )}
-        </View>
-        <View style={{ padding: 7 }}>
-          <TouchableOpacity onPress={() => navigation.replace('Signup')}>
-            <Text
-              style={{
-                fontSize: 15,
-                color: '#001',
-                textDecorationLine: 'underline',
-                textAlign: 'center',
-              }}>
-              Inscrivez-vous!?
-            </Text>
-          </TouchableOpacity>
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ justifyContent: 'center' }}>
-              <View
-                style={{
-                  borderBottomWidth: 1.5,
-                  width: 60,
-                  borderColor: '#143fff',
-                }}
-              />
-            </View>
-            <View style={{ padding: 7, alignItems: 'center' }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: '#001',
-                }}>
-                or
-              </Text>
-            </View>
-            <View style={{ justifyContent: 'center' }}>
-              <View
-                style={{
-                  borderBottomWidth: 1.5,
-                  width: 60,
-                  borderColor: '#143fff',
-                }}
-              />
-            </View>
-          </View>
+    <KeyboardAwareScrollView style={{backgroundColor: '#fff'}}>
+      <View style={styles.container}>
+        <View style={{}}>
           <View
             style={{
-              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              paddingVertical: 25,
             }}>
-            <View
-              style={{
-                width: 40,
-                height: 40,
+            <View style={{}}>
+              <Image
+                style={{
+                  width: 200,
+                  height: 140,
+                }}
+                source={require('../assets/logo.png')}
+              />
+            </View>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#001' }}>
+                Connexion
+              </Text>
+              <Text style={{ fontSize: 17, color: '#001' }}>
+                Hello, bon retour
+              </Text>
+              <Text style={{ fontSize: 17, color: '#001' }}>
+                Content de te revoir!
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ padding: 5 }}>
+            <Text style={{ fontSize: 13, color: '#001', padding: 7 }}>
+              Telephone
+            </Text>
+            <PhoneInput
+              containerStyle={{
+                width: 300,
+                height: 50,
                 borderRadius: 7,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#143fff',
-              }}>
-              <FontAwesome name="google" size={22} color="#fff" />
+              }}
+              textContainerStyle={{ borderRadius: 7 }}
+              withShadow
+              ref={phoneInput}
+              defaultValue={phone}
+              defaultCode="HT"
+              layout="first"
+              onChangeText={(text) => {
+                setPhone(text);
+              }}
+              onChangeFormattedText={(text) => {
+                setFormattedValue(text);
+              }}
+              // autoFocus
+            />
+          </View>
+          <View style={{ padding: 5 }}>
+            <Text style={{ fontSize: 13, color: '#001', padding: 7 }}>
+              Mot de passe
+            </Text>
+            <TextInput
+              onChangeText={(password) => setPassword(password)}
+              value={password}
+              placeholder={'Entrer votre mot de passe'}
+              placeholderTextColor={'#cacaca'}
+              secureTextEntry={true}
+              style={styles.input}
+              returnKeyType="next"
+            />
+            <View style={{ alignSelf: 'flex-end', padding: 8, paddingTop: 10 }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: '#ff9612',
+                  textAlign: 'right',
+                  textDecorationLine: 'underline',
+                }}>
+                Mot de passe oublié
+              </Text>
+            </View>
+          </View>
+          <View style={{ padding: 7 }}>
+            {load === false ? (
+              <TouchableOpacity style={styles.button} onPress={handleLoginSubmit}>
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                  Connecter
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.button1}>
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                  Connecter
+                </Text>
+              </View>
+            )}
+          </View>
+          <View style={{ padding: 7 }}>
+            <TouchableOpacity onPress={() => navigation.replace('Signup')}>
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: '#001',
+                  textDecorationLine: 'underline',
+                  textAlign: 'center',
+                }}>
+                Inscrivez-vous!?
+              </Text>
+            </TouchableOpacity>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ justifyContent: 'center' }}>
+                <View
+                  style={{
+                    borderBottomWidth: 1.5,
+                    width: 60,
+                    borderColor: '#143fff',
+                  }}
+                />
+              </View>
+              <View style={{ padding: 7, alignItems: 'center' }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: '#001',
+                  }}>
+                  or
+                </Text>
+              </View>
+              <View style={{ justifyContent: 'center' }}>
+                <View
+                  style={{
+                    borderBottomWidth: 1.5,
+                    width: 60,
+                    borderColor: '#143fff',
+                  }}
+                />
+              </View>
             </View>
             <View
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: 7,
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#143fff',
+                justifyContent: 'space-between',
               }}>
-              <FontAwesome name="facebook" size={22} color="#fff" />
-            </View>
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 7,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#143fff',
-              }}>
-              <FontAwesome name="twitter" size={22} color="#fff" />
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 7,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#143fff',
+                }}>
+                <FontAwesome name="google" size={22} color="#fff" />
+              </View>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 7,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#143fff',
+                }}>
+                <FontAwesome name="facebook" size={22} color="#fff" />
+              </View>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 7,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#143fff',
+                }}>
+                <FontAwesome name="twitter" size={22} color="#fff" />
+              </View>
             </View>
           </View>
         </View>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 export default Login;

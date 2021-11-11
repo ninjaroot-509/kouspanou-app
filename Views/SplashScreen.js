@@ -4,7 +4,6 @@ import {
   View,
   StyleSheet,
   Image,
-  AsyncStorage,
   Text,
 } from 'react-native';
 import {
@@ -15,14 +14,7 @@ import {
 import useUsers from '../src/state/user/hooks/useUsers';
 
 const SplashScreen = ({ navigation }) => {
-  //State for ActivityIndicator animation
-  const [animating, setAnimating] = useState(true);
-
   useEffect(() => {
-    setAnimating(false);
-    //Check if user_id is set or not
-    //If not then send for Authentication
-    //else send to Home Screen Auth
     getToken().then((value) => {
       if (value === null) {
         navigation.replace('OnBoard');
@@ -76,12 +68,15 @@ const SplashScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator
-        animating={animating}
-        color="#ff8612"
-        size="large"
-        style={{ alignItems: 'center' }}
-      />
+      <View style={{padding: 20}}>
+        <Image
+          style={{
+            width: 240,
+            height: 240,
+          }}
+          source={require('../assets/logo.png')}//changement du logo 
+        />
+      </View>
     </View>
   );
 };

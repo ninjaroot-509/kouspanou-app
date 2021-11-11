@@ -181,7 +181,7 @@ const Home = ({ navigation }) => {
               <View style={{ padding: 15, paddingHorizontal: 10, alignItems: 'center', width: 300 }}>
                 <Text style={{ textAlign: 'center' }}>
                   Hello {user?.details?.first_name}, Confirmez que vous voulez
-                  changer votre compte de type passager en type passager.
+                  changer votre compte de type chauffeur en type passager.
                 </Text>
               </View>
               <View
@@ -218,7 +218,7 @@ const Home = ({ navigation }) => {
               </View>
             </View>
           </Modal>
-          <View style={{alignItems: 'center', flexDirection: 'row'}}>
+          <View style={{alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
           <TouchableOpacity
             style={{borderRadius: 45,
               flexDirection: 'row',

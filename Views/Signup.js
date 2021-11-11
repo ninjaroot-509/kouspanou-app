@@ -54,13 +54,13 @@ const Signup = ({ navigation }) => {
       <View
         style={{
           alignItems: 'center',
-          padding: 10,
+          paddingVertical: 15,
         }}>
         <View style={{}}>
           <Image
             style={{
-              width: 100,
-              height: 100,
+              width: 190,
+              height: 140,
             }}
             source={require('../assets/logo.png')}
           />
