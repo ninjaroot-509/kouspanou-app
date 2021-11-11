@@ -91,7 +91,7 @@ const Login = ({ navigation }) => {
           <PhoneInput
             containerStyle={{
               width: 300,
-              height: 44,
+              height: 50,
               borderRadius: 7,
             }}
             textContainerStyle={{ borderRadius: 7 }}
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: 300,
-    height: 44,
+    height: 50,
     padding: 12,
     borderRadius: 7,
     backgroundColor: '#fff',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 300,
-    height: 44,
+    height: 50,
     padding: 7,
     borderRadius: 8,
     backgroundColor: '#ff8612',

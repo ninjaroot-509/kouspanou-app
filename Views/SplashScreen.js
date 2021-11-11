@@ -38,7 +38,7 @@ const SplashScreen = ({ navigation }) => {
                     navigation.replace('BidRider');
                   } else {
                     if (valueComd.arrival === true) {
-                      navigation.replace('DestRriver');
+                      navigation.replace('DestRider');
                     } else {
                       navigation.replace('BidRiderTrafic');
                     }

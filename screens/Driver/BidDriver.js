@@ -189,6 +189,8 @@ const BidRider = ({ navigation, route }) => {
       complete: false,
       driver: pk,
       client: biddetail?.details?.client,
+      driver_latitude: user?.details?.driver_latitude,
+      driver_longitude: user?.details?.driver_longitude,
     };
     const config = { headers: { 'Content-Type': 'application/json' } };
     const body = JSON.stringify({
@@ -319,9 +321,13 @@ const BidRider = ({ navigation, route }) => {
                   />
                 </MapView>
             </View>
+            <View style={{alignItems: 'center', justifyContent: 'center', paddingHorizontal: 15, paddingVertical: 10}}>
+              <Text style={{textAlign: 'center', color: '#007'}}>
+              {biddetail?.details?.user_first_name}, vient de vous choisir, confirmez pour accepter le trafic
+              </Text>
+            </View>
             <View
               style={{
-                paddingTop: 15,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
@@ -657,20 +663,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Constants.statusBarHeight,
-    alignItems: 'center',
+    paddingTop: Platform.OS === "ios" ? 0 : Constants.statusBarHeight,
   },
   header: {
     justifyContent: 'center',
-    width: width,
+    height: 50,
     backgroundColor: '#fff',
-    borderBottomWidth: 1.8,
+    borderBottomWidth: 1.5,
     borderBottomColor: '#00000033',
   },
   headertitle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    margin: 12,
+    paddingHorizontal: 10
   },
   body: {
     width: width,

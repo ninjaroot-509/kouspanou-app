@@ -21,21 +21,21 @@ const SIZES = {
 const data = [
     {
         _id: '1',
-        title: 'Play The Beat',
-        description: 'lorem ipsun dolor sit amet consec ttur adipiscing elit.',
-        img: require('../assets/logo.png')
+        title: 'GoTaxi Géolocalisation',
+        description: 'Choisissez votre itinéraire à partir de votre position actuelle.',
+        img: require('../assets/onboard2.png')
     },
     {
         _id : '2',
-        title: 'Live The Life',
-        description: 'lorem ipsun dolor sit amet consec ttur adipiscing elit.',
-        img: require('../assets/logo.png')
+        title: 'GoTaxi Communication',
+        description: 'Discutez du prix avec nos chauffeurs.',
+        img: require('../assets/onboard3.png')
     },
     {
         _id : '3',
-        title: 'Capture The Moment',
-        description: 'lorem ipsun dolor sit amet consec ttur adipiscing elit.',
-        img: require('../assets/logo.png')
+        title: 'GoTaxi live traffic',
+        description: 'parcourez tout le trafic en direct et profitez de nos services qui sont les meilleurs.',
+        img: require('../assets/onboard.png')
     },
 ]
 
@@ -231,13 +231,13 @@ const Onboarding = ({navigation}) => {
                     <Image
                     source={item.img}
                     style={{
-                      width: 280, 
-                      height: 300, 
+                      width: width / 1.2, 
+                      height: height / 2, 
                       borderRadius: 30,
                   }}
                     />
                 </View>
-                <View style={{paddingHorizontal: SIZES.base * 4, marginVertical: SIZES.base * 4}}>
+                <View style={{paddingHorizontal: SIZES.base * 4, marginVertical: SIZES.base * 3}}>
                     <Text style={{fontSize: 22, textAlign: 'center', fontWeight: 'bold', color: COLORS.primary}}>
                         {item.title}
                     </Text>

@@ -1,319 +1,451 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   View,
   Text,
-  TextInput,
+  Image,
   TouchableOpacity,
   StyleSheet,
-  Button,
   Platform,
-  SafeAreaView,
+  Dimensions,
+  StatusBar,
+  ActivityIndicator
 } from 'react-native';
-import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { decode } from '@mapbox/polyline';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+// import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from 'react-native-vector-icons';
-import Modal from 'react-native-modal';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import customMapStyle from './mapstyle.json';
+import useDriveronlines from '../../src/state/driveronline/hooks/useDriveronlines';
+import Modal from 'react-native-modal';
+import useUsers from '../../src/state/user/hooks/useUsers';
+import request from '../../Components/Common/HttpRequests';
+import { setmergeItemUser } from '../../Components/Common/Auth/Sessions';
+import useWallets from '../../src/state/wallet/hooks/useWallets';
+import Geocoder from 'react-native-geocoding';
+Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
+const { width, height } = Dimensions.get('window');
 
-const getDirections = async (startLoc, destinationLoc) => {
-  try {
-    const KEY = 'AIzaSyC_C7iEW9aKj93585JSNgZgdsgR8kBihcI';
-    let resp = await fetch(
-      `https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=${KEY}`
-    );
-    let respJson = await resp.json();
-    let points = decode(respJson.routes[0].overview_polyline.points);
-    let coords = points.map((point, index) => {
-      return {
-        latitude: point[0],
-        longitude: point[1],
-      };
-    });
-    return coords;
-  } catch (error) {
-    return error;
-  }
-};
-
-const App = () => {
-  const [coords, setCoords] = useState([]);
-  const [dropoff, setDropoff] = useState('');
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [isModalInput, setModalInput] = useState(false);
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS === 'android' && !Constants.isDevice) {
-        setErrorMsg(
-          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
-        );
-        return;
-      }
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
-  });
-
-  let text = 'Waiting..';
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-  useEffect(() => {
-    getDirections('52.5200066,13.404954', '50.1109221,8.6821267')
-      .then((coords) => setCoords(coords))
-      .catch((err) => console.log('Something went wrong'));
-  });
-
-  // {coords.length > 0 && <Polyline coordinates={coords} />}
-
-  const showInput = () => {
-    if (!isModalInput) {
-      setModalInput(true);
-    } else {
-      setModalInput(false);
-    }
-  };
-
+const MapButton = ({ icon, ...props }) => {
   return (
-    <>
-      {isModalInput === true ? (
-        <AutoComplete
-          showInput={showInput}
-          dropoff={dropoff}
-          setDropoff={setDropoff}
+    <TouchableOpacity
+      {...props}
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 45,
+        height: 45,
+        backgroundColor: '#fff',
+        borderRadius: 22.5,
+        marginRight: 10,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
+      }}>
+      {icon == 'money'?
+        <FontAwesome
+          name={icon}
+          size={22}
+          style={{ color: '#ff8612' }}
         />
-      ) : (
-        <>
-          <SafeAreaView style={{ flex: 1 }}>
-            {location ? (
-              <MapView
-                style={{ flex: 1 }}
-                provider={PROVIDER_GOOGLE}
-                showsUserLocation={true}
-                initialRegion={location}></MapView>
-            ) : (
-              <MapView
-                style={{ flex: 1 }}
-                provider={PROVIDER_GOOGLE}
-                // showsUserLocation={true}
-                customMapStyle={customMapStyle}
-                initialRegion={{
-                  latitude: 18.5138,
-                  longitude: -72.2882,
-                  latitudeDelta: 0.1,
-                  longitudeDelta: 0.1,
-                }}></MapView>
-            )}
-          </SafeAreaView>
-
-          <Modal
-            isVisible={isModalVisible}
-            onRequestClose={() => setModalVisible(false)}
-            onBackButtonPress={() => setModalVisible(false)}>
-            <View
-              style={{
-                backgroundColor: 'white',
-                height: 200,
-                alignItems: 'center',
-                borderRadius: 10,
-              }}>
-              <View style={{ marginTop: 20 }}>
-                <Text style={{ color: '#000', fontWeight: 'bold' }}>
-                  Verification
-                </Text>
-              </View>
-              <View style={{ padding: 20, width: 200, alignItems: 'center' }}>
-                <Text>
-                  Comfirmez que vous etes effectivement pickup que vous voulez
-                  aller a {dropoff}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <TouchableOpacity
-                  style={{
-                    padding: 8,
-                    backgroundColor: '#cacaca',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 8,
-                    margin: 15,
-                  }}
-                  onPress={() => setModalVisible(false)}>
-                  <Text style={{ color: '#000' }}>Annuler</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    padding: 8,
-                    backgroundColor: '#ff8612',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 8,
-                    margin: 15,
-                  }}>
-                  <Text style={{ color: '#fff' }}>Continuer</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
-          <View style={styles.location}>
-            <TouchableOpacity
-              // onPress={positionUser}
-              style={{
-                backgroundColor: '#ff8612',
-                borderRadius: 20,
-                width: 40,
-                height: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
-                elevation: 3,
-              }}>
-              <FontAwesome name="user" size={17} style={{ color: '#fff' }} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.box}>
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 5,
-                }}>
-                <Text
-                  style={{
-                    color: '#000',
-                    fontSize: 20,
-                    fontWeight: '500',
-                    opacity: 0.8,
-                  }}>
-                  où allez vous?
-                </Text>
-              </View>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 5,
-                }}>
-                <TouchableOpacity
-                  style={styles.input}
-                  onPress={showInput}
-                  activeOpacity={0.1}>
-                  <Text style={{ color: '#999999' }}>Petion-ville</Text>
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 8,
-                }}>
-                <TouchableOpacity style={styles.button}>
-                  <Text
-                    style={{
-                      color: '#fff',
-                    }}>
-                    Rechercher
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </>
-      )}
-    </>
+        :
+        <MaterialCommunityIcons
+          name={icon}
+          size={22}
+          style={{ color: '#ff8612' }}
+        />
+      }
+    </TouchableOpacity>
   );
 };
 
-export default App;
+const Home1 = ({ navigation }) => {
+  const [temp, setTemp] = useState(0);
+  const [temp1, setTemp1] = useState(0);
+  const [loadDriver, setLoadDriver] = useState(true);
+  const [change, setChange] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [positionDone, setPositionDone] = useState(false);
+  const [user, isLoadingUser, setUsers] = useUsers();
+  const [wallet, isLoadingW, setWallets] = useWallets();
+  const API_KEY = 'AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc';
+  const ASPECT_RATIO = width / height;
+  const LATITUDE_DELTA = 0.0955;
+  const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+  useEffect(() => {
+    if (!wallet.details || wallet.details.length === 0) {
+      setWallets();
+    }
+  }, [setWallets, wallet]);
+
+  useEffect(() => {
+    if (!user.details || user.details.length === 0) {
+      setUsers();
+    }
+  }, [user, setUsers]);
+
+  useEffect(() => {
+    setInterval(() => {
+      setTemp((prevTemp) => prevTemp + 1);
+    }, 300000);
+  }, []);
+
+  useEffect(() => {
+    setInterval(() => {
+      setTemp1((prevTemp1) => prevTemp1 + 1);
+    }, 220000);
+  }, []);
+
+  useEffect(() => {
+    setLoadDriver(true);
+  }, [temp]);
+
+  const [driveronline, isLoading, setListDriveronlines] = useDriveronlines();
+
+  useEffect(() => {
+    if (!driveronline.list || driveronline.list.length === 0) {
+      if (loadDriver == true) {
+        setLoadDriver(false);
+        setListDriveronlines();
+      }
+    }
+  }, [driveronline, setListDriveronlines]);
+
+  let mapRef = MapView ? MapView : null;
+  const [latLng, setLatLng] = useState({
+    latitude: user?.details?.latitude,
+    longitude: user?.details?.longitude,
+  });
+
+  useEffect(() => {
+    Location.installWebGeolocationPolyfill();
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        if (position.length !== 0) {
+          Geocoder.from(position.coords.latitude,position.coords.longitude).then(json => {
+              request.postUserLocation({
+                pk: user?.details?.id,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                place_name: json.results[0].formatted_address
+              })
+              .then((res) => {
+                setTimeout(() => {
+                  setUsers()
+                }, 1000);
+              })
+              .catch((err) => {
+                console.log("une erreur, Impossible d'obtenir les donnees require!");
+              });
+          })
+          setPositionDone(true)
+        }
+      },
+      () => {
+        console.log("une erreur, Impossible d'obtenir votre position actuelle");
+      },
+      {
+        timeout: 2000,
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+      }
+    );
+  }, [temp1]);
+
+  const centerMap = () => {
+    mapRef?.animateToRegion(
+      {
+        latitude: user?.details?.latitude,
+        longitude: user?.details?.longitude,
+        latitudeDelta: 0.0143,
+        longitudeDelta: 0.0134,
+      },
+      1000
+    );
+  };
+
+  const handleChange = () => {
+    let datauser = {
+      is_driver: true,
+      is_passenger: false,
+    };
+    setChange(true);
+    if (change !== true) {
+      request
+        .postUserType({
+          pk: user?.details?.id,
+          is_driver: true,
+          is_passenger: false,
+        })
+        .then((res) => {
+          setmergeItemUser(datauser).then((res) => {
+            navigation.replace('SplashScreen');
+          });
+        })
+        .catch((err) => {
+          alert('une erreur!', err);
+        });
+    }
+  };
+  if (positionDone === true && user?.details?.latitude) {
+    return (
+      <View style={styles.container}>
+        <StatusBar translucent backgroundColor="transparent" />
+        <MapView
+          ref={(map) => {
+            mapRef = map;
+          }}
+          style={styles.map}
+          initialRegion={{
+            latitude: user?.details?.latitude,
+            longitude: user?.details?.longitude,
+            latitudeDelta: LONGITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+          }}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={customMapStyle}>
+          <MapView.Marker 
+            title="votre position" coordinate={{
+              latitude: user?.details?.latitude,
+              longitude: user?.details?.longitude,
+            }}
+            tracksViewChanges={true}
+            image={require('../../assets/passager.png')}
+            width={5}
+            height={5}
+          />
+          {driveronline?.list?.map((item) => (
+            <MapView.Marker
+              key={item.id}
+              title={item.username}
+              coordinate={{
+                latitude: item.latitude,
+                longitude: item.longitude,
+              }}
+            />
+          ))}
+        </MapView>
+  
+        <Modal
+          isVisible={modal}
+          onRequestClose={() => setModal(false)}
+          onBackButtonPress={() => setModal(false)}>
+          <View
+            style={{
+              backgroundColor: 'white',
+              height: 200,
+              alignItems: 'center',
+              borderRadius: 10,
+            }}>
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18 }}>
+                Changer Type compte
+              </Text>
+            </View>
+            <View style={{ padding: 15, paddingHorizontal: 10, alignItems: 'center', width: 300 }}>
+              <Text style={{ textAlign: 'center' }}>
+                Hello {user?.details?.first_name}, Confirmez que vous voulez
+                changer votre compte de type passager en type chauffeur.
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <TouchableOpacity
+                style={{
+                  margin: 5,
+                  backgroundColor: '#cacaca',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 8,
+                  height: 45,
+                  width: 100,
+                }}
+                onPress={() => setModal(false)}>
+                <Text style={{ color: '#000' }}>Annuler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleChange}
+                style={{
+                  margin: 5,
+                  backgroundColor: change === false ? '#ff8612' : '#cacaca',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 8,
+                  height: 45,
+                  width: 100,
+                }}>
+                <Text style={{ color: '#fff' }}>Comfirmer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <TouchableOpacity
+          style={{borderRadius: 45,
+            position: 'absolute',
+            flexDirection: 'row',
+            top: 40,
+            left: 0,
+            marginHorizontal: 15,
+            backgroundColor: '#fff',
+            padding: 10,
+            elevation: 3,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 5 },
+            shadowOpacity: 0.2,
+            shadowRadius: 6.17,
+            justifyContent: 'center',
+            alignItems: 'center',}}>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Fontisto
+              name="wallet"
+              size={18}
+              style={{ color: '#ff9612', marginHorizontal: 3 }}
+            />
+          </View>
+          <View style={{ margin: 3 }}>
+            <Text style={{ fontSize: 13, color: '#001', fontWeight: '700' }}>{wallet?.details?.montant} HTG</Text>
+          </View>
+        </TouchableOpacity>
+  
+        <TouchableOpacity
+          style={styles.changeusertype}
+          onPress={() => setModal(true)}>
+          <View
+            style={{
+              padding: 5,
+              backgroundColor: '#143fff',
+              borderRadius: 20,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <MaterialCommunityIcons
+              name="seat-passenger"
+              size={20}
+              style={{ color: '#fff' }}
+            />
+          </View>
+          <View style={{ margin: 3 }}>
+            <Text style={{ fontSize: 13, color: '#001' }}>Passager</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={styles.box}>
+          <View style={{ flexDirection: 'row' }}>
+            <MapButton icon={'history'} />
+            <MapButton icon={'money'} />
+          </View>
+          <MapButton icon={'map-marker-radius'} onPress={centerMap} />
+        </View>
+        <View style={styles.input}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Pickup')}>
+            <Text style={{ fontSize: 10, color: '#001' }}>
+              Depuis: votre position actuelle!
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: '#143FFF',
+                  marginRight: 10,
+                }}
+              />
+              <Text style={{ fontSize: 18, color: '#ff8612', opacity: 0.9 }}>
+                où allez vous!?
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  } else {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#fff',
+        }}>
+        <ActivityIndicator
+          color="#ff8612"
+          size="large"
+          style={{ alignItems: 'center' }}
+        />
+      </View>
+    )
+  }
+};
+
+export default Home1;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   input: {
-    width: 270,
-    height: 50,
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#fff',
+    position: 'absolute',
     justifyContent: 'center',
+    bottom: 45,
+    width: '80%',
+    height: 50,
+    backgroundColor: '#fff',
+    borderRadius: 45,
+    padding: 15,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-
-    elevation: 2,
+    shadowRadius: 6.17,
   },
   button: {
-    width: 270,
-    height: 50,
-    borderRadius: 8,
-    backgroundColor: '#ff8612',
-    alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 45,
+  },
+  changeusertype: {
+    borderRadius: 45,
+    position: 'absolute',
+    flexDirection: 'row',
+    top: 40,
+    backgroundColor: '#fff',
+    padding: 6,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-
-    elevation: 2,
+    shadowRadius: 6.17,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   box: {
     position: 'absolute',
-    height: 175,
-    width: '100%',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopLeftRadius: 35,
-    borderTopRightRadius: 35,
-    bottom: 0,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-
-    elevation: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    bottom: 110,
+    width: '80%',
+    height: 50,
   },
-  location: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    top: 0,
-    left: 20,
-    paddingTop: 40,
+  map: {
+    width: '100%',
+    height: '100%',
   },
 });

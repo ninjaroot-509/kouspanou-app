@@ -36,7 +36,10 @@ const BidDriverTrafic = ({ navigation }) => {
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
   const [temp, setTemp] = useState(0);
   const [modal, setModal] = useState(false);
+  const [modalTwo, setModalTwo] = useState(false);
   const [stop, setStop] = useState(false);
+  const [err, setErr] = useState(false);
+  const [code, setCode] = useState('');
   const [biddetail, setBiddetail] = useState([]);
   const [user, isLoading, setUsers] = useUsers();
   const pk = user?.details?.id;
@@ -75,9 +78,6 @@ const BidDriverTrafic = ({ navigation }) => {
           )
           .then((res) => {
             if (res.data.is_complete_comfirm == true) {
-              // setmergeItemComand(datatrip).then((res) => {
-              //   navigation.replace('SplashScreen');
-              // });
               setModal(true)
             }
           })
@@ -105,16 +105,100 @@ const BidDriverTrafic = ({ navigation }) => {
         config
       )
       .then((res) => {
-        alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour terminer, Merci!!")
+        setModal(true)
+      })
+      .catch((err) => {
+        alert("une erreur s'est produite..", err);
+      });
+  }
+
+  const handleNextEnd = () => {
+    setErr(false)
+    const config = { headers: { 'Content-Type': 'application/json' } };
+    const body = JSON.stringify({
+      id_trip: biddetail?.details?.id,
+      code: code,
+    });
+    axios
+      .post(
+        `https://crazy-taxi.quizapay.com/api/driver-end-finale/?pk=${pk}`,
+        body,
+        config
+      )
+      .then((res) => {
+        // alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour terminer, Merci!!")
+        Alert.alert(
+          'GoTaxi!',
+          "Merci, d'avoir utiliser le service GoTaxi et a bientot",
+          [
+            {
+              text: 'Ok',
+              onPress: () => handleFinale(),
+            },
+          ],
+          { cancelable: false }
+        );
       })
       .catch((err) => {
         alert("une erreur s'est produite", err);
+        setErr(true)
       });
   }
+
+  const handleFinale = () => {
+    removeComand().then((suc) => {
+      navigation.replace('SplashScreen');
+    });
+  };
+
+
 
   if (biddetail?.length !== 0 && user?.details?.length !== 0) {
     return (
       <View style={{ flex: 1 }}>
+        <Modal
+          isVisible={modal}
+          onRequestClose={() => setModal(false)}
+          onBackButtonPress={() => setModal(false)}>
+          <View
+            style={{
+              backgroundColor: 'white',
+              height: 200,
+              alignItems: 'center',
+              borderRadius: 10,
+            }}>
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ color: '#000', fontWeight: 'bold' }}>
+                Vous avez arriver!?
+              </Text>
+            </View>
+            <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
+              <Text style={{ textAlign: 'justify' }}>
+                Hello user, Demandez au client le code de confirmation pour finaliser le traffic, Merci!!
+              </Text>
+            </View>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+              <TouchableOpacity
+                onPress={handleNextEnd}
+                style={{
+                  margin: 5,
+                  backgroundColor: '#ff8612',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 8,
+                  height: 45,
+                  width: 100,
+                }}>
+                <Text style={{ color: '#fff' }}>Comfirmer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
         <MapView
           style={styles.map}
           region={{

@@ -35,8 +35,6 @@ const BidDriverTrafic = ({ navigation }) => {
   const LATITUDE_DELTA = 0.0922;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
   const [temp, setTemp] = useState(0);
-  const [modal, setModal] = useState(false);
-  const [stop, setStop] = useState(false);
   const [client, setClient] = useState([]);
   const [biddetail, setBiddetail] = useState([]);
   const [user, isLoading, setUsers] = useUsers();
@@ -109,24 +107,21 @@ const BidDriverTrafic = ({ navigation }) => {
 
   const handleNext = () => {
     const config = { headers: { 'Content-Type': 'application/json' } };
-    axios.post(
-        `https://crazy-taxi.quizapay.com/api/driver-arrival/?pk=${pk}&id_trip=${biddetail?.details?.id}`,
-        config
-      )
-      .then((res) => alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour passer à l'étape suivante, svp!!"))
+    axios.post(`https://crazy-taxi.quizapay.com/api/driver-arrival/?id_trip=${biddetail?.details?.id}&pk=${pk}`, config)
+      .then((res) => alert("Comfirmation requis, une fois que vous aurez vu le client, demandez-lui de confirmer votre arrivée pour passer à l'étape suivante, svp!!"))
       .catch((err) => {
         alert("une erreur s'est produite", err);
       });
   }
 
-  if (biddetail?.length !== 0 && user?.details?.length !== 0) {
+  if (biddetail?.length !== 0 && user?.details?.length !== 0 && client?.latitude) {
     return (
       <View style={{ flex: 1 }}>
         <MapView
           style={styles.map}
           region={{
             latitude: client?.latitude,
-            longitude:client?.longitude,
+            longitude: client?.longitude,
             latitudeDelta: 0.028,
             longitudeDelta: 0.028,
           }}
@@ -135,12 +130,12 @@ const BidDriverTrafic = ({ navigation }) => {
           <MapViewDirections
           lineDashPattern={[0]}
             origin={{
-              latitude: user?.details?.latitude,
-              longitude: user?.details?.longitude,
+              latitude: biddetail?.driver_latitude,
+              longitude: biddetail?.driver_longitude
             }}
             destination={{
-              latitude: client?.latitude,
-              longitude:client?.longitude
+              latitude: biddetail?.client_latitude,
+              longitude: biddetail?.client_longitude
             }}
             apikey={API_KEY}
             strokeWidth={3}
@@ -157,7 +152,15 @@ const BidDriverTrafic = ({ navigation }) => {
             title="position actuelle du client"
             coordinate={{
               latitude: client?.latitude,
-              longitude:client?.longitude
+              longitude: client?.longitude
+            }}
+          />
+
+          <Marker
+            title="position du client 1"
+            coordinate={{
+              latitude: biddetail?.client_latitude,
+              longitude: biddetail?.client_longitude
             }}
           />
         </MapView>
@@ -204,17 +207,17 @@ const BidDriverTrafic = ({ navigation }) => {
             }}>
               <TouchableOpacity onPress={() => {
                   Alert.alert(
-                    'Confirmez que vous êtes arrivé!',
-                    "Es-tu sûr? Avez-vous déjà trouvé le client!?",
+                    'Confirmez que vous êtes arrivé!?',
+                    "Es-tu sûr? Êtes-vous déjà arrivé à l'emplacement exact du client !?",
                     [
                       {
-                        text: 'Annuler',
+                        text: 'Non',
                         onPress: () => {
                           return null;
                         },
                       },
                       {
-                        text: 'Confirmer',
+                        text: 'Oui',
                         onPress: () => handleNext(),
                       },
                     ],

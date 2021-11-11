@@ -35,8 +35,6 @@ const BidRiderTrafic = ({ navigation }) => {
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
   const [temp, setTemp] = useState(0);
   const [modal, setModal] = useState(false);
-  const [arrive, setArrive] = useState(false);
-  const [arriveEnd, setArriveEnd] = useState(false);
   const [stop, setStop] = useState(false);
   const [biddetail, setBiddetail] = useState([]);
   const [driver, setDriver] = useState([]);
@@ -76,6 +74,7 @@ const BidRiderTrafic = ({ navigation }) => {
           .then((res) => {
             if (res) {
               setDriver(res.data);
+              setStop(true)
             }
           })
           .catch((err) => {
@@ -97,9 +96,39 @@ const BidRiderTrafic = ({ navigation }) => {
           .catch((err) => {
             alert("une erreur s'est produite");
           });
+
+          axios
+          .get(
+            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
+            config
+          )
+          .then((res) => {
+            if (res.data.is_complete_comfirm == true) {
+              Alert.alert(
+                'GoTaxi!',
+                "Merci, d'avoir utiliser le service GoTaxi et a bientot",
+                [
+                  {
+                    text: 'Ok',
+                    onPress: () => handleFinale(),
+                  },
+                ],
+                { cancelable: false }
+              );
+            }
+          })
+          .catch((err) => {
+            alert("une erreur s'est produite");
+          });
       }
     }
   }, [temp]);
+
+  const handleFinale = () => {
+    removeComand().then((suc) => {
+      navigation.replace('SplashScreen');
+    });
+  };
 
   const handleArriv = () => {
     if (biddetail?.arrival == true) {
@@ -164,88 +193,41 @@ const BidRiderTrafic = ({ navigation }) => {
               backgroundColor: 'white',
               height: 200,
               alignItems: 'center',
+              justifyContent: 'center',
               borderRadius: 10,
             }}>
             <View style={{ marginTop: 20 }}>
-              <Text style={{ color: '#000', fontWeight: 'bold' }}>
-                {biddetail?.arrival == true
-                  ? 'Deja arriver!?'
-                  : 'Vous avez trouver le Chauffeur !?'}
+              <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 32 }}>
+                {biddetail?.secret_code}
               </Text>
             </View>
             <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
-              <Text style={{ textAlign: 'justify' }}>
-                Hello user, Confirmez que vous êtes{' '}
-                {biddetail?.arrival == true
-                  ? 'deja arriver'
-                  : 'avec le Chauffeur'}
+              <Text style={{ textAlign: 'center', fontSize: 16 }}>
+                Hello {user?.details?.first_name}, {''} ici votre code de verification
               </Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <TouchableOpacity
-                style={{
-                  margin: 5,
-                  backgroundColor: '#cacaca',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  height: 45,
-                  width: 100,
-                }}
-                onPress={() => setModal(false)}>
-                <Text style={{ color: '#000' }}>Annuler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleArriv}
-                style={{
-                  margin: 5,
-                  backgroundColor: '#ff8612',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  height: 45,
-                  width: 100,
-                }}>
-                <Text style={{ color: '#fff' }}>Comfirmer</Text>
-              </TouchableOpacity>
-            </View>
+
           </View>
         </Modal>
         <MapView
           style={styles.map}
           region={{
-            latitude:
-              biddetail?.arrival == true
-                ? biddetail?.destination_latitude
-                : driver?.latitude,
-            longitude:
-              biddetail?.arrival == true
-                ? biddetail?.destination_longitude
-                : driver?.longitude,
+            latitude: biddetail?.destination_latitude,
+            longitude: biddetail?.destination_longitude,
             latitudeDelta: 0.03,
             longitudeDelta: 0.03,
           }}
           provider={PROVIDER_GOOGLE}
           customMapStyle={customMapStyle}>
           <MapViewDirections
-          lineDashPattern={[0]}
+            lineDashPattern={[0]}
             origin={{
               latitude: user?.details?.latitude,
               longitude: user?.details?.longitude,
             }}
             destination={{
-              latitude:
-                biddetail?.arrival == true
-                  ? biddetail?.destination_latitude
-                  : driver?.latitude,
-              longitude:
-                biddetail?.arrival == true
-                  ? biddetail?.destination_longitude
-                  : driver?.longitude,
+              latitude: biddetail?.destination_latitude,
+              longitude: biddetail?.destination_longitude
             }}
             apikey={API_KEY}
             strokeWidth={3}
@@ -259,16 +241,10 @@ const BidRiderTrafic = ({ navigation }) => {
             }}
           />
           <Marker
-            title="position actuelle du chauffeur"
+            title="Votre destination finale!"
             coordinate={{
-              latitude:
-                biddetail?.arrival == true
-                  ? biddetail?.destination_latitude
-                  : driver?.latitude,
-              longitude:
-                biddetail?.arrival == true
-                  ? biddetail?.destination_longitude
-                  : driver?.longitude,
+              latitude: biddetail?.destination_latitude,
+              longitude: biddetail?.destination_longitude
             }}
           />
         </MapView>

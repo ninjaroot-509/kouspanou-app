@@ -11,7 +11,7 @@ import BidRider from '../screens/Rider/BidRider';
 import BidRiderTrafic from '../screens/Rider/BidRiderTrafic';
 import DestRider from '../screens/Rider/DestRider';
 import DestDriver from '../screens/Driver/DestDriver';
-import Home1 from '../screens/Rider/Home1';
+import Home from '../screens/Rider/Home';
 import Pickup from '../screens/Rider/SelectDestination';
 import Book from '../screens/Rider/Book';
 import HomeDriver from '../screens/Driver/Home';
@@ -57,7 +57,7 @@ function HomeStackRider() {
       <Stack.Screen
         options={{ headerShown: false }}
         name="Home"
-        component={Home1}
+        component={Home}
       />
       <Stack.Screen
         options={{ headerShown: false }}
@@ -249,7 +249,9 @@ const AppStart = () => {
   }, []);
 
   useEffect(() => {
-    request.postUserOnline(user?.details?.id);
+    if (user?.details?.length !== 0) {
+      request.postUserOnline(user?.details?.id);
+    }
   }, [temp1]);
 
   return (

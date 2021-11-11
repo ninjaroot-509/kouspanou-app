@@ -190,6 +190,10 @@ const BidRider = ({ navigation }) => {
     const datatrip = {
       choose: true,
       driver: userChoose?.driver,
+      driver_latitude: userChoose?.driver_latitude,
+      driver_longitude: userChoose?.driver_longitude,
+      client_latitude: user?.details?.latitude,
+      client_longitude: user?.details?.longitude,
     };
     const body = JSON.stringify({
       id_trip: biddetail?.details?.id,
@@ -531,8 +535,7 @@ const BidRider = ({ navigation }) => {
                                     fontSize: 15,
                                     textAlign: 'left'
                                   }}>
-                                  {item.message ? item.message : item.prix}{' '}
-                                  {item.message ? '' : 'HTG'}
+                                  {item.message ? item.message : item.prix}{item.message ? '' : 'HTG'}
                                 </Text>
                               </View>
                               <Text
@@ -659,7 +662,7 @@ const BidRider = ({ navigation }) => {
                 <TextInput
                   placeholder={
                     biddetail?.details?.client === pk
-                      ? 'Donner vos instructions...'
+                      ? 'Envoyer vos instructions...'
                       : 'Soumettre votre prix en gourdes..'
                   }
                   keyboardType={
@@ -710,20 +713,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    paddingTop: Constants.statusBarHeight,
+    paddingTop: Platform.OS === "ios" ? 0 : Constants.statusBarHeight,
   },
   header: {
     justifyContent: 'center',
-    width: width,
+    height: 50,
     backgroundColor: '#fff',
-    borderBottomWidth: 1.8,
+    borderBottomWidth: 1.5,
     borderBottomColor: '#00000033',
   },
   headertitle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    margin: 12,
+    paddingHorizontal: 10
   },
   body: {
     width: width,
