@@ -102,13 +102,13 @@ const BidRiderTrafic = ({ navigation }) => {
     }
   }, [temp]);
 
-  const handleArriv = () => {
+  const handleViewDriver = () => {
     const datatrip = {
       arrival: true,
     };
     const config = { headers: { 'Content-Type': 'application/json' } };
     axios.post(
-        `https://crazy-taxi.quizapay.com/api/driver-arrival-comfirm/?pk=${pk}&id_trip=${biddetail?.id}`,
+        `https://crazy-taxi.quizapay.com/api/driver-arrival-comfirm/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
         config
       )
       .then((res) => {
@@ -240,7 +240,7 @@ const BidRiderTrafic = ({ navigation }) => {
                 justifyContent: 'center'
               }}>
               <TouchableOpacity
-                onPress={handleArriv}
+                onPress={handleViewDriver}
                 style={{
                   margin: 5,
                   backgroundColor: '#ff8612',

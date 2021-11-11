@@ -130,17 +130,6 @@ const BidRiderTrafic = ({ navigation }) => {
     });
   };
 
-  const handleArriv = () => {
-    if (biddetail?.arrival == true) {
-      let datatrip = {
-        complete: true,
-      };
-      setmergeItemComand(datatrip).then((res) => {
-        navigation.replace('SplashScreen');
-      });
-    }
-  };
-
   const handleQuit = () => {
     removeComand().then((suc) => {
       navigation.replace('SplashScreen');

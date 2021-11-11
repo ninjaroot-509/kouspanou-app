@@ -18,6 +18,7 @@ import HomeDriver from '../screens/Driver/Home';
 import BidDriver from '../screens/Driver/BidDriver';
 import BidDriverTrafic from '../screens/Driver/BidDriverTrafic';
 import Profile from '../screens/Rider/Profile';
+import ProfileUpdate from '../screens/Rider/ProfileUpdate';
 import Explore from '../screens/Rider/Explore';
 import Notification from '../screens/Rider/Notification';
 import Check from '../Views/Check';
@@ -267,6 +268,11 @@ const AppStart = () => {
         <Stack.Screen
           name="CompleteI"
           component={CompleteI}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProfileUpdate"
+          component={ProfileUpdate}
           options={{ headerShown: false }}
         />
         {/* Auth Navigator: Include Login and Signup */}

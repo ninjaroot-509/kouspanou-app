@@ -7,7 +7,8 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
-  Alert
+  Alert,
+  TextInput
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Feather from 'react-native-vector-icons/Feather';
@@ -39,7 +40,7 @@ const BidDriverTrafic = ({ navigation }) => {
   const [modalTwo, setModalTwo] = useState(false);
   const [stop, setStop] = useState(false);
   const [err, setErr] = useState(false);
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("GT-");
   const [biddetail, setBiddetail] = useState([]);
   const [user, isLoading, setUsers] = useUsers();
   const pk = user?.details?.id;
@@ -95,33 +96,28 @@ const BidDriverTrafic = ({ navigation }) => {
 
   const handleNext = () => {
     const config = { headers: { 'Content-Type': 'application/json' } };
-    const body = JSON.stringify({
-      id_trip: biddetail?.details?.id,
-    });
     axios
       .post(
-        `https://crazy-taxi.quizapay.com/api/driver-end/?pk=${pk}`,
-        body,
+        `https://crazy-taxi.quizapay.com/api/driverEnd/?pk=${pk}&id_trip=${biddetail?.id}&id_client=${biddetail?.client}`,
         config
       )
       .then((res) => {
         setModal(true)
-      })
-      .catch((err) => {
-        alert("une erreur s'est produite..", err);
+      }).catch((err) => {
+        alert("une erreur s'est produite", err);
       });
   }
 
   const handleNextEnd = () => {
     setErr(false)
     const config = { headers: { 'Content-Type': 'application/json' } };
+    const code_full = 'GT-' + code
     const body = JSON.stringify({
-      id_trip: biddetail?.details?.id,
       code: code,
     });
     axios
       .post(
-        `https://crazy-taxi.quizapay.com/api/driver-end-finale/?pk=${pk}`,
+        `https://crazy-taxi.quizapay.com/api/driver-end-finale/?pk=${pk}&id_trip=${biddetail?.id}&id_client=${biddetail?.client}`,
         body,
         config
       )
@@ -140,7 +136,7 @@ const BidDriverTrafic = ({ navigation }) => {
         );
       })
       .catch((err) => {
-        alert("une erreur s'est produite", err);
+        alert("Veuillez vous assurer qu'il s'agit bien du code de vérification", err);
         setErr(true)
       });
   }
@@ -163,19 +159,30 @@ const BidDriverTrafic = ({ navigation }) => {
           <View
             style={{
               backgroundColor: 'white',
-              height: 200,
+              height: 250,
               alignItems: 'center',
+              justifyContent: 'center',
               borderRadius: 10,
             }}>
-            <View style={{ marginTop: 20 }}>
-              <Text style={{ color: '#000', fontWeight: 'bold' }}>
-                Vous avez arriver!?
+            <View style={{  }}>
+              <Text style={{ color: '#000', fontWeight: 'bold', color: '#ff9612', fontSize: 19 }}>
+                Verification code
               </Text>
             </View>
             <View style={{ padding: 17, alignItems: 'center', width: 300 }}>
-              <Text style={{ textAlign: 'justify' }}>
+              <Text style={{ textAlign: 'center', color: '#007' }}>
                 Hello user, Demandez au client le code de confirmation pour finaliser le traffic, Merci!!
               </Text>
+            </View>
+            <View style={{alignItems: 'center', justifyContent: 'center', paddingBottom: 12}}>
+              <TextInput
+                onChangeText={(code) => setCode(code)}
+                value={code}
+                placeholder={'Entrer le code ici!'}
+                placeholderTextColor={'#cacaca'}
+                style={{borderWidth: 1, borderRadius: 12, borderColor: '#009', width: 200, height: 45, padding: 7}}
+                returnKeyType="next"
+              />
             </View>
             <View
               style={{

@@ -78,6 +78,12 @@ const BidRider = ({ navigation }) => {
   }, [setUsers, user]);
 
   useEffect(() => {
+    if (!wallet?.details || wallet?.details?.length === 0) {
+      setWallets();
+    }
+  }, [setWallets, wallet]);
+
+  useEffect(() => {
     if (!stop) {
       setBidDetails();
       if (biddetail?.details || biddetail?.details?.length !== 0) {
@@ -199,7 +205,7 @@ const BidRider = ({ navigation }) => {
       id_trip: biddetail?.details?.id,
       id_driver: userChoose?.driver,
     });
-    if (biddetail?.details?.choose === false) {
+    if (biddetail?.details?.choose === false && wallet?.details?.montant >= userChoose?.prix) {
       axios
         .post(
           `https://crazy-taxi.quizapay.com/api/driver-choose/?pk=${pk}`,
@@ -212,11 +218,12 @@ const BidRider = ({ navigation }) => {
           });
           setUserChooseModal(false);
         });
+    } else {
+      alert("votre solde est insuffisant, merci!!")
     }
   };
 
   const handleChoose = (item) => {
-    console.log(item)
     if (userChoose?.length !== 0) {
       setUserChoose(item);
       setUserChooseModal(true);

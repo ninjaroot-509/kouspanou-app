@@ -106,12 +106,17 @@ const BidDriverTrafic = ({ navigation }) => {
   };
 
   const handleNext = () => {
-    const config = { headers: { 'Content-Type': 'application/json' } };
-    axios.post(`https://crazy-taxi.quizapay.com/api/driver-arrival/?id_trip=${biddetail?.details?.id}&pk=${pk}`, config)
-      .then((res) => alert("Comfirmation requis, une fois que vous aurez vu le client, demandez-lui de confirmer votre arrivée pour passer à l'étape suivante, svp!!"))
-      .catch((err) => {
-        alert("une erreur s'est produite", err);
-      });
+      const config = { headers: { 'Content-Type': 'application/json' } };
+      axios
+        .post(
+          `https://crazy-taxi.quizapay.com/api/driver-arrival/?pk=${pk}&id_trip=${biddetail?.id}&id_client=${biddetail?.client}`,
+          config
+        )
+        .then((res) => {
+          alert("Comfirmation requis, une fois que vous aurez vu le client, demandez-lui de confirmer votre arrivée pour passer à l'étape suivante, svp!!")
+        }).catch((err) => {
+          alert("une erreur s'est produite", err);
+        });
   }
 
   if (biddetail?.length !== 0 && user?.details?.length !== 0 && client?.latitude) {
