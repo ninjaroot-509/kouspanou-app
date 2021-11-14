@@ -218,7 +218,7 @@ const Home = ({ navigation }) => {
               </View>
             </View>
           </Modal>
-          <View style={{alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
+          <View style={{alignItems: 'center', flexDirection: 'row'}}>
           <TouchableOpacity
             style={{borderRadius: 45,
               flexDirection: 'row',
@@ -310,7 +310,7 @@ const Home = ({ navigation }) => {
                             size={22}
                             style={{ color: '#ff8612' }}
                           />
-                          <View style={{ marginHorizontal: 2, width: width / 1.9, alignItems: 'center' }}>
+                          <View style={{ marginHorizontal: 2, width: width / 1.9 }}>
                             <Text style={{ opacity: 0.8 }} numberOfLines={1}>
                               {item.client_position_name}
                             </Text>

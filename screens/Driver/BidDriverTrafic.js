@@ -57,7 +57,7 @@ const BidDriverTrafic = ({ navigation }) => {
   useEffect(() => {
     setInterval(() => {
       setTemp((prevTemp) => prevTemp + 1);
-    }, 30000);
+    }, 15000);
   }, []);
 
   useEffect(() => {

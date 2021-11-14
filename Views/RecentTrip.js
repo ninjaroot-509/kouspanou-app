@@ -15,7 +15,8 @@ import {
   AsyncImage,
   Text,
   SearchBar,
-  ImageBackground
+  ImageBackground,
+  Platform
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useScrollToTop } from '@react-navigation/native';

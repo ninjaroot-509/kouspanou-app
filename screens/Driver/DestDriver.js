@@ -39,6 +39,7 @@ const BidDriverTrafic = ({ navigation }) => {
   const [modal, setModal] = useState(false);
   const [modalTwo, setModalTwo] = useState(false);
   const [stop, setStop] = useState(false);
+  const [comfirmLoad, setComfirmLoad] = useState(false);
   const [err, setErr] = useState(false);
   const [code, setCode] = useState("GT-");
   const [biddetail, setBiddetail] = useState([]);
@@ -62,7 +63,7 @@ const BidDriverTrafic = ({ navigation }) => {
   useEffect(() => {
     setInterval(() => {
       setTemp((prevTemp) => prevTemp + 1);
-    }, 30000);
+    }, 15000);
   }, []);
 
   useEffect(() => {
@@ -109,6 +110,7 @@ const BidDriverTrafic = ({ navigation }) => {
   }
 
   const handleNextEnd = () => {
+    setComfirmLoad(true)
     setErr(false)
     const config = { headers: { 'Content-Type': 'application/json' } };
     const code_full = 'GT-' + code
@@ -180,7 +182,7 @@ const BidDriverTrafic = ({ navigation }) => {
                 value={code}
                 placeholder={'Entrer le code ici!'}
                 placeholderTextColor={'#cacaca'}
-                style={{borderWidth: 1, borderRadius: 12, borderColor: '#009', width: 200, height: 45, padding: 7}}
+                style={{borderWidth: 1, borderRadius: 12, borderColor: err === true? 'red' : '#009', width: 200, height: 45, padding: 7}}
                 returnKeyType="next"
               />
             </View>
@@ -193,7 +195,7 @@ const BidDriverTrafic = ({ navigation }) => {
                 onPress={handleNextEnd}
                 style={{
                   margin: 5,
-                  backgroundColor: '#ff8612',
+                  backgroundColor: comfirmLoad === true? '#cacaca' : '#ff8612',
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 8,

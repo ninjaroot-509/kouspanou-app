@@ -16,6 +16,7 @@ import {
   Text,
   SearchBar,
   Alert,
+  Platform,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useScrollToTop } from '@react-navigation/native';
@@ -57,6 +58,7 @@ const BidRider = ({ navigation }) => {
   const pk = user?.details?.id;
   const [prix, setPrix] = useState('');
   const [send, setSend] = useState(false);
+  const [sendLoad, setSendLoad] = useState(false);
   const [bid, setBid] = useState([]);
   const [userChoose, setUserChoose] = useState();
   const [userChooseModal, setUserChooseModal] = useState(false);
@@ -95,13 +97,14 @@ const BidRider = ({ navigation }) => {
   useEffect(() => {
     setInterval(() => {
       setTemp((prevTemp) => prevTemp + 1);
-    }, 7000);
+    }, 5000);
   }, []);
 
   useEffect(() => {
     if (biddetail?.details || biddetail?.details?.length !== 0) {
       request.getBidPrix(pk, biddetail?.details?.id).then((res) => {
         setBid(res);
+        setSendLoad(false);
       });
     }
 
@@ -132,6 +135,7 @@ const BidRider = ({ navigation }) => {
   }, [temp]);
 
   const handleSubmitPrix = () => {
+    setSendLoad(true);
     if (
       biddetail?.details &&
       prix &&
@@ -186,9 +190,21 @@ const BidRider = ({ navigation }) => {
   };
 
   const handleQuit = () => {
-    removeComand().then((suc) => {
-      navigation.replace('SplashScreen');
+    const config = { headers: { 'Content-Type': 'application/json' } };
+    const body = JSON.stringify({
+      id_trip: biddetail?.details?.id,
     });
+    axios
+      .post(
+        `https://crazy-taxi.quizapay.com/api/rider-quits/?pk=${pk}`,
+        body,
+        config
+      )
+      .then((res) => {
+        removeComand().then((suc) => {
+          navigation.replace('SplashScreen');
+        });
+      });
   };
 
   const handleChoosePost = () => {
@@ -205,7 +221,10 @@ const BidRider = ({ navigation }) => {
       id_trip: biddetail?.details?.id,
       id_driver: userChoose?.driver,
     });
-    if (biddetail?.details?.choose === false && wallet?.details?.montant >= userChoose?.prix) {
+    if (
+      biddetail?.details?.choose === false &&
+      wallet?.details?.montant >= userChoose?.prix
+    ) {
       axios
         .post(
           `https://crazy-taxi.quizapay.com/api/driver-choose/?pk=${pk}`,
@@ -219,7 +238,7 @@ const BidRider = ({ navigation }) => {
           setUserChooseModal(false);
         });
     } else {
-      alert("votre solde est insuffisant, merci!!")
+      alert('votre solde est insuffisant, merci!!');
     }
   };
 
@@ -263,7 +282,7 @@ const BidRider = ({ navigation }) => {
               <Text
                 style={{
                   textAlign: 'center',
-                  fontWeight: 'bold',
+                  fontWeight: '700',
                   color: '#002',
                 }}>
                 {userChoose?.user_first_name} {userChoose?.user_last_name}
@@ -360,7 +379,7 @@ const BidRider = ({ navigation }) => {
                     }}
                     customMapStyle={customMapStyle}>
                     <MapViewDirections
-                    lineDashPattern={[0]}
+                      lineDashPattern={[0]}
                       origin={{
                         latitude: userChoose?.driver_latitude,
                         longitude: userChoose?.driver_longitude,
@@ -410,7 +429,7 @@ const BidRider = ({ navigation }) => {
                 onPress={() => {
                   setViewMore(false);
                   setUserChooseModal(false);
-                  setUserChoose()
+                  setUserChoose();
                 }}>
                 <Text style={{ color: '#002' }}>Annuler</Text>
               </TouchableOpacity>
@@ -432,75 +451,121 @@ const BidRider = ({ navigation }) => {
         </Modal>
         <View style={styles.header}>
           <View style={styles.headertitle}>
-            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ justifyContent: 'center' }}>
               <Text style={{ fontWeight: 'bold', color: '#001', fontSize: 18 }}>
                 {biddetail?.details?.user_first_name}
               </Text>
             </View>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <View
-                  style={{
-                    width: 9,
-                    height: 9,
-                    backgroundColor: '#ff8612',
-                    borderRadius: 20,
-                  }}
-                />
-              </View>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    color: '#001',
-                    fontSize: 18,
-                    width: width / 1.9,
-                  }}
-                  numberOfLines={1}>
-                  {biddetail?.details?.destination_place_name}
-                </Text>
-              </View>
-            <TouchableOpacity
-              onPress={() => {
-                Alert.alert(
-                  'Quitter cette espace!',
-                  "Es-tu sûr? De vouloir quitter l'espace?",
-                  [
-                    {
-                      text: 'Annuler',
-                      onPress: () => {
-                        return null;
-                      },
-                    },
-                    {
-                      text: 'Confirmer',
-                      onPress: () => handleQuit(),
-                    },
-                  ],
-                  { cancelable: false }
-                );
-              }}
-              style={{
-                borderWidth: 1,
-                borderColor: '#143fff',
-                justifyContent: 'center',
-                borderRadius: 7,
-              }}>
+            <View style={{ justifyContent: 'center', paddingHorizontal: 5 }}>
+              <View
+                style={{
+                  width: 9,
+                  height: 9,
+                  backgroundColor: '#ff8612',
+                  borderRadius: 20,
+                }}
+              />
+            </View>
+            <View style={{ justifyContent: 'center' }}>
               <Text
                 style={{
-                  fontWeight: '500',
-                  color: '#143fff',
-                  fontSize: 12,
-                  padding: 5,
-                }}>
-                Quitter
+                  fontWeight: 'bold',
+                  color: '#001',
+                  fontSize: 18,
+                  width: width / 2,
+                }}
+                numberOfLines={1}>
+                {biddetail?.details?.destination_place_name}
               </Text>
-            </TouchableOpacity>
+            </View>
+            <View style={{ justifyContent: 'center' }}>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(
+                    'Quitter cette espace!',
+                    "Es-tu sûr? De vouloir quitter l'espace?",
+                    [
+                      {
+                        text: 'Annuler',
+                        onPress: () => {
+                          return null;
+                        },
+                      },
+                      {
+                        text: 'Confirmer',
+                        onPress: () => handleQuit(),
+                      },
+                    ],
+                    { cancelable: false }
+                  );
+                }}
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#143fff',
+                  justifyContent: 'center',
+                  borderRadius: 7,
+                }}>
+                <Text
+                  style={{
+                    fontWeight: '500',
+                    color: '#143fff',
+                    fontSize: 12,
+                    padding: 5,
+                  }}>
+                  Quitter
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
         <View style={styles.body}>
           <ScrollView style={{ width: width }}>
             <View style={{}}>
+              {bid.length === 0 && (
+                <View style={{ alignItems: 'center', padding: 15 }}>
+                  <View
+                    style={{
+                      width: width / 1.8,
+                      height: 30,
+                      backgroundColor: '#cccccc',
+                      borderRadius: 7,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        color: '#fff',
+                        fontSize: 13,
+                        fontWeight: '700',
+                      }}>
+                      Pas encore de message!.
+                    </Text>
+                  </View>
+                </View>
+              )}
+              {biddetail?.details?.choose === true && (
+                <View style={{ alignItems: 'center', padding: 15 }}>
+                  <View
+                    style={{
+                      width: width / 1.8,
+                      height: 30,
+                      backgroundColor: '#ff8612',
+                      borderRadius: 7,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        color: '#fff',
+                        fontSize: 13,
+                        fontWeight: '700',
+                      }}>
+                      Veuillez attendre l'acceptation du chauffeur!.
+                    </Text>
+                  </View>
+                </View>
+              )}
               <FlatList
                 style={{ top: 12 }}
                 data={bid}
@@ -521,15 +586,16 @@ const BidRider = ({ navigation }) => {
                                   backgroundColor: '#ff8612',
                                   borderRadius: 10,
                                   padding: 8,
-                                  maxWidth: 210,
-                                  elevation: 1.5
+                                  minWidth: 50,
+                                  maxWidth: 200,
+                                  elevation: 1.5,
                                 }}>
                                 <Text
                                   style={{
                                     color: '#fff',
                                     fontSize: 13,
-                                    fontWeight: 'bold',
-                                    textAlign: 'left'
+                                    fontWeight: '700',
+                                    textAlign: 'left',
                                   }}
                                   numberOfLines={1}
                                   ellipsizeMode="tail">
@@ -540,9 +606,10 @@ const BidRider = ({ navigation }) => {
                                     padding: 2,
                                     color: '#fff',
                                     fontSize: 15,
-                                    textAlign: 'left'
+                                    textAlign: 'left',
                                   }}>
-                                  {item.message ? item.message : item.prix}{item.message ? '' : 'HTG'}
+                                  {item.message ? item.message : item.prix}
+                                  {item.message ? '' : 'HTG'}
                                 </Text>
                               </View>
                               <Text
@@ -594,57 +661,61 @@ const BidRider = ({ navigation }) => {
                               />
                             </View>
                             <View>
-
-                            <View
-                              style={{
-                                backgroundColor: '#143fff',
-                                borderRadius: 10,
-                                padding: 8,
-                                maxWidth: 210,
-                                elevation: 1.5
-                              }}>
                               <View
                                 style={{
-                                  flexDirection: 'row',
-                                  justifyContent: 'space-between',
+                                  backgroundColor: '#143fff',
+                                  borderRadius: 10,
+                                  padding: 8,
+                                  minWidth: 50,
+                                  maxWidth: 200,
+                                  elevation: 1.5,
                                 }}>
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                  }}>
+                                  <Text
+                                    style={{
+                                      color: '#fff',
+                                      fontSize: 13,
+                                      fontWeight: '700',
+                                    }}
+                                    numberOfLines={1}
+                                    ellipsizeMode="tail">
+                                    {item.user_first_name} {item.user_last_name}
+                                  </Text>
+                                  {biddetail?.details?.client === pk &&
+                                    biddetail?.details?.choose == false && (
+                                      <TouchableOpacity
+                                        onPress={() => handleChoose(item)}
+                                        style={{
+                                          width: 20,
+                                          height: 20,
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          backgroundColor: '#ff9612',
+                                          borderRadius: 18,
+                                          marginHorizontal: 10,
+                                        }}>
+                                        <Feather
+                                          name="user-check"
+                                          color="#fff"
+                                        />
+                                      </TouchableOpacity>
+                                    )}
+                                </View>
                                 <Text
                                   style={{
+                                    padding: 2,
                                     color: '#fff',
-                                    fontSize: 13,
-                                    fontWeight: 'bold',
-                                  }}
-                                  numberOfLines={1}
-                                  ellipsizeMode="tail">
-                                  {item.user_first_name} {item.user_last_name}
+                                    fontSize: 15,
+                                  }}>
+                                  {item.message ? item.message : item.prix}{' '}
+                                  {item.message ? '' : 'HTG'}
                                 </Text>
-                                {biddetail?.details?.client === pk && biddetail?.details?.choose == false && (
-                                    <TouchableOpacity
-                                      onPress={() => handleChoose(item)}
-                                      style={{
-                                        width: 20,
-                                        height: 20,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        backgroundColor: '#ff9612',
-                                        borderRadius: 18,
-                                        marginHorizontal: 10,
-                                      }}>
-                                      <Feather name="user-check" color="#fff" />
-                                    </TouchableOpacity>
-                                  )}
                               </View>
                               <Text
-                                style={{
-                                  padding: 2,
-                                  color: '#fff',
-                                  fontSize: 15,
-                                }}>
-                                {item.message ? item.message : item.prix}{' '}
-                                {item.message ? '' : 'HTG'}
-                              </Text>
-                            </View>
-                            <Text
                                 style={{
                                   padding: 5,
                                   color: '#143fff',
@@ -695,7 +766,15 @@ const BidRider = ({ navigation }) => {
                     },
                     styles.sendbutton,
                   ]}>
-                  <Ionicons name="send" size={19} color="#fff" />
+                  {sendLoad ? (
+                    <ActivityIndicator
+                      color="#ffffff"
+                      size="small"
+                      style={{ alignItems: 'center' }}
+                    />
+                  ) : (
+                    <Ionicons name="send" size={19} color="#fff" />
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -720,7 +799,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === "ios" ? 0 : Constants.statusBarHeight,
+    paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight,
   },
   header: {
     justifyContent: 'center',
@@ -732,7 +811,7 @@ const styles = StyleSheet.create({
   headertitle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   body: {
     width: width,

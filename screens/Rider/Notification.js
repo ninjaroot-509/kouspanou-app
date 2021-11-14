@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { View, TouchableOpacity, Text, StyleSheet, Dimensions, FlatList, Image } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Dimensions, FlatList, Image, Platform } from "react-native";
 import { Ionicons } from 'react-native-vector-icons';
 import { AntDesign } from 'react-native-vector-icons';
 import Constants from 'expo-constants';
