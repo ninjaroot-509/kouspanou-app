@@ -117,30 +117,33 @@ const BidDriverTrafic = ({ navigation }) => {
     const body = JSON.stringify({
       code: code,
     });
-    axios
-      .post(
-        `https://crazy-taxi.quizapay.com/api/driver-end-finale/?pk=${pk}&id_trip=${biddetail?.id}&id_client=${biddetail?.client}`,
-        body,
-        config
-      )
-      .then((res) => {
-        // alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour terminer, Merci!!")
-        Alert.alert(
-          'GoTaxi!',
-          "Merci, d'avoir utiliser le service GoTaxi et a bientot",
-          [
-            {
-              text: 'Ok',
-              onPress: () => handleFinale(),
-            },
-          ],
-          { cancelable: false }
-        );
-      })
-      .catch((err) => {
-        alert("Veuillez vous assurer qu'il s'agit bien du code de vérification", err);
-        setErr(true)
-      });
+    if (comfirmLoad == false) {
+      axios
+        .post(
+          `https://crazy-taxi.quizapay.com/api/driver-end-finale/?pk=${pk}&id_trip=${biddetail?.id}&id_client=${biddetail?.client}`,
+          body,
+          config
+        )
+        .then((res) => {
+          // alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour terminer, Merci!!")
+          Alert.alert(
+            'GoTaxi!',
+            "Merci, d'avoir utiliser le service GoTaxi et a bientot",
+            [
+              {
+                text: 'Ok',
+                onPress: () => handleFinale(),
+              },
+            ],
+            { cancelable: false }
+          );
+        })
+        .catch((err) => {
+          alert("Veuillez vous assurer qu'il s'agit bien du code de vérification", err);
+          setErr(true)
+          setComfirmLoad(false)
+        });
+    }
   }
 
   const handleFinale = () => {
@@ -180,7 +183,7 @@ const BidDriverTrafic = ({ navigation }) => {
               <TextInput
                 onChangeText={(code) => setCode(code)}
                 value={code}
-                placeholder={'Entrer le code ici!'}
+                placeholder={'GT-xxxxxx'}
                 placeholderTextColor={'#cacaca'}
                 style={{borderWidth: 1, borderRadius: 12, borderColor: err === true? 'red' : '#009', width: 200, height: 45, padding: 7}}
                 returnKeyType="next"

@@ -17,7 +17,8 @@ export default function Notification({navigation}) {
       <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 10}}>
         <View
             style={{
-                justifyContent: 'center'
+                justifyContent: 'center',
+                paddingLeft: 8
             }}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Ionicons

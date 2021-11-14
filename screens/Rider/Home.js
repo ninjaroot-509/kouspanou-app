@@ -212,7 +212,8 @@ const Home1 = ({ navigation }) => {
           provider={PROVIDER_GOOGLE}
           customMapStyle={customMapStyle}>
           <MapView.Marker 
-            title="votre position" coordinate={{
+            title="votre position" 
+            coordinate={{
               latitude: user?.details?.latitude,
               longitude: user?.details?.longitude,
             }}
@@ -224,7 +225,8 @@ const Home1 = ({ navigation }) => {
           {driveronline?.list?.map((item) => (
             <MapView.Marker
               key={item.id}
-              title={item.username}
+              title={item.first_name}
+              tracksViewChanges={true}
               coordinate={{
                 latitude: item.latitude,
                 longitude: item.longitude,

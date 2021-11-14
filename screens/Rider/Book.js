@@ -156,7 +156,9 @@ const Book = ({ navigation, route }) => {
               strokeColor="#143fff"
               optimizeWaypoints={true}
             />
-        <MapView.Marker title="votre destination" coordinate={latLng} />
+        <MapView.Marker title="votre destination" coordinate={latLng} 
+          // image={require('../../assets/marker.png')}
+        />
         <MapView.Marker
           title="votre position"
           coordinate={{
