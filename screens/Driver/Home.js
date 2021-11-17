@@ -158,7 +158,7 @@ const Home = ({ navigation }) => {
         });
     }
   };
-  if (positionDone === true) {
+  if (user?.details?.latitude) {
     return (
       <>
         <View style={styles.container}>

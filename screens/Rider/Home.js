@@ -192,7 +192,7 @@ const Home1 = ({ navigation }) => {
         });
     }
   };
-  if (positionDone === true && user?.details?.latitude) {
+  if (user?.details?.latitude) {
     return (
       <View style={styles.container}>
         <StatusBar translucent backgroundColor="transparent" />
