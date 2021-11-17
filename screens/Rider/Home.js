@@ -130,21 +130,19 @@ const Home1 = ({ navigation }) => {
       async (position) => {
         if (position.length !== 0) {
           Geocoder.from(position.coords.latitude,position.coords.longitude).then(json => {
+            let addressComponent = json.results[0].formatted_address;    
               request.postUserLocation({
                 pk: user?.details?.id,
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
-                place_name: json.results[0].formatted_address
+                place_name: addressComponent
               })
-              .then((res) => {
-                setTimeout(() => {
-                  setUsers()
-                }, 1000);
-              })
+              .then((res) => setUsers())
               .catch((err) => {
                 console.log("une erreur, Impossible d'obtenir les donnees require!");
               });
           })
+          // setLatLng( position.coords.latitude, position.coords.longitude );
           setPositionDone(true)
         }
       },
@@ -157,7 +155,7 @@ const Home1 = ({ navigation }) => {
         maximumAge: 1000,
       }
     );
-  }, [temp1]);
+  }, []);
 
   const centerMap = () => {
     mapRef?.animateToRegion(
