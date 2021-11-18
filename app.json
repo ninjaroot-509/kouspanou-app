@@ -3,7 +3,7 @@
     "sdkVersion": "43.0.0",
     "name": "GoTaxi",
     "slug": "snack-1f966f4a-e2f8-4bae-8725-1f3b188dfcf8",
-    "version": "0.0.9",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "splash": {
@@ -18,12 +18,16 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.ninjaroot509.snack1f966f4ae2f84bae87251f3b188dfcf8",
+      "bundleIdentifier": "com.ninjaroot509.gotaxi",
       "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "com.ninjaroot509.snack1f966f4ae2f84bae87251f3b188dfcf8",
-      "versionCode": 1
+      "package": "com.ninjaroot509.gotaxi",
+      "versionCode": 1,
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "ACCESS_BACKGROUND_LOCATION", "FOREGROUND_SERVICE"],
+      "config": {
+        "googleMaps": { "apiKey": "AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc" }
+      }
     }
   }
 }
