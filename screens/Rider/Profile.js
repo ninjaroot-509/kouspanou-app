@@ -57,11 +57,11 @@ const ProfileScreen = ({ navigation }) => {
           <View style={{height: 20}}/>
           <View style={{justifyContent: 'center', paddingVertical: 25}}>
               <View style={{alignItems: 'center'}}>
-                <View style={{alignItems: 'center'}}>
+                <View style={{alignItems: 'center', width: 131, height: 131, borderRadius: 100, elevation: 8}}>
                   <Image style={{
-                        width: 120,
-                        height: 120,
-                        borderRadius: 50
+                        width: 130,
+                        height: 130,
+                        borderRadius: 100
                     }} 
                     source={{
                       uri: 'https://crazy-taxi.quizapay.com' + user?.details?.photo
@@ -92,7 +92,7 @@ const ProfileScreen = ({ navigation }) => {
                     fontWeight: '700',
                     color: '#ff8612',
                     fontSize: 14,
-                  }}>Edit profile</Text>
+                  }}>Modifier Profile</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -100,18 +100,39 @@ const ProfileScreen = ({ navigation }) => {
           <View style={{justifyContent: 'center'}}>
               <View style={{alignItems: 'center', borderBottomWidth: 0.5, borderTopWidth: 0.5, borderColor: '#cacaca', paddingVertical: 18}}>
                   <View style={{padding: 8}}>
-                    <TouchableOpacity style={{width: width / 1.1, backgroundColor: '#ffffff', elevation: 3, justifyContent: 'center', borderRadius: 12, padding: 15}}>
+                    <TouchableOpacity onPress={()=> navigation.navigate('Recharge')} style={{width: width / 1.1, backgroundColor: '#ffffff', elevation: 3, justifyContent: 'center', borderRadius: 12, padding: 15}}>
                         <View style={{flexDirection: 'row', padding: 5, justifyContent: 'space-between'}}>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{justifyContent: 'center'}}>
-                                    <Feather name="users" size={20} style={{ color: '#143fff' }} />
+                                    <Feather name="dollar-sign" size={20} style={{ color: '#143fff' }} />
                                 </View>
                                 <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
                                     <Text style={{
                                         color: '#003',
                                         fontWeight: '700',
                                         fontSize: 16,
-                                    }}>Option click</Text>
+                                    }}>Recharger mon compte</Text>
+                                </View>
+                            </View>
+                            <View style={{justifyContent: 'center'}}>
+                                <AntDesign name="right" size={20} style={{ color: '#143fff' }} />
+                            </View>
+                        </View>
+                      </TouchableOpacity>
+                  </View>
+                  <View style={{padding: 8}}>
+                    <TouchableOpacity onPress={()=> navigation.navigate('Retrait')} style={{width: width / 1.1, backgroundColor: '#ffffff', elevation: 3, justifyContent: 'center', borderRadius: 12, padding: 15}}>
+                        <View style={{flexDirection: 'row', padding: 5, justifyContent: 'space-between'}}>
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{justifyContent: 'center'}}>
+                                    <Feather name="dollar-sign" size={20} style={{ color: '#143fff' }} />
+                                </View>
+                                <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
+                                    <Text style={{
+                                        color: '#003',
+                                        fontWeight: '700',
+                                        fontSize: 16,
+                                    }}>Faire un retrait</Text>
                                 </View>
                             </View>
                             <View style={{justifyContent: 'center'}}>
@@ -125,14 +146,14 @@ const ProfileScreen = ({ navigation }) => {
                         <View style={{flexDirection: 'row', padding: 5, justifyContent: 'space-between'}}>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{justifyContent: 'center'}}>
-                                    <Feather name="users" size={20} style={{ color: '#143fff' }} />
+                                    <Feather name="dollar-sign" size={20} style={{ color: '#143fff' }} />
                                 </View>
                                 <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
                                     <Text style={{
                                         color: '#003',
                                         fontWeight: '700',
                                         fontSize: 16,
-                                    }}>Option click</Text>
+                                    }}>Tranferer de l'argent</Text>
                                 </View>
                             </View>
                             <View style={{justifyContent: 'center'}}>
@@ -146,14 +167,35 @@ const ProfileScreen = ({ navigation }) => {
                         <View style={{flexDirection: 'row', padding: 5, justifyContent: 'space-between'}}>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{justifyContent: 'center'}}>
-                                    <Feather name="users" size={20} style={{ color: '#143fff' }} />
+                                    <Feather name="list" size={20} style={{ color: '#143fff' }} />
                                 </View>
                                 <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
                                     <Text style={{
                                         color: '#003',
                                         fontWeight: '700',
                                         fontSize: 16,
-                                    }}>Option click</Text>
+                                    }}>Mes transactions récents</Text>
+                                </View>
+                            </View>
+                            <View style={{justifyContent: 'center'}}>
+                                <AntDesign name="right" size={20} style={{ color: '#143fff' }} />
+                            </View>
+                        </View>
+                      </TouchableOpacity>
+                  </View>
+                  <View style={{padding: 8}}>
+                    <TouchableOpacity onPress={()=> navigation.navigate('RecentTrip')} style={{width: width / 1.1, backgroundColor: '#ffffff', elevation: 3, justifyContent: 'center', borderRadius: 12, padding: 15}}>
+                        <View style={{flexDirection: 'row', padding: 5, justifyContent: 'space-between'}}>
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{justifyContent: 'center'}}>
+                                    <Feather name="list" size={20} style={{ color: '#143fff' }} />
+                                </View>
+                                <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
+                                    <Text style={{
+                                        color: '#003',
+                                        fontWeight: '700',
+                                        fontSize: 16,
+                                    }}>Mes voyages récents</Text>
                                 </View>
                             </View>
                             <View style={{justifyContent: 'center'}}>
@@ -167,14 +209,14 @@ const ProfileScreen = ({ navigation }) => {
                         <View style={{flexDirection: 'row', padding: 5, justifyContent: 'space-between'}}>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{justifyContent: 'center'}}>
-                                    <Feather name="users" size={20} style={{ color: '#143fff' }} />
+                                    <Feather name="alert-circle" size={20} style={{ color: '#143fff' }} />
                                 </View>
                                 <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
                                     <Text style={{
                                         color: '#003',
                                         fontWeight: '700',
                                         fontSize: 16,
-                                    }}>Option click</Text>
+                                    }}>A-propos GoTaxi</Text>
                                 </View>
                             </View>
                             <View style={{justifyContent: 'center'}}>
@@ -188,14 +230,14 @@ const ProfileScreen = ({ navigation }) => {
                         <View style={{flexDirection: 'row', padding: 5, justifyContent: 'space-between'}}>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{justifyContent: 'center'}}>
-                                    <Feather name="users" size={20} style={{ color: '#143fff' }} />
+                                    <Feather name="briefcase" size={20} style={{ color: '#143fff' }} />
                                 </View>
                                 <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
                                     <Text style={{
                                         color: '#003',
                                         fontWeight: '700',
                                         fontSize: 16,
-                                    }}>Option click</Text>
+                                    }}>Termes et conditions d'utilisation</Text>
                                 </View>
                             </View>
                             <View style={{justifyContent: 'center'}}>
@@ -209,14 +251,14 @@ const ProfileScreen = ({ navigation }) => {
                         <View style={{flexDirection: 'row', padding: 5, justifyContent: 'space-between'}}>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{justifyContent: 'center'}}>
-                                    <Feather name="users" size={20} style={{ color: '#143fff' }} />
+                                    <Feather name="lock" size={20} style={{ color: '#143fff' }} />
                                 </View>
                                 <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
                                     <Text style={{
                                         color: '#003',
                                         fontWeight: '700',
                                         fontSize: 16,
-                                    }}>Option click</Text>
+                                    }}>Politiques et confidentialité</Text>
                                 </View>
                             </View>
                             <View style={{justifyContent: 'center'}}>
@@ -260,7 +302,7 @@ const ProfileScreen = ({ navigation }) => {
                   }}>Déconnexion</Text>
               </TouchableOpacity>
           </View>
-          <View style={{height: 50}}/>
+          <View style={{height: 10}}/>
         </ScrollView>
     </View>
   );

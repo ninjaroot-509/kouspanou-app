@@ -8,6 +8,7 @@ import Login from '../Views/Login';
 import Signup from '../Views/Signup';
 import CompleteI from '../Views/CompleteI';
 import Recharge from '../Views/Recharge';
+import Retrait from '../Views/Retrait';
 import RecentTrip from '../Views/RecentTrip';
 import BidRider from '../screens/Rider/BidRider';
 import BidRiderTrafic from '../screens/Rider/BidRiderTrafic';
@@ -270,6 +271,11 @@ const AppStart = () => {
         <Stack.Screen
           name="Recharge"
           component={Recharge}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Retrait"
+          component={Retrait}
           options={{ headerShown: false }}
         />
         <Stack.Screen

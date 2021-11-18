@@ -60,7 +60,7 @@ const SelectDestination = ({ navigation }) => {
                 bottom: 0,
                 shadowOpacity: 0,
                 borderColor: '#dedede',
-                borderWidth: 0.4,
+                borderWidth: 0.3,
                 marginBottom: 10,
               }}
             />

@@ -204,9 +204,10 @@ const Login = ({ navigation }) => {
                   borderRadius: 7,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: '#143fff',
+                  backgroundColor: '#ffffff',
+                  elevation: 4
                 }}>
-                <FontAwesome name="google" size={22} color="#fff" />
+                <FontAwesome name="google" size={22} color="#143fff" />
               </View>
               <View
                 style={{
@@ -215,9 +216,10 @@ const Login = ({ navigation }) => {
                   borderRadius: 7,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: '#143fff',
+                  backgroundColor: '#ffffff',
+                  elevation: 4
                 }}>
-                <FontAwesome name="facebook" size={22} color="#fff" />
+                <FontAwesome name="facebook" size={22} color="#143fff" />
               </View>
               <View
                 style={{
@@ -226,9 +228,10 @@ const Login = ({ navigation }) => {
                   borderRadius: 7,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: '#143fff',
+                  backgroundColor: '#ffffff',
+                  elevation: 4
                 }}>
-                <FontAwesome name="twitter" size={22} color="#fff" />
+                <FontAwesome name="twitter" size={22} color="#143fff" />
               </View>
             </View>
           </View>
@@ -241,10 +244,9 @@ export default Login;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    width: '100%',
     flex: 1,
     backgroundColor: '#fff',
+    justifyContent: 'center',
   },
   input: {
     width: 300,
