@@ -16,7 +16,6 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { FontAwesome } from 'react-native-vector-icons';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
-import * as TaskManager from 'expo-task-manager';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -66,9 +65,9 @@ const MapButton = ({ icon, ...props }) => {
   );
 };
 
-const LOCATION_TRACKING = 'location-tracking';
 const Home1 = ({ navigation }) => {
   const [temp, setTemp] = useState(0);
+  const [temp1, setTemp1] = useState(0);
   const [loadDriver, setLoadDriver] = useState(true);
   const [change, setChange] = useState(false);
   const [modal, setModal] = useState(false);
@@ -99,6 +98,12 @@ const Home1 = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    setInterval(() => {
+      setTemp1((prevTemp1) => prevTemp1 + 1);
+    }, 220000);
+  }, []);
+
+  useEffect(() => {
     setLoadDriver(true);
   }, [temp]);
 
@@ -114,51 +119,49 @@ const Home1 = ({ navigation }) => {
   }, [driveronline, setListDriveronlines]);
 
   let mapRef = MapView ? MapView : null;
-
-  const [lngLng, setLngLng] = useState(user?.details?.longitude);
-  const [latLat, setLatLat] = useState(user?.details?.latitude);
-
-  const startLocationTracking = async () => {
-    await Location.startLocationUpdatesAsync(LOCATION_TRACKING, {
-      accuracy: Location.Accuracy.Highest,
-      timeInterval: 5000,
-      distanceInterval: 0,
-      foregroundService: {
-        notificationTitle: "GoTaxi is working in background",
-        notificationBody: "Accès à votre emplacement actuelle!?"
-      }
-    });
-    const hasStarted = await Location.hasStartedLocationUpdatesAsync(
-      LOCATION_TRACKING
-    );
-    console.log('tracking started?', hasStarted);
-  };
+  const [latLng, setLatLng] = useState({
+    latitude: user?.details?.latitude,
+    longitude: user?.details?.longitude,
+  });
 
   useEffect(() => {
-    if (!positionDone) {
-      startLocationTracking()
-    }
-    const config = async () => {
-      let res = await Location.requestForegroundPermissionsAsync();
-      if (res.status !== 'granted') {
-        console.log('Permission to access location was denied');
-      } else {
-        console.log('Permission to access location granted');
+    Location.installWebGeolocationPolyfill();
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        if (position.length !== 0) {
+          Geocoder.from(position.coords.latitude,position.coords.longitude).then(json => {
+            let addressComponent = json.results[0].formatted_address;    
+              request.postUserLocation({
+                pk: user?.details?.id,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                place_name: addressComponent
+              })
+              .then((res) => setUsers())
+              .catch((err) => {
+                console.log("une erreur, Impossible d'obtenir les donnees require!");
+              });
+          })
+          // setLatLng( position.coords.latitude, position.coords.longitude );
+          setPositionDone(true)
+        }
+      },
+      () => {
+        console.log("une erreur, Impossible d'obtenir votre position actuelle");
+      },
+      {
+        timeout: 2000,
+        enableHighAccuracy: true,
+        maximumAge: 1000,
       }
-    };
-
-    config();
-    return () => {
-      TaskManager.unregisterAllTasksAsync()
-    }
-
+    );
   }, []);
 
   const centerMap = () => {
     mapRef?.animateToRegion(
       {
         latitude: user?.details?.latitude,
-        longitude: lngLng,
+        longitude: user?.details?.longitude,
         latitudeDelta: 0.0143,
         longitudeDelta: 0.0134,
       },
@@ -199,8 +202,8 @@ const Home1 = ({ navigation }) => {
           }}
           style={styles.map}
           initialRegion={{
-            latitude: latLat,
-            longitude: lngLng,
+            latitude: user?.details?.latitude,
+            longitude: user?.details?.longitude,
             latitudeDelta: LONGITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           }}
@@ -209,8 +212,8 @@ const Home1 = ({ navigation }) => {
           <MapView.Marker 
             title="votre position" 
             coordinate={{
-              latitude: latLat,
-              longitude: lngLng,
+              latitude: user?.details?.latitude,
+              longitude: user?.details?.longitude,
             }}
             tracksViewChanges={true}
             image={require('../../assets/passager.png')}
@@ -445,41 +448,4 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-});
-
-
-TaskManager.defineTask(LOCATION_TRACKING, async ({ data, error }) => {
-  if (error) {
-    console.log('LOCATION_TRACKING task ERROR:', error);
-    return;
-  }
-  if (data) {
-    //@ts-ignore
-    const { locations } = data;
-    let lat = locations[0].coords.latitude;
-    let long = locations[0].coords.longitude;
-
-    setLngLng(long)
-    setLatLat(lat)
-
-    Geocoder.from(lat,long).then(json => {
-      let addressComponent = json.results[0].formatted_address;    
-        request.postUserLocation({
-          pk: user?.details?.id,
-          latitude: lat,
-          longitude: long,
-          place_name: addressComponent
-        })
-        .then((res) => setUsers())
-        .catch((err) => {
-          console.log("une erreur, Impossible d'obtenir les donnees require!");
-        });
-    })
-    
-    setPositionDone(true)
-
-    console.log(
-      new Date(Date.now()).toLocaleString() + '' + lat, long
-    );
-  }
 });

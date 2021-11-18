@@ -29,7 +29,6 @@ import useWallets from '../../src/state/wallet/hooks/useWallets';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MapViewDirections from 'react-native-maps-directions';
 import * as Location from 'expo-location';
-import * as TaskManager from 'expo-task-manager';
 import Geocoder from 'react-native-geocoding';
 import {
   getComand,
@@ -38,7 +37,6 @@ import {
 
 const { width, height } = Dimensions.get('window');
 Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
-const LOCATION_TRACKING = 'location-tracking';
 const Home = ({ navigation }) => {
   const [demande, setDemande] = useState([]);
   const [temp, setTemp] = useState(0);
@@ -81,43 +79,42 @@ const Home = ({ navigation }) => {
     });
   };
 
-  const [lngLng, setLngLng] = useState(user?.details?.longitude);
-  const [latLat, setLatLat] = useState(user?.details?.latitude);
-
-  const startLocationTracking = async () => {
-    await Location.startLocationUpdatesAsync(LOCATION_TRACKING, {
-      accuracy: Location.Accuracy.Highest,
-      timeInterval: 5000,
-      distanceInterval: 0,
-      foregroundService: {
-        notificationTitle: "GoTaxi is working in background",
-        notificationBody: "Accès à votre emplacement actuelle!?"
-      }
-    });
-    const hasStarted = await Location.hasStartedLocationUpdatesAsync(
-      LOCATION_TRACKING
-    );
-    console.log('tracking started?', hasStarted);
-  };
+  const [latLng, setLatLng] = useState({
+    latitude: user?.details?.latitude,
+    longitude: user?.details?.longitude,
+  });
 
   useEffect(() => {
-    if (!positionDone) {
-      startLocationTracking()
-    }
-    const config = async () => {
-      let res = await Location.requestForegroundPermissionsAsync();
-      if (res.status !== 'granted') {
-        console.log('Permission to access location was denied');
-      } else {
-        console.log('Permission to access location granted');
+    Location.installWebGeolocationPolyfill();
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        if (position.length !== 0) {
+          Geocoder.from(position.coords.latitude,position.coords.longitude).then(json => {
+            let addressComponent = json.results[0].formatted_address;    
+              request.postUserLocation({
+                pk: user?.details?.id,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                place_name: addressComponent
+              })
+              .then((res) => setUsers())
+              .catch((err) => {
+                console.log("une erreur, Impossible d'obtenir les donnees require!");
+              });
+          })
+          // setLatLng( position.coords.latitude, position.coords.longitude );
+          setPositionDone(true)
+        }
+      },
+      () => {
+        console.log("une erreur, Impossible d'obtenir votre position actuelle");
+      },
+      {
+        timeout: 2000,
+        enableHighAccuracy: true,
+        maximumAge: 1000,
       }
-    };
-
-    config();
-    return () => {
-      TaskManager.unregisterAllTasksAsync()
-    }
-
+    );
   }, []);
 
   const renderFooter = () => {
@@ -161,7 +158,7 @@ const Home = ({ navigation }) => {
         });
     }
   };
-  if (positionDone) {
+  if (positionDone && user?.details?.latitude) {
     return (
       <>
         <View style={styles.container}>
@@ -508,40 +505,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-});
-
-TaskManager.defineTask(LOCATION_TRACKING, async ({ data, error }) => {
-  if (error) {
-    console.log('LOCATION_TRACKING task ERROR:', error);
-    return;
-  }
-  if (data) {
-    //@ts-ignore
-    const { locations } = data;
-    let lat = locations[0].coords.latitude;
-    let long = locations[0].coords.longitude;
-
-    setLngLng(long)
-    setLatLat(lat)
-
-    Geocoder.from(lat,long).then(json => {
-      let addressComponent = json.results[0].formatted_address;    
-        request.postUserLocation({
-          pk: user?.details?.id,
-          latitude: lat,
-          longitude: long,
-          place_name: addressComponent
-        })
-        .then((res) => setUsers())
-        .catch((err) => {
-          console.log("une erreur, Impossible d'obtenir les donnees require!");
-        });
-    })
-    
-    setPositionDone(true)
-
-    console.log(
-      new Date(Date.now()).toLocaleString() + '' + lat, long
-    );
-  }
 });
