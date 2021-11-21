@@ -8,6 +8,7 @@ import Login from '../Views/Login';
 import Signup from '../Views/Signup';
 import CompleteI from '../Views/CompleteI';
 import Recharge from '../Views/Recharge';
+import AddKous from '../Views/AddKous';
 import Retrait from '../Views/Retrait';
 import RecentTrip from '../Views/RecentTrip';
 import BidRider from '../screens/Rider/BidRider';
@@ -271,6 +272,11 @@ const AppStart = () => {
         <Stack.Screen
           name="Recharge"
           component={Recharge}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AddKous"
+          component={AddKous}
           options={{ headerShown: false }}
         />
         <Stack.Screen

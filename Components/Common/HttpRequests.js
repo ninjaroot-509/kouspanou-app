@@ -12,15 +12,11 @@ const getProfile = (pk) =>
   axios.get(`${url}profile/?pk=${pk}`, config).then((res) => res.data);
 const GetUser = (pk) => axios.get(`${url}user/?pk=${pk}`, config).then((res) => res.data);
 const getWallet = (pk) => axios.get(`${url}wallet/?pk=${pk}`, config).then((res) => res.data);
-const getCoin = (pk) =>
-  axios.get(`${url}coins/?pk=${pk}`, config).then((res) => res.data);
 // .catch(error => {
 //     removeUserSession()
 // });
 const getRetrait = (pk) =>
   axios.get(`${url}retrait/?pk=${pk}`, config).then((res) => res.data);
-const getZones = () =>
-  axios.get(`${url}zones/`, config).then((res) => res.data);
 const getDemande = (pk) =>
   axios.get(`${url}demande/?pk=${pk}`, config).then((res) => res.data);
 const getDriverOnline = (pk, driver) =>
@@ -56,7 +52,6 @@ const postUserType = (pk, is_driver, is_passenger) =>
     .post(
       `${url}change-user-type/?pk=${pk.pk}&is_driver=${pk.is_driver}&is_passenger=${pk.is_passenger}`
     )
-    .then((err) => console.log(pk));
 
 const postTrip = (pk, longitude, latitude, destination_id, payMN) =>
   axios
@@ -70,7 +65,7 @@ const postTrip = (pk, longitude, latitude, destination_id, payMN) =>
       }),
       config
     ).then((res) => res.data).catch((err) => {
-      console.log(err, pk, longitude, latitude, destination_id, payMN)
+      // console.log(err, pk, longitude, latitude, destination_id, payMN)
     })
 
     const postDriverPrix = (pk, id_trip, prix) =>
@@ -101,12 +96,10 @@ export default {
   postUserLocation,
   postTrip,
   postUserType,
-  getZones,
   getProfile,
   getDemande,
   getDriverOnline,
   getWallet,
-  getCoin,
   getRetrait,
   getBidPrix
 };

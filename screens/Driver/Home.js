@@ -280,157 +280,179 @@ const Home = ({ navigation }) => {
               </View>
             </TouchableOpacity>
           </View>
-          <ScrollView>
-            <FlatList
-              style={{ paddingVertical: 20 }}
-              horizontal={false}
-              data={demande}
-              keyExtractor={({ key }, index) => key}
-              enableEmptySections={true}
-              ListFooterComponent={renderFooter}
-              renderItem={({ item }) => {
-                return (
-                  <View style={{ alignItems: 'center', paddingVertical: 10 }}>
-                    <Card style={styles.box}>
-                    <View style={{ alignItems: 'center' }}>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          padding: 12,
-                          alignItems: 'center'
-                        }}>
+          {user?.details?.kous.kous >= 1?
+            <ScrollView>
+              <FlatList
+                style={{ paddingVertical: 20 }}
+                horizontal={false}
+                data={demande}
+                keyExtractor={({ key }, index) => key}
+                enableEmptySections={true}
+                ListFooterComponent={renderFooter}
+                renderItem={({ item }) => {
+                  return (
+                    <View style={{ alignItems: 'center', paddingVertical: 10 }}>
+                      <Card style={styles.box}>
+                      <View style={{ alignItems: 'center' }}>
                         <View
                           style={{
                             flexDirection: 'row',
-                            justifyContent: 'center',
-                          }}>
-                          <FontAwesome
-                            name="map-marker"
-                            size={22}
-                            style={{ color: '#ff8612' }}
-                          />
-                          <View style={{ marginHorizontal: 2, width: width / 1.9 }}>
-                            <Text style={{ opacity: 0.8 }} numberOfLines={1}>
-                              {item.client_position_name}
-                            </Text>
-                          </View>
-                        </View>
-  
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                          }}>
-                          <View style={{ marginHorizontal: 5, width: 100, alignItems: 'center' }}>
-                            <Text
-                            numberOfLines={1}
-                              style={{ color: '#ff8612', fontWeight: '500' }}>
-                              {moment(item.created_on).fromNow()}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <MapView
-                        style={{
-                          width: 320,
-                          height: 150,
-                          justifyContent: 'center',
-                          alignSelf: 'center',
-                          borderRadius: 10
-                        }}
-                        provider={PROVIDER_GOOGLE}
-                        initialRegion={{
-                          latitude: item.client_latitude,
-                          longitude: item.client_longitude,
-                          latitudeDelta: LONGITUDE_DELTA,
-                          longitudeDelta: LONGITUDE_DELTA,
-                        }}
-                        customMapStyle={customMapStyle}>
-                          <MapViewDirections
-                            lineDashPattern={[0]}
-                            origin={{
-                              latitude: item.client_latitude,
-                              longitude: item.client_longitude,
-                            }}
-                            destination={{
-                              latitude: item.destination_latitude,
-                              longitude: item.destination_longitude,
-                            }}
-                            apikey={API_KEY}
-                            strokeWidth={3}
-                            strokeColor="#143fff"
-                            optimizeWaypoints={true}
-                          />
-                        <Marker
-                          coordinate={{
-                            latitude: item.client_latitude,
-                            longitude: item.client_longitude,
-                          }}
-                          title={'Position actuelle du client'}
-                        />
-                        <Marker
-                          coordinate={{
-                            latitude: item.destination_latitude,
-                            longitude: item.destination_longitude,
-                          }}
-                          title={'Destination du client'}
-                        />
-                      </MapView>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          padding: 8,
-                          alignItems: 'center'
-                        }}>
-                        <View
-                          style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: 12,
+                            alignItems: 'center'
                           }}>
                           <View
                             style={{
                               flexDirection: 'row',
                               justifyContent: 'center',
                             }}>
-                            <MaterialCommunityIcons
-                              name="cash-marker"
+                            <FontAwesome
+                              name="map-marker"
                               size={22}
                               style={{ color: '#ff8612' }}
                             />
-                            <View style={{ paddingHorizontal: 3 }}>
-                              <Text style={{ opacity: 0.8 }}>
-                                {item.is_peye_nan_men === true? 'Paiement en cash' : 'Paiement via portefeuille'}
+                            <View style={{ marginHorizontal: 2, width: width / 1.9 }}>
+                              <Text style={{ opacity: 0.8 }} numberOfLines={1}>
+                                {item.client_position_name}
+                              </Text>
+                            </View>
+                          </View>
+    
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                            }}>
+                            <View style={{ marginHorizontal: 5, width: 100, alignItems: 'center' }}>
+                              <Text
+                              numberOfLines={1}
+                                style={{ color: '#ff8612', fontWeight: '500' }}>
+                                {moment(item.created_on).fromNow()}
                               </Text>
                             </View>
                           </View>
                         </View>
-                        <View style={{paddingHorizontal: 3}}>
-                          <TouchableOpacity
-                          onPress={() =>
-                            setComand(item).then((res)=> navigation.replace('SplashScreen'))
-                          }
+                        <MapView
+                          style={{
+                            width: 320,
+                            height: 150,
+                            justifyContent: 'center',
+                            alignSelf: 'center',
+                            borderRadius: 10
+                          }}
+                          provider={PROVIDER_GOOGLE}
+                          initialRegion={{
+                            latitude: item.client_latitude,
+                            longitude: item.client_longitude,
+                            latitudeDelta: LONGITUDE_DELTA,
+                            longitudeDelta: LONGITUDE_DELTA,
+                          }}
+                          customMapStyle={customMapStyle}>
+                            <MapViewDirections
+                              lineDashPattern={[0]}
+                              origin={{
+                                latitude: item.client_latitude,
+                                longitude: item.client_longitude,
+                              }}
+                              destination={{
+                                latitude: item.destination_latitude,
+                                longitude: item.destination_longitude,
+                              }}
+                              apikey={API_KEY}
+                              strokeWidth={3}
+                              strokeColor="#143fff"
+                              optimizeWaypoints={true}
+                            />
+                          <Marker
+                            coordinate={{
+                              latitude: item.client_latitude,
+                              longitude: item.client_longitude,
+                            }}
+                            title={'Position actuelle du client'}
+                          />
+                          <Marker
+                            coordinate={{
+                              latitude: item.destination_latitude,
+                              longitude: item.destination_longitude,
+                            }}
+                            title={'Destination du client'}
+                          />
+                        </MapView>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            padding: 8,
+                            alignItems: 'center'
+                          }}>
+                          <View
                             style={{
-                              padding: 8,
-                              backgroundColor: '#ff8612',
-                              borderRadius: 20,
-                              alignItems: 'center',
                               justifyContent: 'center',
+                              alignItems: 'center',
                             }}>
-                            <Text style={{ color: '#fff', fontSize: 15 }}>
-                              Envoyer un prix
-                            </Text>
-                          </TouchableOpacity>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                              }}>
+                              <MaterialCommunityIcons
+                                name="cash-marker"
+                                size={22}
+                                style={{ color: '#ff8612' }}
+                              />
+                              <View style={{ paddingHorizontal: 3 }}>
+                                <Text style={{ opacity: 0.8 }}>
+                                  {item.is_peye_nan_men === true? 'Paiement en cash' : 'Paiement via portefeuille'}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                          <View style={{paddingHorizontal: 3}}>
+                            <TouchableOpacity
+                            onPress={() =>
+                              setComand(item).then((res)=> navigation.replace('SplashScreen'))
+                            }
+                              style={{
+                                padding: 8,
+                                backgroundColor: '#ff8612',
+                                borderRadius: 20,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}>
+                              <Text style={{ color: '#fff', fontSize: 15 }}>
+                                Envoyer un prix
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
                         </View>
-                      </View>
+                    </View>
+                      </Card>
+                    </View>
+                  );
+                }}
+              />
+            </ScrollView>
+            :
+              <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                <View style={{alignItems: 'center'}}>
+                  <View style={{paddingVertical: 15, paddingHorizontal: 30}}>
+                    <Text style={{
+                        color: '#999999',
+                        fontWeight: '500',
+                        fontSize: 17,
+                        textAlign: 'center'
+                      }}>hello {user?.details?.first_name}, {''} vous n'avez plus de kous pour effectuer les voyages</Text>
                   </View>
-                    </Card>
-                  </View>
-                );
-              }}
-            />
-          </ScrollView>
+                    <TouchableOpacity onPress={()=> navigation.navigate('AddKous')} style={{backgroundColor: '#ff8612', padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 10, elevation: 3}}>
+                      <Text style={{
+                        color: '#ffffff',
+                        fontWeight: '700',
+                        fontSize: 14
+                      }}>Ajouter kous</Text>
+                    </TouchableOpacity>
+                </View>
+              </View>
+          }
         </View>
       </>
     );
