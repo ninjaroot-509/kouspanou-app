@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useStateValue } from '../../index';
 import httpRequest from '../../../../Components/Common/HttpRequests';
-import {getUser} from '../../../../Components/Common/Auth/Sessions';
+import {getToken} from '../../../../Components/Common/Auth/Sessions';
 
 const LIST_DRIVERONLINE = 'driveronline/LIST_DRIVERONLINE';
 
@@ -12,9 +12,9 @@ const useDriveronlines = () => {
   const request = async () => {
     setIsLoading(true);
 
-    const user = await getUser()
+    const token = await getToken()
 
-    const response = await httpRequest.getDriverOnline(user.id, true);
+    const response = await httpRequest.getDriverOnline(token);
 
     if (response) {
       dispatch({

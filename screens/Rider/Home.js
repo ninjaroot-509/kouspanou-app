@@ -9,7 +9,7 @@ import {
   Platform,
   Dimensions,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 // import { useNavigation } from '@react-navigation/native';
@@ -24,7 +24,10 @@ import useDriveronlines from '../../src/state/driveronline/hooks/useDriveronline
 import Modal from 'react-native-modal';
 import useUsers from '../../src/state/user/hooks/useUsers';
 import request from '../../Components/Common/HttpRequests';
-import { setmergeItemUser } from '../../Components/Common/Auth/Sessions';
+import {
+  setmergeItemUser,
+  getToken,
+} from '../../Components/Common/Auth/Sessions';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
 import Geocoder from 'react-native-geocoding';
 Geocoder.init('AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc');
@@ -48,19 +51,15 @@ const MapButton = ({ icon, ...props }) => {
         shadowOpacity: 0.34,
         shadowRadius: 6.27,
       }}>
-      {icon == 'money'?
-        <FontAwesome
-          name={icon}
-          size={22}
-          style={{ color: '#ff8612' }}
-        />
-        :
+      {icon == 'money' ? (
+        <FontAwesome name={icon} size={22} style={{ color: '#ff8612' }} />
+      ) : (
         <MaterialCommunityIcons
           name={icon}
           size={22}
           style={{ color: '#ff8612' }}
         />
-      }
+      )}
     </TouchableOpacity>
   );
 };
@@ -78,6 +77,7 @@ const Home1 = ({ navigation }) => {
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0955;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+  const [token, setToken] = useState('');
 
   useEffect(() => {
     if (!wallet.details || wallet.details.length === 0) {
@@ -94,13 +94,13 @@ const Home1 = ({ navigation }) => {
   useEffect(() => {
     setInterval(() => {
       setTemp((prevTemp) => prevTemp + 1);
-    }, 300000);
+    }, 3000);
   }, []);
 
   useEffect(() => {
     setInterval(() => {
       setTemp1((prevTemp1) => prevTemp1 + 1);
-    }, 220000);
+    }, 2200);
   }, []);
 
   useEffect(() => {
@@ -125,26 +125,37 @@ const Home1 = ({ navigation }) => {
   });
 
   useEffect(() => {
+    getLocation();
+  }, []);
+
+  const getLocation = async () => {
+    const token = await getToken();
     Location.installWebGeolocationPolyfill();
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        if (position.length !== 0) {
-          Geocoder.from(position.coords.latitude,position.coords.longitude).then(json => {
-            let addressComponent = json.results[0].formatted_address;    
-              request.postUserLocation({
-                pk: user?.details?.id,
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                place_name: addressComponent
-              })
-              .then((res) => setUsers())
-              .catch((err) => {
-                console.log("une erreur, Impossible d'obtenir les donnees require!");
-              });
-          })
-          // setLatLng( position.coords.latitude, position.coords.longitude );
-          setPositionDone(true)
-        }
+      (position) => {
+        setPositionDone(true);
+        const latitudeInfo = position.coords.latitude;
+        const longitudeInfo = position.coords.longitude;
+        Geocoder.from(latitudeInfo, longitudeInfo).then((resName) => {
+          const place_nameInfo = resName.results[0].formatted_address;
+          const dataBody = new FormData();
+          dataBody.append('latitude',latitudeInfo);
+          dataBody.append('longitude',longitudeInfo);
+          dataBody.append('place_name',place_nameInfo);
+          request
+            .postUserLocation(token, dataBody)
+            .then((res) => {
+              console.log('localisation Done!!');
+              setUsers();
+            })
+            .catch((err) => {
+              console.log(
+                "une erreur, Impossible d'envoyer les donnees require!"
+              );
+            });
+          // request.postUserOnline(token);
+          // setLatLng( latitudeInfo,longitudeInfo );
+        });
       },
       () => {
         console.log("une erreur, Impossible d'obtenir votre position actuelle");
@@ -155,7 +166,7 @@ const Home1 = ({ navigation }) => {
         maximumAge: 1000,
       }
     );
-  }, []);
+  };
 
   const centerMap = () => {
     mapRef?.animateToRegion(
@@ -169,7 +180,11 @@ const Home1 = ({ navigation }) => {
     );
   };
 
-  const handleChange = () => {
+  const handleChange = async () => {
+    const token = await getToken();
+    const dataBody = new FormData();
+    dataBody.append('is_driver',1);
+    dataBody.append('is_passenger',0);
     let datauser = {
       is_driver: true,
       is_passenger: false,
@@ -177,21 +192,19 @@ const Home1 = ({ navigation }) => {
     setChange(true);
     if (change !== true) {
       request
-        .postUserType({
-          pk: user?.details?.id,
-          is_driver: true,
-          is_passenger: false,
-        })
+        .postUserType(token, dataBody)
         .then((res) => {
           setmergeItemUser(datauser).then((res) => {
             navigation.replace('SplashScreen');
           });
         })
         .catch((err) => {
+          setChange(false);
           alert('une erreur!', err);
         });
     }
   };
+
   if (positionDone && user?.details?.latitude) {
     return (
       <View style={styles.container}>
@@ -209,8 +222,8 @@ const Home1 = ({ navigation }) => {
           }}
           provider={PROVIDER_GOOGLE}
           customMapStyle={customMapStyle}>
-          <MapView.Marker 
-            title="votre position" 
+          <MapView.Marker
+            title="votre position"
             coordinate={{
               latitude: user?.details?.latitude,
               longitude: user?.details?.longitude,
@@ -232,7 +245,7 @@ const Home1 = ({ navigation }) => {
             />
           ))}
         </MapView>
-  
+
         <Modal
           isVisible={modal}
           onRequestClose={() => setModal(false)}
@@ -249,7 +262,13 @@ const Home1 = ({ navigation }) => {
                 Changer Type compte
               </Text>
             </View>
-            <View style={{ padding: 15, paddingHorizontal: 10, alignItems: 'center', width: 300 }}>
+            <View
+              style={{
+                padding: 15,
+                paddingHorizontal: 10,
+                alignItems: 'center',
+                width: 300,
+              }}>
               <Text style={{ textAlign: 'center' }}>
                 Hello {user?.details?.first_name}, Confirmez que vous voulez
                 changer votre compte de type passager en type chauffeur.
@@ -290,7 +309,8 @@ const Home1 = ({ navigation }) => {
           </View>
         </Modal>
         <TouchableOpacity
-          style={{borderRadius: 45,
+          style={{
+            borderRadius: 45,
             position: 'absolute',
             flexDirection: 'row',
             top: 40,
@@ -304,7 +324,8 @@ const Home1 = ({ navigation }) => {
             shadowOpacity: 0.2,
             shadowRadius: 6.17,
             justifyContent: 'center',
-            alignItems: 'center',}}>
+            alignItems: 'center',
+          }}>
           <View
             style={{
               justifyContent: 'center',
@@ -317,10 +338,12 @@ const Home1 = ({ navigation }) => {
             />
           </View>
           <View style={{ margin: 3 }}>
-            <Text style={{ fontSize: 13, color: '#001', fontWeight: '700' }}>{wallet?.details?.montant} HTG</Text>
+            <Text style={{ fontSize: 13, color: '#001', fontWeight: '700' }}>
+              {wallet?.details?.montant} HTG
+            </Text>
           </View>
         </TouchableOpacity>
-  
+
         <TouchableOpacity
           style={styles.changeusertype}
           onPress={() => setModal(true)}>
@@ -344,8 +367,14 @@ const Home1 = ({ navigation }) => {
         </TouchableOpacity>
         <View style={styles.box}>
           <View style={{ flexDirection: 'row' }}>
-            <MapButton icon={'history'} onPress={()=> navigation.navigate('RecentTrip')} />
-            <MapButton icon={'money'} onPress={()=> navigation.navigate('Recharge')} />
+            <MapButton
+              icon={'history'}
+              onPress={() => navigation.navigate('RecentTrip')}
+            />
+            <MapButton
+              icon={'money'}
+              onPress={() => navigation.navigate('Recharge')}
+            />
           </View>
           <MapButton icon={'map-marker-radius'} onPress={centerMap} />
         </View>
@@ -389,7 +418,7 @@ const Home1 = ({ navigation }) => {
           style={{ alignItems: 'center' }}
         />
       </View>
-    )
+    );
   }
 };
 

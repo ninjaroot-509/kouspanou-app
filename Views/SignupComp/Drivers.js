@@ -9,6 +9,7 @@ import {
   Image,
   KeyboardAvoidingView,
   ImageBackground,
+  ActivityIndicator
 } from 'react-native';
 import Constants from 'expo-constants';
 import { FontAwesome } from 'react-native-vector-icons';
@@ -18,6 +19,7 @@ import axios from 'axios';
 import PhoneInput from 'react-native-phone-number-input';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { useNavigation } from '@react-navigation/native';
+import request from '../../Components/Common/HttpRequests';
 
 const Signup = () => {
   const navigation = useNavigation();
@@ -43,22 +45,10 @@ const Signup = () => {
         alert('Les mots de passe ne correspondent pas!');
         setLoad(false);
       } else {
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
-          phone: tel,
-          password,
-          is_driver,
-          is_passenger,
-        });
-        axios
-          .post(
-            'https://crazy-taxi.quizapay.com/api/auth/register',
-            body,
-            config
-          )
-          .then((res) => {
-            setUserSession(res.data.token, res.data.user); // Signup OK redirect
-            console.log('Bienvenue ' + '' + res.data.user.phone);
+        const dataBody = JSON.stringify({ phone: tel, password: password, is_driver: is_driver, is_passenger: is_passenger });
+        httpRequest
+          .postHandleSignup(dataBody).then((res) => {
+            setUserSession(res.token, res.user); // Signup OK redirect
             navigation.replace('SplashScreen');
           })
           .catch((err) => {
@@ -124,21 +114,21 @@ const Signup = () => {
         />
       </View>
       <View style={{ padding: 7, paddingTop: 14 }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSignupSubmit}>
         {load === false ? (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleSignupSubmit}>
             <Text style={{ color: '#fff', fontWeight: 'bold' }}>
               S'inscrire
             </Text>
-          </TouchableOpacity>
         ) : (
-          <View style={styles.button1}>
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-              S'inscrire
-            </Text>
-          </View>
+            <ActivityIndicator
+              color="#ffffff"
+              size="small"
+              style={{ alignItems: 'center' }}
+            />
         )}
+        </TouchableOpacity>
       </View>
       <View style={{ padding: 3 }}>
         <TouchableOpacity onPress={() => navigation.replace('Auth')}>

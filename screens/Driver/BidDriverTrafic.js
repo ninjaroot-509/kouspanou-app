@@ -19,6 +19,7 @@ import useUsers from '../../src/state/user/hooks/useUsers';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
 import customMapStyle from '../Rider/mapstyle.json';
 import {
+  getToken,
   getComand,
   setComand,
   setmergeItemComand,
@@ -62,42 +63,37 @@ const BidDriverTrafic = ({ navigation }) => {
 
   useEffect(() => {
     if (biddetail?.length !== 0) {
-      const config = { headers: { 'Content-Type': 'application/json' } };
-
-      axios
-        .get(
-          `https://crazy-taxi.quizapay.com/api/get-driver/?pk=${pk}&id_driver=${biddetail?.client}`,
-          config
-        )
-        .then((res) => {
-          if (res) {
-            setClient(res.data);
-          }
-        })
-        .catch((err) => {
-          alert("une erreur s'est produite");
-        });
-
-      const datatrip = {
-        arrival: true,
-      };
-        axios
-          .get(
-            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
-            config
-          )
-          .then((res) => {
-            if (res.data.is_arrivale_comfirm == true) {
-              setmergeItemComand(datatrip).then((res) => {
-                navigation.replace('SplashScreen');
-              });
-            }
-          })
-          .catch((err) => {
-            alert("une erreur s'est produite");
-          });
+      getDriverInfo()
+      getTripInfo()
     }
   }, [temp]);
+
+  const getTripInfo = async () => {
+    const token = await getToken()
+    const datatrip = {
+      arrival: true,
+    };
+    request.getTripInfo(token, biddetail?.id, biddetail?.driver).then((res) => {
+      if (res.data.is_arrivale_comfirm == true) {
+        setmergeItemComand(datatrip).then((res) => {
+          navigation.replace('SplashScreen');
+        });
+      }
+    })
+  .catch((err) => {
+    alert("une erreur s'est produite..!");
+  });
+}
+
+const getDriverInfo = async () => {
+  const token = await getToken()
+  request.getDriverInfo(token, biddetail?.driver).then((res) => {
+    setClient(res);
+  })
+.catch((err) => {
+  alert("une erreur s'est produite..!");
+});
+}
 
   const handleQuit = () => {
     removeComand().then((suc) => {
@@ -105,14 +101,13 @@ const BidDriverTrafic = ({ navigation }) => {
     });
   };
 
-  const handleNext = () => {
-      const config = { headers: { 'Content-Type': 'application/json' } };
-      axios
-        .post(
-          `https://crazy-taxi.quizapay.com/api/driver-arrival/?pk=${pk}&id_trip=${biddetail?.id}&id_client=${biddetail?.client}`,
-          config
-        )
-        .then((res) => {
+  const handleNext = async () => {
+      const token = await getToken()
+      const dataBody = JSON.stringify({
+        id_trip: biddetail?.id,
+        id_client: biddetail?.client,
+      });
+      request.postDriverArival(token, dataBody).then((res) => {
           alert("Comfirmation requis, une fois que vous aurez vu le client, demandez-lui de confirmer votre arrivée pour passer à l'étape suivante, svp!!")
         }).catch((err) => {
           alert("une erreur s'est produite", err);

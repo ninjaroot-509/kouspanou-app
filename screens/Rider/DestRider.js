@@ -19,6 +19,7 @@ import useUsers from '../../src/state/user/hooks/useUsers';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
 import customMapStyle from './mapstyle.json';
 import {
+  getToken,
   getComand,
   setComand,
   setmergeItemComand,
@@ -66,63 +67,60 @@ const BidRiderTrafic = ({ navigation }) => {
       const config = { headers: { 'Content-Type': 'application/json' } };
 
       if (stop == false) {
-        axios
-          .get(
-            `https://crazy-taxi.quizapay.com/api/get-driver/?pk=${pk}&id_driver=${biddetail?.driver}`,
-            config
-          )
-          .then((res) => {
-            if (res) {
-              setDriver(res.data);
-              setStop(true)
-            }
-          })
-          .catch((err) => {
-            alert("une erreur s'est produite");
-          });
+        getDriverInfo()
       }
 
       if (biddetail?.arrival == true && biddetail?.complete == false) {
-        axios
-          .get(
-            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
-            config
-          )
-          .then((res) => {
-            if (res.data.is_complete == true) {
-              setModal(true);
-            }
-          })
-          .catch((err) => {
-            alert("une erreur s'est produite");
-          });
-
-          axios
-          .get(
-            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
-            config
-          )
-          .then((res) => {
-            if (res.data.is_complete_comfirm == true) {
-              Alert.alert(
-                'GoTaxi!',
-                "Merci, d'avoir utiliser le service GoTaxi et a bientot",
-                [
-                  {
-                    text: 'Ok',
-                    onPress: () => handleFinale(),
-                  },
-                ],
-                { cancelable: false }
-              );
-            }
-          })
-          .catch((err) => {
-            alert("une erreur s'est produite");
-          });
+        BidComplete()
+        BidCompleteComfirm()
       }
     }
   }, [temp]);
+
+  const BidComplete = async () => {
+    const token = await getToken()
+    request.getTripInfo(token, biddetail?.id, biddetail?.driver).then((res) => {
+      if (res.is_complete == true) {
+        setModal(true);
+      }
+    })
+    .catch((err) => {
+      alert("une erreur s'est produite");
+    });
+  }
+
+  const BidCompleteComfirm = async () => {
+    const token = await getToken()
+    request.getTripInfo(token, biddetail?.id, biddetail?.driver).then((res) => {
+      if (res.is_complete_comfirm == true) {
+        Alert.alert(
+          'GoTaxi!',
+          "Merci, d'avoir utiliser le service GoTaxi et a bientot",
+          [
+            {
+              text: 'Ok',
+              onPress: () => handleFinale(),
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    })
+    .catch((err) => {
+      alert("une erreur s'est produite");
+    });
+  }
+
+  const getDriverInfo = async () => {
+    const token = await getToken()
+    request.getDriverInfo(token, biddetail?.driver).then((res) => {
+      setDriver(res);
+      setStop(true)
+    })
+  .catch((err) => {
+    alert("une erreur s'est produite..!");
+  });
+}
 
   const handleFinale = () => {
     removeComand().then((suc) => {

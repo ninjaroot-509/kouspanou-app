@@ -34,7 +34,7 @@ const data = [
     {
         _id : '3',
         title: 'GoTaxi live traffic',
-        description: 'parcourez tout le trafic en direct et profitez de nos services qui sont les meilleurs.',
+        description: 'Parcourez tout le trafic en direct et profitez de nos services qui sont les meilleurs.',
         img: require('../assets/onboard.png')
     },
 ]

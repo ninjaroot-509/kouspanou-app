@@ -14,7 +14,7 @@ import {
 const { width, height } = Dimensions.get('window');
 import Constants from 'expo-constants';
 import { FontAwesome } from 'react-native-vector-icons';
-import { setmergeItemUser } from '../Components/Common/Auth/Sessions';
+import { setmergeItemUser, getToken } from '../Components/Common/Auth/Sessions';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
 import request from '../Components/Common/HttpRequests';
@@ -34,26 +34,18 @@ const CompleteI = ({ navigation }) => {
   }, [user, setUsers]);
 
   const handleSubmit = async () => {
+    const token = await getToken()
     if (first_name != '' && last_name != '') {
       if (load === false) {
         setLoad(true);
-        const pk = user?.details?.id;
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
+        const dataBody = JSON.stringify({
           last_name: last_name,
           first_name: first_name,
         });
-        axios
-          .post(
-            `https://crazy-taxi.quizapay.com/api/info-user/?pk=${pk}`,
-            body,
-            config
-          )
-          .then((res) => {
+        request.postUserInfoStart(token, dataBody).then((res) => {
             setmergeItemUser(res.data).then((i) => {
               setUsers();
               navigation.replace('SplashScreen');
-              console.log('Bienvenue ' + res.data.user.first_name);
               setLoad(false);
             });
           })
@@ -123,19 +115,21 @@ const CompleteI = ({ navigation }) => {
             />
           </View>
           <View style={{ padding: 20 }}>
-            {load === false ? (
-              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                  Continuer
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.button1}>
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                  Continuer
-                </Text>
-              </View>
-            )}
+          <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit}>
+          {load === false ? (
+              <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+              Continuer
+            </Text>
+          ) : (
+              <ActivityIndicator
+                color="#ffffff"
+                size="small"
+                style={{ alignItems: 'center' }}
+              />
+          )}
+        </TouchableOpacity>
           </View>
         </View>
         </View>

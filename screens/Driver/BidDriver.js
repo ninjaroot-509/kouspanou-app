@@ -32,6 +32,7 @@ import { Card } from 'react-native-paper';
 import request from '../../Components/Common/HttpRequests';
 import {
   getUser,
+  getToken,
   getComand,
   removeComand,
   setmergeItemComand,
@@ -95,46 +96,58 @@ const BidDriver = ({ navigation, route }) => {
       request.getBidPrix(pk, biddetail?.details?.id).then((res) => {
         setBid(res);
         setSendLoad(false);
-      });
-    }
-
-    const config = { headers: { 'Content-Type': 'application/json' } };
-    if (userAccept == true) {
-      axios
-        .get(
-          `https://crazy-taxi.quizapay.com/api/driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}`,
-          config
-        )
-        .then((res) => {
-          if (res.data.is_win == true) {
-            setUserWinModal(true);
-            setUserAcceptDone(true);
-          }
-        })
-        .catch((err) => {
-          alert("une erreur s'est produite...");
-        });
-  
-  
-      }
-      axios
-      .get(
-        `https://crazy-taxi.quizapay.com/api/driver-bid-choose/?pk=${pk}&id_trip=${biddetail?.details?.id}`,
-        config
-      )
-      .then((res) => {
-        if (res.data.bid_active === false) {
-          handleQuit()
-        }
       }).catch(function (error) {
         if (error.response.status === 404) {
           // Request made and server responded
           handleQuit()
-        }    
+        } else {
+          alert('an error occured!')
+        }
       });
+    }
+
+      getClientInfo()
+      getDriverBidChoose()
+      
   }, [temp]);
 
-  const handleSubmitPrix = () => {
+  const getClientInfo = async () => {
+    const token = await getToken()
+    request.getClientInfo(token, biddetail?.details?.id).then((res) => {
+      if (res.is_win == true) {
+        setUserWinModal(true);
+        setUserAcceptDone(true);
+      }
+    }).catch(function (error) {
+      if (error.response.status === 404) {
+        // Request made and server responded
+        handleQuit()
+      } else {
+        alert('an error occured!')
+      }
+    });
+}
+
+const getDriverBidChoose = async () => {
+  const token = await getToken()
+    request.getDriverBidChoose(token, biddetail?.details?.id).then((res) => {
+      if (res.bid_active === false) {
+        handleQuit()
+      }
+    }).catch(function (error) {
+      if (error.response.status === 404) {
+        // Request made and server responded
+        handleQuit()
+      } else {
+        alert('an error occured!')
+      }
+    });
+}
+
+  
+
+  const handleSubmitPrix = async () => {
+    const token = await getToken()
     if (
       biddetail?.details &&
       prix &&
@@ -143,18 +156,11 @@ const BidDriver = ({ navigation, route }) => {
     ) {
       setSend(true);
       if (biddetail?.details?.client === pk) {
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
+        const dataBody = JSON.stringify({
           id_trip: biddetail?.details?.id,
           prix: prix,
         });
-        axios
-          .post(
-            `https://crazy-taxi.quizapay.com/api/user-instructions/?pk=${pk}`,
-            body,
-            config
-          )
-          .then((res) => {
+        request.postUserInstruction(token, dataBody).then((res) => {
             setPrix('');
             setSend(false);
           })
@@ -165,18 +171,11 @@ const BidDriver = ({ navigation, route }) => {
           });
       } else {
         setUserAccept(true);
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
+        const dataBody = JSON.stringify({
           id_trip: biddetail?.details?.id,
           prix: prix,
         });
-        axios
-          .post(
-            `https://crazy-taxi.quizapay.com/api/driver-prix/?pk=${pk}`,
-            body,
-            config
-          )
-          .then((res) => {
+        request.postDriverPrix(token, dataBody).then((res) => {
             setPrix('');
             setSend(false);
           })
@@ -189,18 +188,12 @@ const BidDriver = ({ navigation, route }) => {
     }
   };
 
-  const handleQuit = () => {
-    const config = { headers: { 'Content-Type': 'application/json' } };
-    const body = JSON.stringify({
+  const handleQuit = async () => {
+    const token = await getToken()
+    const dataBody = JSON.stringify({
       id_trip: biddetail?.details?.id,
     });
-    axios
-      .post(
-        `https://crazy-taxi.quizapay.com/api/driver-quits/?pk=${pk}`,
-        body,
-        config
-      )
-      .then((res) => {
+    request.postQuitDriverBid(token, dataBody).then((res) => {
         removeComand().then((suc) => {
           navigation.replace('SplashScreen');
         });
@@ -214,7 +207,8 @@ const BidDriver = ({ navigation, route }) => {
       });
   };
 
-  const handleAcceptPost = () => {
+  const handleAcceptPost = async () => {
+    const token = await getToken()
     const datatrip = {
       is_active: false,
       arrival: false,
@@ -224,19 +218,12 @@ const BidDriver = ({ navigation, route }) => {
       driver_latitude: user?.details?.driver_latitude,
       driver_longitude: user?.details?.driver_longitude,
     };
-    const config = { headers: { 'Content-Type': 'application/json' } };
-    const body = JSON.stringify({
+    const dataBody = JSON.stringify({
       id_trip: biddetail?.details?.id,
     });
     if (userAcceptDone === true && userClickAccept == false) {
       setUserClickAccept(true);
-      axios
-        .post(
-          `https://crazy-taxi.quizapay.com/api/driver-accept/?pk=${pk}`,
-          body,
-          config
-        )
-        .then((res) => {
+      request.postAcceptUserBid(token, dataBody).then((res) => {
           setmergeItemComand(datatrip).then((res) => {
             navigation.replace('SplashScreen');
           });
@@ -411,7 +398,7 @@ const BidDriver = ({ navigation, route }) => {
                 {biddetail?.details?.user_first_name}
               </Text>
             </View>
-            <View style={{ justifyContent: 'center', paddingHorizontal: 5 }}>
+            <View style={{ justifyContent: 'center', paddingHorizontal: 2 }}>
               <View
                 style={{
                   width: 9,
@@ -427,7 +414,7 @@ const BidDriver = ({ navigation, route }) => {
                   fontWeight: 'bold',
                   color: '#001',
                   fontSize: 18,
-                  width: width / 2,
+                  width: width / 1.85,
                 }}
                 numberOfLines={1}>
                 {biddetail?.details?.destination_place_name}
@@ -725,7 +712,7 @@ const styles = StyleSheet.create({
   },
   header: {
     justifyContent: 'center',
-    height: 50,
+    height: '7.5%',
     backgroundColor: '#fff',
     borderBottomWidth: 1.5,
     borderBottomColor: '#00000033',
@@ -736,8 +723,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   body: {
-    width: width,
-    height: '92%',
+    flex: 1
   },
   iconbg: {
     width: 65,

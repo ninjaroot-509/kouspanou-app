@@ -58,10 +58,10 @@ const Stack = createStackNavigator();
 
 function HomeStackRider() {
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="HomeR">
       <Stack.Screen
         options={{ headerShown: false }}
-        name="Home"
+        name="HomeR"
         component={Home}
       />
       <Stack.Screen
@@ -81,7 +81,7 @@ function HomeStackRider() {
 function MyTabRider({ navigation, route }) {
   return (
     <Tab.Navigator
-      tabBarOptions={{
+      screenOptions={{
         keyboardHidesTabBar: true, //<=====
       }}
       tabBar={(props) => <MyTabBar {...props} />}>
@@ -111,10 +111,10 @@ function MyTabRider({ navigation, route }) {
 
 function HomeStackDriver() {
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="HomeS">
       <Stack.Screen
         options={{ headerShown: false }}
-        name="Home"
+        name="HomeS"
         component={HomeDriver}
       />
     </Stack.Navigator>
@@ -124,7 +124,7 @@ function HomeStackDriver() {
 function MyTabDriver({ navigation, route }) {
   return (
     <Tab.Navigator
-      tabBarOptions={{
+      screenOptions={{
         keyboardHidesTabBar: true, //<=====
       }}
       tabBar={(props) => <MyTabBar {...props} />}>
@@ -210,6 +210,7 @@ function MyTabBar({ state, descriptors, navigation }) {
           }
           return (
             <TouchableOpacity
+              key={index}
               accessibilityRole="button"
               accessibilityStates={isFocused ? ['selected'] : []}
               accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -231,33 +232,6 @@ function MyTabBar({ state, descriptors, navigation }) {
 }
 
 const AppStart = () => {
-  const [temp, setTemp] = useState(0);
-  const [temp1, setTemp1] = useState(0);
-  const [user, isLoading, setUsers] = useUsers();
-
-  useEffect(() => {
-    if (!user.details || user.details.length === 0) {
-      setUsers();
-    }
-  }, [temp]);
-
-  useEffect(() => {
-    setInterval(() => {
-      setTemp((prevTemp) => prevTemp + 1);
-    }, 3000);
-  }, []);
-
-  useEffect(() => {
-    setInterval(() => {
-      setTemp1((prevTemp1) => prevTemp1 + 1);
-    }, 1500000);
-  }, []);
-
-  useEffect(() => {
-    if (user?.details?.length !== 0) {
-      request.postUserOnline(user?.details?.id);
-    }
-  }, [temp1]);
 
   return (
     <NavigationContainer>

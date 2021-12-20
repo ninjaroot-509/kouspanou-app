@@ -20,6 +20,7 @@ import useUsers from '../../src/state/user/hooks/useUsers';
 import useWallets from '../../src/state/wallet/hooks/useWallets';
 import customMapStyle from '../Rider/mapstyle.json';
 import {
+  getToken,
   getComand,
   setComand,
   setmergeItemComand,
@@ -68,26 +69,21 @@ const BidDriverTrafic = ({ navigation }) => {
 
   useEffect(() => {
     if (biddetail?.length !== 0) {
-      const config = { headers: { 'Content-Type': 'application/json' } };
-      const datatrip = {
-        complete: true,
-      };
-
-        axios
-          .get(
-            `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.id}&id_driver=${biddetail?.driver}`,
-            config
-          )
-          .then((res) => {
-            if (res.data.is_complete_comfirm == true) {
-              setModal(true)
-            }
-          })
-          .catch((err) => {
-            alert("une erreur s'est produite");
-          });
+      getTripInfo()
     }
   }, [temp]);
+  
+  const getTripInfo = async () => {
+      const token = await getToken()
+      request.getTripInfo(token, biddetail?.id, biddetail?.driver).then((res) => {
+        if (res.is_complete_comfirm == true) {
+          setModal(true)
+        }
+      })
+    .catch((err) => {
+      alert("une erreur s'est produite..!");
+    });
+  }
 
   const handleQuit = () => {
     removeComand().then((suc) => {
@@ -96,35 +92,30 @@ const BidDriverTrafic = ({ navigation }) => {
   };
 
   const handleNext = () => {
-    const config = { headers: { 'Content-Type': 'application/json' } };
-    axios
-      .post(
-        `https://crazy-taxi.quizapay.com/api/driverEnd/?pk=${pk}&id_trip=${biddetail?.id}&id_client=${biddetail?.client}`,
-        config
-      )
-      .then((res) => {
+    const dataBody = JSON.stringify({
+      id_trip: biddetail?.id,
+      id_client: biddetail?.client,
+    });
+    request.postEnd(token, dataBody).then((res) => {
         setModal(true)
       }).catch((err) => {
         alert("une erreur s'est produite", err);
       });
   }
 
-  const handleNextEnd = () => {
+  const handleNextEnd = async () => {
+    const token = await getToken()
     setComfirmLoad(true)
     setErr(false)
     const config = { headers: { 'Content-Type': 'application/json' } };
     const code_full = 'GT-' + code
-    const body = JSON.stringify({
+    const dataBody = JSON.stringify({
+      id_trip: biddetail?.id,
+      id_client: biddetail?.client,
       code: code,
     });
     if (comfirmLoad == false) {
-      axios
-        .post(
-          `https://crazy-taxi.quizapay.com/api/driver-end-finale/?pk=${pk}&id_trip=${biddetail?.id}&id_client=${biddetail?.client}`,
-          body,
-          config
-        )
-        .then((res) => {
+      request.postEndFinale(token, dataBody).then((res) => {
           // alert("Comfirmation requis", "Demandez au client de confirmer votre arrivée pour terminer, Merci!!")
           Alert.alert(
             'GoTaxi!',

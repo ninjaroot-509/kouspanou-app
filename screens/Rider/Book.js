@@ -20,7 +20,8 @@ import customMapStyle from './mapstyle.json';
 import {
   getComand,
   setComand,
-  setmergeItemComand
+  setmergeItemComand,
+  getToken
 } from '../../Components/Common/Auth/Sessions';
 import axios from 'axios';
 import Geocoder from 'react-native-geocoding';
@@ -57,24 +58,18 @@ const Book = ({ navigation, route }) => {
     longitude: zone.item.geometry.location.lng,
   });
 
-  const handlePayNM = () => {
+  const handlePayNM = async () => {
+    const token = await getToken()
     setDone(true);
-    const pk = user?.details?.id;
-    const config = { headers: { 'Content-Type': 'application/json' } };
-    const body = JSON.stringify({
+    const dataBody = JSON.stringify({
       place_name: zone.item.formatted_address,
       longitude: zone.item.geometry.location.lng,
       latitude: zone.item.geometry.location.lat,
       payMN: true,
     });
-    axios
-      .post(
-        `https://crazy-taxi.quizapay.com/api/trips/?pk=${pk}`,
-        body,
-        config
-      )
-      .then((res) => {     
-        setComand(res.data).then((i)=> {
+    request
+        .postTrip(token, dataBody).then((res) => {     
+        setComand(res).then((i)=> {
           navigation.replace('SplashScreen');
         })
         setDone(false)
@@ -86,11 +81,10 @@ const Book = ({ navigation, route }) => {
       })
   };
 
-  const handlePay = () => {
+  const handlePay = async () => {
+    const token = await getToken()
     setDone(true);
-    const pk = user?.details?.id;
-    const config = { headers: { 'Content-Type': 'application/json' } };
-    const body = JSON.stringify({
+    const dataBody = JSON.stringify({
       place_name: zone.item.formatted_address,
       longitude: zone.item.geometry.location.lng,
       latitude: zone.item.geometry.location.lat,
@@ -100,14 +94,9 @@ const Book = ({ navigation, route }) => {
       choose: false
     };
     if (done === false) {
-      axios
-        .post(
-          `https://crazy-taxi.quizapay.com/api/trips/?pk=${pk}`,
-          body,
-          config
-        )
-        .then((res) => {
-          setComand(res.data).then((i)=> {
+      request
+      .postTrip(token, dataBody).then((res) => {
+          setComand(res).then((i)=> {
             setTimeout(() => {
               setmergeItemComand(datatrip).then((res) => {
                 navigation.replace('SplashScreen');

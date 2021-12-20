@@ -1,35 +1,38 @@
 import { useState } from 'react';
 import { useStateValue } from '../../index';
 import httpRequest from '../../../../Components/Common/HttpRequests';
-import {getToken} from '../../../../Components/Common/Auth/Sessions';
+import {getToken, getUser} from '../../../../Components/Common/Auth/Sessions';
 
-const SET_USER = 'user/SET_USER';
+const LIST_MESSAGEGROUP = 'messageGroup/LIST_MESSAGEGROUP';
 
-const useUsers = () => {
-  const [{ user }, dispatch] = useStateValue();
+const useMessageGroup = () => {
+  const [{ messageGroup }, dispatch] = useStateValue();
   const [isLoading, setIsLoading] = useState(false);
 
   const request = async () => {
     setIsLoading(true);
+
     const token = await getToken()
-    const response = await httpRequest.GetUser(token)
+    const user = await getUser()
+
+    const response = await httpRequest.getCommunityMessages(token, user.community_code);
 
     if (response) {
       dispatch({
-        type: SET_USER,
+        type: LIST_MESSAGEGROUP,
         payload: response,
       });
     } else {
       const err = [];
       dispatch({
-        type: SET_USER,
+        type: LIST_MESSAGEGROUP,
         payload: err,
       });
     }
     setIsLoading(false);
   };
 
-  return [user, isLoading, request];
+  return [messageGroup, isLoading, request];
 };
 
-export default useUsers;
+export default useMessageGroup;

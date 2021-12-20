@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useStateValue } from '../../index';
 import httpRequest from '../../../../Components/Common/HttpRequests';
-import {getUser} from '../../../../Components/Common/Auth/Sessions';
+import {getToken} from '../../../../Components/Common/Auth/Sessions';
 
 const SET_WALLET = 'wallet/SET_WALLET';
 
@@ -11,8 +11,8 @@ const useWallets = () => {
 
   const request = async () => {
     setIsLoading(true);
-    const user_id = await getUser()
-    const response = await httpRequest.getWallet(user_id.id)
+    const token = await getToken()
+    const response = await httpRequest.getWallet(token)
 
     if (response) {
       dispatch({

@@ -33,6 +33,7 @@ import { Card } from 'react-native-paper';
 import moment from 'moment';
 import request from '../../Components/Common/HttpRequests';
 import {
+  getToken,
   getUser,
   getComand,
   removeComand,
@@ -47,6 +48,9 @@ import Modal from 'react-native-modal';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import customMapStyle from './mapstyle.json';
 import MapViewDirections from 'react-native-maps-directions';
+import BoxLeft from './Message/BoxLeft'
+import BoxRight from './Message/BoxRight'
+import DriverInfo from './Modal/DriverInfo'
 
 const { width, height } = Dimensions.get('window');
 const BidRider = ({ navigation }) => {
@@ -67,6 +71,7 @@ const BidRider = ({ navigation }) => {
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+  
   const handleView = () => {
     setViewMore(!viewMore);
   };
@@ -102,39 +107,45 @@ const BidRider = ({ navigation }) => {
 
   useEffect(() => {
     if (biddetail?.details || biddetail?.details?.length !== 0) {
-      request.getBidPrix(pk, biddetail?.details?.id).then((res) => {
-        setBid(res);
-        setSendLoad(false);
-      });
+      handleGetBid()
     }
 
     if (biddetail?.details?.choose === true) {
-      const config = { headers: { 'Content-Type': 'application/json' } };
-      axios
-        .get(
-          `https://crazy-taxi.quizapay.com/api/user-driver-attemp/?pk=${pk}&id_trip=${biddetail?.details?.id}&id_driver=${biddetail?.details?.driver}`,
-          config
-        )
-        .then((res) => {
-          const datatrip = {
-            arrival: false,
-            complete: false,
-            client: pk,
-            is_active: false,
-          };
-          if (res.data.is_comfirm == true) {
-            setmergeItemComand(datatrip).then((res) => {
-              navigation.replace('SplashScreen');
-            });
-          }
-        })
-        .catch((err) => {
-          alert("une erreur s'est produite ..!");
-        });
+      getTripInfo()
     }
   }, [temp]);
 
-  const handleSubmitPrix = () => {
+  const handleGetBid = async () => {
+    const token = await getToken()
+    request.getBidPrix(token, biddetail?.details?.id).then((res) => {
+      setBid(res);
+      setSendLoad(false);
+    });
+  }
+
+
+  const getTripInfo = async () => {
+      const token = await getToken()
+      request.getTripInfo(token, biddetail?.details?.id, biddetail?.details?.driver).then((res) => {
+        const datatrip = {
+          arrival: false,
+          complete: false,
+          client: pk,
+          is_active: false,
+        };
+        if (res.is_comfirm == true) {
+          setmergeItemComand(datatrip).then((res) => {
+            navigation.replace('SplashScreen');
+          });
+        }
+      })
+    .catch((err) => {
+      alert("une erreur s'est produite..!");
+    });
+  }
+
+  const handleSubmitPrix = async () => {
+    const token = await getToken()
     setSendLoad(true);
     if (
       biddetail?.details &&
@@ -144,39 +155,24 @@ const BidRider = ({ navigation }) => {
     ) {
       setSend(true);
       if (biddetail?.details?.client === pk) {
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
+        const dataBody = JSON.stringify({
           id_trip: biddetail?.details?.id,
           prix: prix,
         });
-        axios
-          .post(
-            `https://crazy-taxi.quizapay.com/api/user-instructions/?pk=${pk}`,
-            body,
-            config
-          )
-          .then((res) => {
+        request.postUserInstruction(token, dataBody).then((res) => {
             setPrix('');
             setSend(false);
-          })
-          .catch((err) => {
+          }).catch((err) => {
             alert("une erreur s'est produite");
             setPrix('');
             setSend(false);
           });
       } else {
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
+        const dataBody = JSON.stringify({
           id_trip: biddetail?.details?.id,
           prix: prix,
         });
-        axios
-          .post(
-            `https://crazy-taxi.quizapay.com/api/driver-prix/?pk=${pk}`,
-            body,
-            config
-          )
-          .then((res) => {
+        request.postDriverPrix(token, dataBody).then((res) => {
             setPrix('');
             setSend(false);
           })
@@ -184,31 +180,25 @@ const BidRider = ({ navigation }) => {
             alert("une erreur s'est produite");
             setPrix('');
             setSend(false);
-          });
+          }); 
       }
     }
   };
 
-  const handleQuit = () => {
-    const config = { headers: { 'Content-Type': 'application/json' } };
-    const body = JSON.stringify({
+  const handleQuit = async () => {
+    const token = await getToken()
+    const dataBody = JSON.stringify({
       id_trip: biddetail?.details?.id,
     });
-    axios
-      .post(
-        `https://crazy-taxi.quizapay.com/api/rider-quits/?pk=${pk}`,
-        body,
-        config
-      )
-      .then((res) => {
-        removeComand().then((suc) => {
-          navigation.replace('SplashScreen');
-        });
+    request.postQuitUserBid(token, dataBody).then((res) => {
+      removeComand().then((suc) => {
+        navigation.replace('SplashScreen');
       });
+    });
   };
 
-  const handleChoosePost = () => {
-    const config = { headers: { 'Content-Type': 'application/json' } };
+  const handleChoosePost = async () => {
+    const token = await getToken()
     const datatrip = {
       choose: true,
       driver: userChoose?.driver,
@@ -217,7 +207,7 @@ const BidRider = ({ navigation }) => {
       client_latitude: user?.details?.latitude,
       client_longitude: user?.details?.longitude,
     };
-    const body = JSON.stringify({
+    const dataBody = JSON.stringify({
       id_trip: biddetail?.details?.id,
       id_driver: userChoose?.driver,
     });
@@ -225,15 +215,9 @@ const BidRider = ({ navigation }) => {
       biddetail?.details?.choose === false &&
       wallet?.details?.montant >= userChoose?.prix
     ) {
-      axios
-        .post(
-          `https://crazy-taxi.quizapay.com/api/driver-choose/?pk=${pk}`,
-          body,
-          config
-        )
-        .then((res) => {
+      request.postChooseUserBid(token, dataBody).then((res) => {
           setmergeItemComand(datatrip).then((res) => {
-            navigation.replace('SplashScreen');
+            navigation.replace('BidRider');
           });
           setUserChooseModal(false);
         });
@@ -252,203 +236,7 @@ const BidRider = ({ navigation }) => {
   if (biddetail?.details || biddetail?.details?.length !== 0) {
     return (
       <View style={styles.container}>
-        <Modal
-          isVisible={userChooseModal}
-          onRequestClose={() => {
-            setUserChooseModal(false);
-            setViewMore(false);
-          }}
-          onBackButtonPress={() => {
-            setUserChooseModal(false);
-            setViewMore(false);
-          }}>
-          <View
-            style={{
-              backgroundColor: 'white',
-              height: 380,
-              alignItems: 'center',
-              borderRadius: 10,
-            }}>
-            <View style={{ position: 'absolute', top: -50 }}>
-              <Image
-                style={{ width: 100, height: 100, borderRadius: 50 }}
-                source={{
-                  uri:
-                    'https://crazy-taxi.quizapay.com/' + userChoose?.user_photo,
-                }}
-              />
-            </View>
-            <View style={{ paddingTop: 52, alignItems: 'center', width: 100 }}>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontWeight: '700',
-                  color: '#002',
-                }}>
-                {userChoose?.user_first_name} {userChoose?.user_last_name}
-              </Text>
-              <TouchableOpacity onPress={handleView}>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: '#ff8612',
-                    textDecorationColor: 'underline',
-                  }}>
-                  {viewMore === true ? 'Voir moins' : 'Voir plus'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{}}>
-              {viewMore === true ? (
-                <View style={{ height: 205 }}>
-                  <FlatList
-                    style={{ bottom: 0, top: 20 }}
-                    horizontal={true}
-                    data={[
-                      {
-                        id: 1,
-                        image:
-                          'https://crazy-taxi.quizapay.com/' +
-                          userChoose?.user_photo,
-                      },
-                      {
-                        id: 2,
-                        image:
-                          'https://crazy-taxi.quizapay.com/' +
-                          userChoose?.user_photo,
-                      },
-                    ]}
-                    keyExtractor={({ id }, index) => id}
-                    renderItem={({ item }) => {
-                      return (
-                        <View style={{ paddingHorizontal: 6 }}>
-                          <View style={{}}>
-                            <Image
-                              style={{
-                                width: 190,
-                                height: 180,
-                                borderRadius: 5,
-                              }}
-                              source={{
-                                uri: item.image,
-                              }}
-                            />
-                          </View>
-                        </View>
-                      );
-                    }}
-                  />
-                </View>
-              ) : (
-                <>
-                  <View
-                    style={{
-                      paddingHorizontal: 10,
-                    }}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                      }}>
-                      <FontAwesome
-                        name="map-marker"
-                        size={22}
-                        style={{ color: '#ff8612' }}
-                      />
-                      <View style={{ padding: 5 }}>
-                        <Text style={{ opacity: 0.8 }} numberOfLines={1}>
-                          {userChoose?.driver_place_name}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                  <MapView
-                    style={{
-                      width: 310,
-                      height: 150,
-                      justifyContent: 'center',
-                      alignSelf: 'center',
-                      borderRadius: 30,
-                    }}
-                    provider={PROVIDER_GOOGLE}
-                    region={{
-                      latitude: userChoose?.driver_latitude,
-                      longitude: userChoose?.driver_longitude,
-                      latitudeDelta: 0.03,
-                      longitudeDelta: 0.03,
-                    }}
-                    customMapStyle={customMapStyle}>
-                    <MapViewDirections
-                      lineDashPattern={[0]}
-                      origin={{
-                        latitude: userChoose?.driver_latitude,
-                        longitude: userChoose?.driver_longitude,
-                      }}
-                      destination={{
-                        latitude: user?.details?.latitude,
-                        longitude: user?.details?.longitude,
-                      }}
-                      apikey={API_KEY}
-                      strokeWidth={3}
-                      strokeColor="#143fff"
-                    />
-                    <Marker
-                      coordinate={{
-                        latitude: userChoose?.driver_latitude,
-                        longitude: userChoose?.driver_longitude,
-                      }}
-                      title={'Position actuelle du chauffeur'}
-                    />
-                    <Marker
-                      coordinate={{
-                        latitude: user?.details?.latitude,
-                        longitude: user?.details?.longitude,
-                      }}
-                      title={'Votre position actuelle'}
-                    />
-                  </MapView>
-                </>
-              )}
-            </View>
-            <View
-              style={{
-                paddingTop: 15,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <TouchableOpacity
-                style={{
-                  margin: 5,
-                  backgroundColor: '#cacaca',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  height: 45,
-                  width: 100,
-                }}
-                onPress={() => {
-                  setViewMore(false);
-                  setUserChooseModal(false);
-                  setUserChoose();
-                }}>
-                <Text style={{ color: '#002' }}>Annuler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleChoosePost}
-                style={{
-                  margin: 5,
-                  backgroundColor: '#ff8612',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  height: 45,
-                  width: 100,
-                }}>
-                <Text style={{ color: '#fff' }}>Comfirmer</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+        <DriverInfo handleChoosePost={handleChoosePost} setUserChoose={setUserChoose} userChooseModal={userChooseModal} setUserChooseModal={setUserChooseModal} setViewMore={setViewMore} userChoose={userChoose} handleView={handleView} viewMore={viewMore} user={user} />
         <View style={styles.header}>
           <View style={styles.headertitle}>
             <View style={{ justifyContent: 'center' }}>
@@ -456,7 +244,7 @@ const BidRider = ({ navigation }) => {
                 {biddetail?.details?.user_first_name}
               </Text>
             </View>
-            <View style={{ justifyContent: 'center', paddingHorizontal: 5 }}>
+            <View style={{ justifyContent: 'center', paddingHorizontal: 2 }}>
               <View
                 style={{
                   width: 9,
@@ -472,7 +260,7 @@ const BidRider = ({ navigation }) => {
                   fontWeight: 'bold',
                   color: '#001',
                   fontSize: 18,
-                  width: width / 2,
+                  width: width / 1.85,
                 }}
                 numberOfLines={1}>
                 {biddetail?.details?.destination_place_name}
@@ -545,10 +333,10 @@ const BidRider = ({ navigation }) => {
                 </View>
               )}
               {biddetail?.details?.choose === true && (
-                <View style={{ alignItems: 'center', padding: 15 }}>
+                <View style={{ alignItems: 'center', justifyContent: 'center', padding: 15 }}>
                   <View
                     style={{
-                      width: width / 1.8,
+                      width: width / 1.3,
                       height: 30,
                       backgroundColor: '#ff8612',
                       borderRadius: 7,
@@ -558,7 +346,7 @@ const BidRider = ({ navigation }) => {
                     <Text
                       style={{
                         color: '#fff',
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: '700',
                       }}>
                       Veuillez attendre l'acceptation du chauffeur!.
@@ -574,158 +362,9 @@ const BidRider = ({ navigation }) => {
                   return (
                     <>
                       {item.driver === pk ? (
-                        <View style={{ paddingHorizontal: 5, padding: 10 }}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'flex-end',
-                            }}>
-                            <View>
-                              <View
-                                style={{
-                                  backgroundColor: '#ff8612',
-                                  borderRadius: 10,
-                                  padding: 8,
-                                  minWidth: 50,
-                                  maxWidth: 200,
-                                  elevation: 1.5,
-                                }}>
-                                <Text
-                                  style={{
-                                    color: '#fff',
-                                    fontSize: 13,
-                                    fontWeight: '700',
-                                    textAlign: 'left',
-                                  }}
-                                  numberOfLines={1}
-                                  ellipsizeMode="tail">
-                                  Moi
-                                </Text>
-                                <Text
-                                  style={{
-                                    padding: 2,
-                                    color: '#fff',
-                                    fontSize: 15,
-                                    textAlign: 'left',
-                                  }}>
-                                  {item.message ? item.message : item.prix}
-                                  {item.message ? '' : 'HTG'}
-                                </Text>
-                              </View>
-                              <Text
-                                style={{
-                                  padding: 5,
-                                  color: '#143fff',
-                                  fontSize: 12,
-                                }}>
-                                {moment(item.updated_on).fromNow()}
-                              </Text>
-                            </View>
-                            <View
-                              style={{
-                                paddingHorizontal: 8,
-                              }}>
-                              <Image
-                                style={{
-                                  width: 40,
-                                  height: 40,
-                                  borderRadius: 16,
-                                }}
-                                source={{
-                                  uri:
-                                    'https://crazy-taxi.quizapay.com/' +
-                                    item.user_photo,
-                                }}
-                              />
-                            </View>
-                          </View>
-                        </View>
+                        <BoxRight item={item} />
                       ) : (
-                        <View style={{ paddingHorizontal: 5, padding: 10 }}>
-                          <View style={{ flexDirection: 'row' }}>
-                            <View
-                              style={{
-                                paddingHorizontal: 8,
-                              }}>
-                              <Image
-                                style={{
-                                  width: 40,
-                                  height: 40,
-                                  borderRadius: 16,
-                                }}
-                                source={{
-                                  uri:
-                                    'https://crazy-taxi.quizapay.com/' +
-                                    item.user_photo,
-                                }}
-                              />
-                            </View>
-                            <View>
-                              <View
-                                style={{
-                                  backgroundColor: '#143fff',
-                                  borderRadius: 10,
-                                  padding: 8,
-                                  minWidth: 50,
-                                  maxWidth: 200,
-                                  elevation: 1.5,
-                                }}>
-                                <View
-                                  style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                  }}>
-                                  <Text
-                                    style={{
-                                      color: '#fff',
-                                      fontSize: 13,
-                                      fontWeight: '700',
-                                    }}
-                                    numberOfLines={1}
-                                    ellipsizeMode="tail">
-                                    {item.user_first_name} {item.user_last_name}
-                                  </Text>
-                                  {biddetail?.details?.client === pk &&
-                                    biddetail?.details?.choose == false && (
-                                      <TouchableOpacity
-                                        onPress={() => handleChoose(item)}
-                                        style={{
-                                          width: 20,
-                                          height: 20,
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                          backgroundColor: '#ff9612',
-                                          borderRadius: 18,
-                                          marginHorizontal: 10,
-                                        }}>
-                                        <Feather
-                                          name="user-check"
-                                          color="#fff"
-                                        />
-                                      </TouchableOpacity>
-                                    )}
-                                </View>
-                                <Text
-                                  style={{
-                                    padding: 2,
-                                    color: '#fff',
-                                    fontSize: 15,
-                                  }}>
-                                  {item.message ? item.message : item.prix}{' '}
-                                  {item.message ? '' : 'HTG'}
-                                </Text>
-                              </View>
-                              <Text
-                                style={{
-                                  padding: 5,
-                                  color: '#143fff',
-                                  fontSize: 12,
-                                }}>
-                                {moment(item.updated_on).fromNow()}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
+                        <BoxLeft item={item} biddetail={biddetail} pk={pk} handleChoose={handleChoose} />
                       )}
                     </>
                   );
@@ -803,7 +442,7 @@ const styles = StyleSheet.create({
   },
   header: {
     justifyContent: 'center',
-    height: 50,
+    height: '7.4%',
     backgroundColor: '#fff',
     borderBottomWidth: 1.5,
     borderBottomColor: '#00000033',
@@ -814,8 +453,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   body: {
-    width: width,
-    height: '92%',
+    flex: 1
   },
   iconbg: {
     width: 65,

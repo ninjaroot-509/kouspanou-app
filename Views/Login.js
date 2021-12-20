@@ -9,6 +9,7 @@ import {
   Image,
   KeyboardAvoidingView,
   ImageBackground,
+  ActivityIndicator
 } from 'react-native';
 import Constants from 'expo-constants';
 import { FontAwesome } from 'react-native-vector-icons';
@@ -17,6 +18,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import axios from 'axios';
 import PhoneInput from 'react-native-phone-number-input';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import request from '../Components/Common/HttpRequests';
 
 const Login = ({ navigation }) => {
   const [phone, setPhone] = useState('');
@@ -32,12 +34,9 @@ const Login = ({ navigation }) => {
     if (phone != '' && password != '') {
       if (load === false) {
         setLoad(true);
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({ phone: tel, password: password });
-        axios
-          .post('https://crazy-taxi.quizapay.com/api/auth/login', body, config)
-          .then((res) => {
-            setUserSession(res.data.token, res.data.user).then((res) => {
+        const dataBody = JSON.stringify({ phone: tel, password: password });
+        request.postHandleLogin(dataBody).then((res) => {
+            setUserSession(res.token, res.user).then((res) => {
               navigation.replace('SplashScreen');
             }); // LOGIN OK redirect
             setLoad(false);
@@ -136,19 +135,21 @@ const Login = ({ navigation }) => {
             </View>
           </View>
           <View style={{ padding: 7 }}>
-            {load === false ? (
-              <TouchableOpacity style={styles.button} onPress={handleLoginSubmit}>
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                  Connecter
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.button1}>
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                  Connecter
-                </Text>
-              </View>
-            )}
+          <TouchableOpacity
+          style={styles.button}
+          onPress={handleLoginSubmit}>
+          {load === false ? (
+              <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+              Connecter
+            </Text>
+          ) : (
+              <ActivityIndicator
+                color="#ffffff"
+                size="small"
+                style={{ alignItems: 'center' }}
+              />
+          )}
+        </TouchableOpacity>
           </View>
           <View style={{ padding: 7 }}>
             <TouchableOpacity onPress={() => navigation.replace('Signup')}>

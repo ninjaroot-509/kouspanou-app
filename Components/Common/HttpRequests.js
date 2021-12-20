@@ -1,98 +1,435 @@
 import axios from 'axios';
-import {
-  getToken,
-  // removeUserSession
-} from './Auth/Sessions';
 
 const url = 'https://crazy-taxi.quizapay.com/api/';
 // const url = 'http://127.0.0.1:8000/api/';
-const config = { headers: { 'Content-Type': 'application/json' } };
 
-const getProfile = (pk) =>
-  axios.get(`${url}profile/?pk=${pk}`, config).then((res) => res.data);
-const GetUser = (pk) => axios.get(`${url}user/?pk=${pk}`, config).then((res) => res.data);
-const getWallet = (pk) => axios.get(`${url}wallet/?pk=${pk}`, config).then((res) => res.data);
+const getProfile = (token) =>
+  axios
+    .get(
+      `${url}profile/`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+
+const GetUser = (token) =>
+  axios
+    .get(
+      `${url}user/`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+
+const getWallet = (token) =>
+  axios
+    .get(
+      `${url}wallet/`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
 // .catch(error => {
 //     removeUserSession()
 // });
-const getRetrait = (pk) =>
-  axios.get(`${url}retrait/?pk=${pk}`, config).then((res) => res.data);
-const getDemande = (pk) =>
-  axios.get(`${url}demande/?pk=${pk}`, config).then((res) => res.data);
-const getDriverOnline = (pk, driver) =>
+
+const getRetrait = (token) =>
   axios
-    .get(`${url}onlines/?pk=${pk}&driver=${driver}`, config)
-    .then((res) => res.data);
-    
-const getBidPrix = (pk, id) =>
-    axios
-      .get(`${url}bid-prix/?pk=${pk}&id=${id}`, config)
-      .then((res) => res.data);
-//parti POST
-const postInfo = (pk, last_name, first_name) =>
-  axios
-    .post(
-      `${url}info-user/?pk=${pk}`,
-      JSON.stringify({
-        last_name: last_name,
-        first_name: first_name,
-      }),
-      config
+    .get(
+      `${url}retrait/`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
     )
     .then((res) => res.data);
-const postUserOnline = (pk) => axios.post(`${url}onlines/?pk=${pk}`);
 
-const postUserLocation = (pk, latitude, longitude, place_name) =>
+const getDemande = (token) =>
+  axios
+    .get(
+      `${url}demande/`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+
+const getDriverOnline = (token, driver) =>
+  axios
+    .get(
+      `${url}onlines/?driver=${driver}`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+
+const getBidPrix = (token, biddetail_id) =>
+  axios
+    .get(
+      `${url}bid-prix/?bid_id=${biddetail_id}`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+
+const getTripInfo = (token, biddetail_id, biddetail_driver) =>
+  axios
+    .get(
+      `${url}user-driver-attemp/?id_trip=${biddetail_id}&id_driver=${biddetail_driver}`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+
+  const getClientInfo = (token, biddetail_id) =>
+    axios
+      .get(
+        `${url}driver-attemp/?id_trip=${biddetail_id}`,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        },
+        { withCredentials: true }
+      )
+      .then((res) => res.data);
+
+    const getDriverBidChoose = (token, biddetail_id) =>
+      axios
+        .get(
+          `${url}driver-bid-choose/?id_trip=${biddetail_id}`,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          },
+          { withCredentials: true }
+        )
+        .then((res) => res.data);
+
+const getDriverInfo = (token, biddetail_driver) =>
+  axios
+    .get(
+      `${url}get-driver/?id_driver=${biddetail_driver}`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+//parti POST
+const postHandleLogin = (dataBody) =>
+  axios
+    .post(
+      `${url}auth/login`,
+      dataBody,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+const postHandleSignup = (dataBody) =>
+  axios
+    .post(
+      `${url}auth/register`,
+      dataBody,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
+
+const postUserOnline = (token) =>
   axios.post(
-    `${url}users-locations/?pk=${pk.pk}&latitude=${pk.latitude}&longitude=${pk.longitude}&place_name=${pk.place_name}`
+    `${url}onlines/`,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true },
+    { withCredentials: true }
   );
 
-const postUserType = (pk, is_driver, is_passenger) =>
+const postUserInfoStart = (token, dataBody) =>
   axios
     .post(
-      `${url}change-user-type/?pk=${pk.pk}&is_driver=${pk.is_driver}&is_passenger=${pk.is_passenger}`
+      `${url}info-user/`,
+      dataBody,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/*',
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+      { withCredentials: true }
     )
+    .then((res) => res.data);
 
-const postTrip = (pk, longitude, latitude, destination_id, payMN) =>
+const postUserLocation = (token, dataBody) =>
+  axios.post(
+    `${url}users-locations/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/*',
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postUserType = (token, dataBody) =>
+  axios.post(
+    `${url}change-user-type/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/*',
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postTrip = (token, dataBody) =>
   axios
     .post(
-      `${url}trips/?pk=${pk}`,
-      JSON.stringify({
-        longitude: longitude,
-        latitude: latitude,
-        destination_id: destination_id,
-        payMN: payMN,
-      }),
-      config
-    ).then((res) => res.data).catch((err) => {
-      // console.log(err, pk, longitude, latitude, destination_id, payMN)
-    })
+      `${url}trips/`,
+      dataBody,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+      { withCredentials: true }
+    )
+    .then((res) => res.data);
 
-    const postDriverPrix = (pk, id_trip, prix) =>
-      axios
-        .post(
-          `${url}driver-prix/?pk=${pk}`,
-          JSON.stringify({
-            id_trip: id_trip,
-            prix: prix,
-          })
-        )
-      
-    const postUserInstruction = (pk, id_trip, prix) =>
-        axios
-          .post(
-            `${url}user-instructions/?pk=${pk}`,
-            JSON.stringify({
-              id_trip: id_trip,
-              message: prix,
-            })
-          )
+const postDriverPrix = (token, dataBody) =>
+  axios.post(
+    `${url}driver-prix/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postUserInstruction = (token, dataBody) =>
+  axios.post(
+    `${url}user-instructions/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postQuitUserBid = (token, dataBody) =>
+  axios.post(
+    `${url}rider-quits/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postQuitDriverBid = (token, dataBody) =>
+  axios.post(
+    `${url}driver-quits/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postChooseUserBid = (token, dataBody) =>
+  axios.post(
+    `${url}driver-choose/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postAcceptUserBid = (token, dataBody) =>
+  axios.post(
+    `${url}driver-accept/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postViewDriverBid = (token, dataBody) =>
+  axios.post(
+    `${url}driver-arrival-comfirm/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postEndFinale = (token, dataBody) =>
+  axios.post(
+    `${url}driver-end-finale/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+  const postEnd = (token, dataBody) =>
+  axios.post(
+    `${url}driverEnd/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+const postDriverArival = (token, dataBody) =>
+  axios.post(
+    `${url}driver-arrival/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
 
 export default {
   GetUser,
+  postHandleLogin,
+  postHandleSignup,
   postUserOnline,
+  postUserInfoStart,
   postDriverPrix,
   postUserInstruction,
+  postDriverArival,
+  postQuitUserBid,
+  postQuitDriverBid,
+  postChooseUserBid,
+  postAcceptUserBid,
+  postViewDriverBid,
+  postEnd,
+  postEndFinale,
   postUserLocation,
   postTrip,
   postUserType,
@@ -101,5 +438,9 @@ export default {
   getDriverOnline,
   getWallet,
   getRetrait,
-  getBidPrix
+  getBidPrix,
+  getTripInfo,
+  getClientInfo,
+  getDriverBidChoose,
+  getDriverInfo,
 };
