@@ -19,6 +19,7 @@
     "axios": "*",
     "expo": "^44.0.0",
     "expo-constants": "~13.0.0",
+    "expo-dev-client": "~0.7.2",
     "expo-linear-gradient": "~11.0.0",
     "expo-location": "~14.0.1",
     "expo-status-bar": "~1.2.0",
@@ -54,7 +55,8 @@
     "react-native-svg": "12.1.1",
     "react-native-tab-view": "*",
     "react-native-vector-icons": "*",
-    "react-native-web": "0.17.1"
+    "react-native-web": "0.17.1",
+    "react-native-webview": "^11.15.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

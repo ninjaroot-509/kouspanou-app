@@ -53,6 +53,7 @@ const AddKous = ({ navigation }) => {
                   text: 'Ok',
                   onPress: () => {
                     setUsers()
+                    setLoad(false)
                     navigation.navigate('SplashScreen')
                   },
                 },

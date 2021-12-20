@@ -302,6 +302,19 @@ const postDriverPrix = (token, dataBody) =>
     { withCredentials: true }
   );
 
+  const postRecharge = (token, dataBody) =>
+  axios.post(
+      `${url}depot/`,
+      dataBody,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+    ).then((res) => res.data);
+
 const postUserInstruction = (token, dataBody) =>
   axios.post(
     `${url}user-instructions/`,
@@ -435,6 +448,7 @@ export default {
   postUserOnline,
   postUserInfoStart,
   postDriverPrix,
+  postRecharge,
   postAddKous,
   postUserInstruction,
   postDriverArival,

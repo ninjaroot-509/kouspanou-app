@@ -15,17 +15,29 @@ const { width, height } = Dimensions.get('window');
 import Constants from 'expo-constants';
 import { FontAwesome } from 'react-native-vector-icons';
 import { Ionicons } from 'react-native-vector-icons';
-import { setmergeItemUser } from '../Components/Common/Auth/Sessions';
+import { setmergeItemUser, getToken } from '../Components/Common/Auth/Sessions';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
 import request from '../Components/Common/HttpRequests';
 
 import useUsers from '../src/state/user/hooks/useUsers';
+import Moncash from './Moncash'
+
 
 const Recharge = ({ navigation }) => {
   const [montantInput, setMontantInput] = useState('');
   const [load, setLoad] = useState(false);
   const [user, isLoading, setUsers] = useUsers();
+  const [modal, setModal] = useState(false);
+  const [moncashLink, setMoncashLink] = useState('');
+
+  const togleOpenModal = () => {
+    setModal(true)
+  }
+
+  const togleCloseModal = () => {
+    setModal(false)
+  }
 
   useEffect(() => {
     if (!user.details || user.details.length === 0) {
@@ -34,35 +46,24 @@ const Recharge = ({ navigation }) => {
   }, [user, setUsers]);
 
   const handleSubmit = async () => {
-    if (first_name != '' && montantInput != '') {
+    const token = await getToken()
+    if (montantInput != '') {
       if (load === false) {
         setLoad(true);
-        const pk = user?.details?.id;
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
-          montantInput: montantInput,
+        const dataBody = JSON.stringify({
+          montant: montantInput,
         });
-        axios
-          .post(
-            `https://crazy-taxi.quizapay.com/api/depot-user/?pk=${pk}`,
-            body,
-            config
-          )
-          .then((res) => {
-            setmergeItemUser(res.data).then((i) => {
-              setUsers();
-              navigation.replace('SplashScreen');
-              console.log('Bienvenue ' + res.data.user.first_name);
-              setLoad(false);
-            });
-          })
-          .catch((err) => {
-            alert(err);
-            setLoad(false);
-          });
+        request.postRecharge(token, dataBody).then((res) => {
+          setLoad(false)
+          setMoncashLink(res.lien_moncash)
+          togleOpenModal()
+        }).catch((err) => {
+          setLoad(false)
+          alert(err)
+        });
       }
     } else {
-      alert('Nom ou Prenom manquant!');
+      alert('Entrer votre montant!');
     }
   };
 
@@ -85,6 +86,7 @@ const Recharge = ({ navigation }) => {
     return (
       <KeyboardAwareScrollView style={{backgroundColor: '#fff'}}>
       <View style={styles.container}>
+      <Moncash togleOpenModal={togleOpenModal} togleCloseModal={togleCloseModal} modal={modal} moncashLink={moncashLink} />
       <View style={styles.header}>
         <View style={styles.headertitle}>
           <View style={{justifyContent: 'center'}}>
@@ -131,22 +133,25 @@ const Recharge = ({ navigation }) => {
               placeholderTextColor={'#cacaca'}
               style={styles.input}
               returnKeyType="next"
+              keyboardType={'numeric'}
             />
           </View>
           <View style={{ padding: 20 }}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleSubmit}>
             {load === false ? (
-              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                  Continuer
-                </Text>
-              </TouchableOpacity>
+                Continuer
+              </Text>
             ) : (
-              <View style={styles.button1}>
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-                  Continuer
-                </Text>
-              </View>
+                <ActivityIndicator
+                  color="#ffffff"
+                  size="small"
+                  style={{ alignItems: 'center' }}
+                />
             )}
+          </TouchableOpacity>
           </View>
         </View>
         </View>
