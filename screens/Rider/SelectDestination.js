@@ -20,7 +20,7 @@ const SelectDestination = ({ navigation }) => {
         <View style={styles.card}>
           <View style={styles.drop}>
             <Text style={styles.dropText}>Rechercher ici</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
               <Feather name="x" size={24} style={{ color: '#8c8d95' }} />
             </TouchableOpacity>
           </View>

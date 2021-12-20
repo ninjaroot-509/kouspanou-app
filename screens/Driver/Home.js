@@ -317,7 +317,7 @@ const Home = ({ navigation }) => {
                 ListFooterComponent={renderFooter}
                 renderItem={({ item }) => {
                   return (
-                    <View style={{ alignItems: 'center', paddingVertical: 10 }}>
+                    <View key={item.id} style={{ alignItems: 'center', paddingVertical: 10 }}>
                       <Card style={styles.box}>
                         <View style={{ alignItems: 'center' }}>
                           <View

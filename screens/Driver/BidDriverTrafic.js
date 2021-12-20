@@ -74,7 +74,7 @@ const BidDriverTrafic = ({ navigation }) => {
       arrival: true,
     };
     request.getTripInfo(token, biddetail?.id, biddetail?.driver).then((res) => {
-      if (res.data.is_arrivale_comfirm == true) {
+      if (res.is_arrivale_comfirm == true) {
         setmergeItemComand(datatrip).then((res) => {
           navigation.replace('SplashScreen');
         });
@@ -89,9 +89,8 @@ const getDriverInfo = async () => {
   const token = await getToken()
   request.getDriverInfo(token, biddetail?.driver).then((res) => {
     setClient(res);
-  })
-.catch((err) => {
-  alert("une erreur s'est produite..!");
+  }).catch((err) => {
+  alert("une erreur s'est produite");
 });
 }
 

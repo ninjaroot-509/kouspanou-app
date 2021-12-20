@@ -93,17 +93,7 @@ const BidDriver = ({ navigation, route }) => {
 
   useEffect(() => {
     if (biddetail?.details || biddetail?.details?.length !== 0) {
-      request.getBidPrix(pk, biddetail?.details?.id).then((res) => {
-        setBid(res);
-        setSendLoad(false);
-      }).catch(function (error) {
-        if (error.response.status === 404) {
-          // Request made and server responded
-          handleQuit()
-        } else {
-          alert('an error occured!')
-        }
-      });
+      handleGetBid()
     }
 
       getClientInfo()
@@ -111,21 +101,23 @@ const BidDriver = ({ navigation, route }) => {
       
   }, [temp]);
 
-  const getClientInfo = async () => {
+  const handleGetBid = async () => {
     const token = await getToken()
+    request.getBidPrix(token, biddetail?.details?.id).then((res) => {
+      setBid(res);
+      setSendLoad(false);
+    });
+  }
+
+
+  const getClientInfo = async () => {
+    const token = await getToken() 
     request.getClientInfo(token, biddetail?.details?.id).then((res) => {
       if (res.is_win == true) {
         setUserWinModal(true);
         setUserAcceptDone(true);
       }
-    }).catch(function (error) {
-      if (error.response.status === 404) {
-        // Request made and server responded
-        handleQuit()
-      } else {
-        alert('an error occured!')
-      }
-    });
+    })
 }
 
 const getDriverBidChoose = async () => {
@@ -134,14 +126,7 @@ const getDriverBidChoose = async () => {
       if (res.bid_active === false) {
         handleQuit()
       }
-    }).catch(function (error) {
-      if (error.response.status === 404) {
-        // Request made and server responded
-        handleQuit()
-      } else {
-        alert('an error occured!')
-      }
-    });
+    })
 }
 
   
@@ -254,6 +239,7 @@ const getDriverBidChoose = async () => {
               borderRadius: 10,
             }}>
             <View style={{ position: 'absolute', top: -50 }}>
+            <View style={{width: 100.5, height: 100.5, elevation: 2, borderRadius: 50, backgroundColor: '#ffffff'}}>
               <Image
                 style={{ width: 100, height: 100, borderRadius: 50 }}
                 source={{
@@ -262,6 +248,7 @@ const getDriverBidChoose = async () => {
                     biddetail?.details?.user_photo,
                 }}
               />
+            </View>
             </View>
             <View style={{ paddingTop: 52, alignItems: 'center', width: 100 }}>
               <Text
@@ -511,18 +498,20 @@ const getDriverBidChoose = async () => {
                               style={{
                                 paddingHorizontal: 8,
                               }}>
-                              <Image
-                                style={{
-                                  width: 40,
-                                  height: 40,
-                                  borderRadius: 16,
-                                }}
-                                source={{
-                                  uri:
-                                    'https://crazy-taxi.quizapay.com' +
-                                    item.user_photo,
-                                }}
-                              />
+                                 <View style={{width: 40.5, height: 40.5, elevation: 2, borderRadius: 16, backgroundColor: '#ffffff'}}>
+                                    <Image
+                                      style={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 16,
+                                      }}
+                                      source={{
+                                        uri:
+                                          'https://crazy-taxi.quizapay.com' +
+                                          item.user_photo,
+                                      }}
+                                    />
+                                 </View>
                             </View>
                           </View>
                         </View>
@@ -539,18 +528,20 @@ const getDriverBidChoose = async () => {
                                   style={{
                                     paddingHorizontal: 8,
                                   }}>
-                                  <Image
-                                    style={{
-                                      width: 35,
-                                      height: 35,
-                                      borderRadius: 10,
-                                    }}
-                                    source={{
-                                      uri:
-                                        'https://crazy-taxi.quizapay.com' +
-                                        item.user_photo,
-                                    }}
-                                  />
+                                  <View style={{width: 40.5, height: 40.5, elevation: 2, borderRadius: 16, backgroundColor: '#ffffff'}}>
+                                    <Image
+                                      style={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 16,
+                                      }}
+                                      source={{
+                                        uri:
+                                          'https://crazy-taxi.quizapay.com' +
+                                          item.user_photo,
+                                      }}
+                                    />
+                                 </View>
                                 </View>
                                 <View
                                   style={{
@@ -589,18 +580,20 @@ const getDriverBidChoose = async () => {
                                   style={{
                                     paddingHorizontal: 8,
                                   }}>
-                                  <Image
-                                    style={{
-                                      width: 40,
-                                      height: 40,
-                                      borderRadius: 16,
-                                    }}
-                                    source={{
-                                      uri:
-                                        'https://crazy-taxi.quizapay.com' +
-                                        item.user_photo,
-                                    }}
-                                  />
+                                  <View style={{width: 40.5, height: 40.5, elevation: 2, borderRadius: 16, backgroundColor: '#ffffff'}}>
+                                    <Image
+                                      style={{
+                                        width: 40,
+                                        height: 40,
+                                        borderRadius: 16,
+                                      }}
+                                      source={{
+                                        uri:
+                                          'https://crazy-taxi.quizapay.com' +
+                                          item.user_photo,
+                                      }}
+                                    />
+                                 </View>
                                 </View>
                                 <View
                                   style={{

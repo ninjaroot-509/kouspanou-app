@@ -19,7 +19,7 @@ import axios from 'axios';
 import PhoneInput from 'react-native-phone-number-input';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { useNavigation } from '@react-navigation/native';
-import request from '../../Components/Common/HttpRequests';
+import request from '../../Components/Common/rs';
 
 const Signup = () => {
   const navigation = useNavigation();
@@ -46,7 +46,7 @@ const Signup = () => {
         setLoad(false);
       } else {
         const dataBody = JSON.stringify({ phone: tel, password: password, is_driver: is_driver, is_passenger: is_passenger });
-        httpRequest
+        request
           .postHandleSignup(dataBody).then((res) => {
             setUserSession(res.token, res.user); // Signup OK redirect
             navigation.replace('SplashScreen');

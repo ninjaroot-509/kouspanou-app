@@ -40,6 +40,7 @@ const BidRiderTrafic = ({ navigation }) => {
   const [biddetail, setBiddetail] = useState([]);
   const [driver, setDriver] = useState([]);
   const [user, isLoading, setUsers] = useUsers();
+  const [wallet, isLoadingW, setWallets] = useWallets();
   const pk = user?.details?.id;
 
   useEffect(() => {
@@ -124,7 +125,8 @@ const BidRiderTrafic = ({ navigation }) => {
 
   const handleFinale = () => {
     removeComand().then((suc) => {
-      navigation.replace('SplashScreen');
+      setWallets()
+      navigation.replace('SplashScreen'); 
     });
   };
 

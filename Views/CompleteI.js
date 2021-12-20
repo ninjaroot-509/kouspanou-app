@@ -43,13 +43,12 @@ const CompleteI = ({ navigation }) => {
           first_name: first_name,
         });
         request.postUserInfoStart(token, dataBody).then((res) => {
-            setmergeItemUser(res.data).then((i) => {
+            setmergeItemUser(res).then((i) => {
               setUsers();
               navigation.replace('SplashScreen');
               setLoad(false);
             });
-          })
-          .catch((err) => {
+          }).catch((err) => {
             alert(err);
             setLoad(false);
           });

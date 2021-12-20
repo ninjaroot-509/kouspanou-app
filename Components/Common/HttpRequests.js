@@ -222,8 +222,8 @@ const postUserInfoStart = (token, dataBody) =>
       {
         headers: {
           authorization: `Bearer ${token}`,
-          Accept: 'application/*',
-          'Content-Type': 'multipart/form-data',
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
       },
       { withCredentials: true }
@@ -277,6 +277,20 @@ const postTrip = (token, dataBody) =>
 const postDriverPrix = (token, dataBody) =>
   axios.post(
     `${url}driver-prix/`,
+    dataBody,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+    { withCredentials: true }
+  );
+
+  const postAddKous = (token, dataBody) =>
+  axios.post(
+    `${url}add-kous/`,
     dataBody,
     {
       headers: {
@@ -421,6 +435,7 @@ export default {
   postUserOnline,
   postUserInfoStart,
   postDriverPrix,
+  postAddKous,
   postUserInstruction,
   postDriverArival,
   postQuitUserBid,

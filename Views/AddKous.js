@@ -9,13 +9,14 @@ import {
   Image,
   KeyboardAvoidingView,
   ActivityIndicator,
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
 const { width, height } = Dimensions.get('window');
 import Constants from 'expo-constants';
 import { FontAwesome } from 'react-native-vector-icons';
 import { Ionicons } from 'react-native-vector-icons';
-import { setmergeItemUser } from '../Components/Common/Auth/Sessions';
+import { setmergeItemUser, getToken } from '../Components/Common/Auth/Sessions';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
 import request from '../Components/Common/HttpRequests';
@@ -34,35 +35,40 @@ const AddKous = ({ navigation }) => {
   }, [user, setUsers]);
 
   const handleSubmit = async () => {
-    if (first_name != '' && montantInput != '') {
+    const token = await getToken()
+    if (montantInput != '') {
       if (load === false) {
-        setLoad(true);
-        const pk = user?.details?.id;
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
-          montantInput: montantInput,
-        });
-        axios
-          .post(
-            `https://crazy-taxi.quizapay.com/api/depot-user/?pk=${pk}`,
-            body,
-            config
-          )
-          .then((res) => {
-            setmergeItemUser(res.data).then((i) => {
-              setUsers();
-              navigation.replace('SplashScreen');
-              console.log('Bienvenue ' + res.data.user.first_name);
+        if (montantInput < 10) {
+          setLoad(true);
+          const dataBody = JSON.stringify({
+            nb_kous: montantInput,
+          });
+          
+          request.postAddKous(token, dataBody).then((res) => {
+            Alert.alert(
+              'GoTaxi!',
+              "transaction reussie",
+              [
+                {
+                  text: 'Ok',
+                  onPress: () => {
+                    setUsers()
+                    navigation.navigate('SplashScreen')
+                  },
+                },
+              ],
+              { cancelable: false }
+            )
+          }).catch((err) => {
+              alert(err);
               setLoad(false);
             });
-          })
-          .catch((err) => {
-            alert(err);
-            setLoad(false);
-          });
+        } else {
+          alert("vous ne pouvez pas acheter autant de kous, Merci!!")
+        }
       }
     } else {
-      alert('Nom ou Prenom manquant!');
+      alert('Qantite manquant!');
     }
   };
 
@@ -127,10 +133,11 @@ const AddKous = ({ navigation }) => {
             <TextInput
               onChangeText={(montantInput) => setMontantInput(montantInput)}
               value={montantInput}
-              placeholder={'Entrer la quantite'}
+              placeholder={'Ex: 1 = 1kous'}
               placeholderTextColor={'#cacaca'}
               style={styles.input}
               returnKeyType="next"
+              keyboardType={'numeric'}
             />
           </View>
           <View style={{ padding: 20 }}>

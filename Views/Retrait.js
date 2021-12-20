@@ -34,36 +34,7 @@ const Retrait = ({ navigation }) => {
   }, [user, setUsers]);
 
   const handleSubmit = async () => {
-    if (first_name != '' && montantInput != '') {
-      if (load === false) {
-        setLoad(true);
-        const pk = user?.details?.id;
-        const config = { headers: { 'Content-Type': 'application/json' } };
-        const body = JSON.stringify({
-          montantInput: montantInput,
-        });
-        axios
-          .post(
-            `https://crazy-taxi.quizapay.com/api/depot-user/?pk=${pk}`,
-            body,
-            config
-          )
-          .then((res) => {
-            setmergeItemUser(res.data).then((i) => {
-              setUsers();
-              navigation.replace('SplashScreen');
-              console.log('Bienvenue ' + res.data.user.first_name);
-              setLoad(false);
-            });
-          })
-          .catch((err) => {
-            alert(err);
-            setLoad(false);
-          });
-      }
-    } else {
-      alert('Nom ou Prenom manquant!');
-    }
+    alert("not disponible")
   };
 
   if (isLoading === true) {

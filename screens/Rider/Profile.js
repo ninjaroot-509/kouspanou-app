@@ -57,7 +57,7 @@ const ProfileScreen = ({ navigation }) => {
           <View style={{height: 20}}/>
           <View style={{justifyContent: 'center', paddingVertical: 25}}>
               <View style={{alignItems: 'center'}}>
-                <View style={{alignItems: 'center', width: 131, height: 131, borderRadius: 100, elevation: 8, backgroundColor: '#ffffff'}}>
+                <View style={{alignItems: 'center', width: 130.3, height: 130.3, borderRadius: 100, elevation: 8, backgroundColor: '#ffffff'}}>
                   <Image style={{
                         width: 130,
                         height: 130,

@@ -91,7 +91,8 @@ const BidDriverTrafic = ({ navigation }) => {
     });
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    const token = await getToken()
     const dataBody = JSON.stringify({
       id_trip: biddetail?.id,
       id_client: biddetail?.client,
