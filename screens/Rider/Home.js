@@ -309,6 +309,7 @@ const Home1 = ({ navigation }) => {
           </View>
         </Modal>
         <TouchableOpacity
+        onPress={() => navigation.navigate('Recharge')}
           style={{
             borderRadius: 45,
             position: 'absolute',

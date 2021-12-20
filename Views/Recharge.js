@@ -91,8 +91,8 @@ const Recharge = ({ navigation }) => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Ionicons
                   name="arrow-back"
-                  size={22}
-                  style={{ color: '#009' }}
+                  size={26}
+                  style={{ color: '#ff8612' }}
                 />
               </TouchableOpacity>
           </View>
@@ -127,7 +127,7 @@ const Recharge = ({ navigation }) => {
             <TextInput
               onChangeText={(montantInput) => setMontantInput(montantInput)}
               value={montantInput}
-              placeholder={'Entrer le montant'}
+              placeholder={'Ex: 100 = 100HTG'}
               placeholderTextColor={'#cacaca'}
               style={styles.input}
               returnKeyType="next"

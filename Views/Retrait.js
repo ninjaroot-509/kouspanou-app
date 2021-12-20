@@ -62,8 +62,8 @@ const Retrait = ({ navigation }) => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Ionicons
                   name="arrow-back"
-                  size={22}
-                  style={{ color: '#009' }}
+                  size={26}
+                  style={{ color: '#ff8612' }}
                 />
               </TouchableOpacity>
           </View>

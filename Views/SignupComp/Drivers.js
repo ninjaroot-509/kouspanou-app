@@ -19,7 +19,7 @@ import axios from 'axios';
 import PhoneInput from 'react-native-phone-number-input';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { useNavigation } from '@react-navigation/native';
-import request from '../../Components/Common/rs';
+import request from '../../Components/Common/HttpRequests';
 
 const Signup = () => {
   const navigation = useNavigation();

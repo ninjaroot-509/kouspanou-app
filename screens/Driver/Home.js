@@ -237,74 +237,114 @@ const Home = ({ navigation }) => {
               </View>
             </View>
           </Modal>
-          <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-            <TouchableOpacity
-              style={{
-                borderRadius: 45,
-                flexDirection: 'row',
-                marginHorizontal: 15,
-                backgroundColor: '#fff',
-                padding: 10,
-                elevation: 3,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 5 },
-                shadowOpacity: 0.2,
-                shadowRadius: 6.17,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Fontisto
-                  name="wallet"
-                  size={18}
-                  style={{ color: '#ff9612', marginHorizontal: 3 }}
-                />
+          <View style={{alignItems: 'center', top: 5}}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                <TouchableOpacity
+                onPress={() => navigation.navigate('Recharge')}
+                  style={{
+                    borderRadius: 45,
+                    flexDirection: 'row',
+                    backgroundColor: '#fff',
+                    padding: 10,
+                    elevation: 3,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 5 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6.17,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Fontisto
+                      name="wallet"
+                      size={18}
+                      style={{ color: '#ff9612', marginHorizontal: 3 }}
+                    />
+                  </View>
+                  <View style={{ margin: 3 }}>
+                    <Text
+                      style={{ fontSize: 13, color: '#001', fontWeight: 'bold' }}>
+                      {wallet?.details?.montant} HTG
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               </View>
-              <View style={{ margin: 3 }}>
-                <Text
-                  style={{ fontSize: 13, color: '#001', fontWeight: 'bold' }}>
-                  {wallet?.details?.montant} HTG
-                </Text>
+              <View style={{alignItems: 'center', justifyContent: 'center', marginHorizontal: 5}}>
+                <TouchableOpacity
+                  style={{
+                    borderRadius: 45,
+                    flexDirection: 'row',
+                    backgroundColor: '#fff',
+                    padding: 6,
+                    elevation: 3,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 5 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6.17,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  onPress={() => setModal(true)}>
+                  <View
+                    style={{
+                      padding: 5,
+                      backgroundColor: '#143fff',
+                      borderRadius: 20,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <MaterialCommunityIcons
+                      name="van-passenger"
+                      size={20}
+                      style={{ color: '#fff' }}
+                    />
+                  </View>
+                  <View style={{ margin: 3 }}>
+                    <Text style={{ fontSize: 13, color: '#001' }}>Chauffeur</Text>
+                  </View>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                borderRadius: 45,
-                flexDirection: 'row',
-                marginHorizontal: 15,
-                backgroundColor: '#fff',
-                padding: 6,
-                elevation: 3,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 5 },
-                shadowOpacity: 0.2,
-                shadowRadius: 6.17,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onPress={() => setModal(true)}>
-              <View
-                style={{
-                  padding: 5,
-                  backgroundColor: '#143fff',
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <MaterialCommunityIcons
-                  name="van-passenger"
-                  size={20}
-                  style={{ color: '#fff' }}
-                />
+              <View style={{alignItems: 'center', justifyContent: 'center', paddingLeft: 20}}>
+                <TouchableOpacity
+                onPress={() => navigation.navigate('AddKous')}
+                  style={{
+                    borderRadius: 45,
+                    flexDirection: 'row',
+                    backgroundColor: '#fff',
+                    padding: 10,
+                    elevation: 3,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 5 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6.17,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <FontAwesome
+                      name="ticket"
+                      size={18}
+                      style={{ color: '#ff9612', marginHorizontal: 3 }}
+                    />
+                  </View>
+                  <View style={{ paddingVertical: 3, paddingHorizontal: 1 }}>
+                    <Text
+                      style={{ fontSize: 13, color: '#001', fontWeight: 'bold' }}>
+                      {user?.details?.kous.kous}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               </View>
-              <View style={{ margin: 3 }}>
-                <Text style={{ fontSize: 13, color: '#001' }}>Chauffeur</Text>
-              </View>
-            </TouchableOpacity>
+            </View>
           </View>
           {user?.details?.kous.kous >= 1 ? (
             <ScrollView>

@@ -1,6 +1,5 @@
 {
   "expo": {
-    "sdkVersion": "43.0.0",
     "name": "GoTaxi",
     "slug": "snack-1f966f4a-e2f8-4bae-8725-1f3b188dfcf8",
     "version": "1.0.0",
@@ -24,9 +23,16 @@
     "android": {
       "package": "com.ninjaroot509.gotaxi",
       "versionCode": 1,
-      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "ACCESS_BACKGROUND_LOCATION", "FOREGROUND_SERVICE"],
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE"
+      ],
       "config": {
-        "googleMaps": { "apiKey": "AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc" }
+        "googleMaps": {
+          "apiKey": "AIzaSyAwUfhJQ4jDgFcJR1ahGeP1zceMTLIMTkc"
+        }
       }
     }
   }
