@@ -153,7 +153,9 @@ const Home1 = ({ navigation }) => {
                 "une erreur, Impossible d'envoyer les donnees require!"
               );
             });
-          // request.postUserOnline(token);
+
+            handleOnline()
+          
           // setLatLng( latitudeInfo,longitudeInfo );
         });
       },
@@ -167,6 +169,13 @@ const Home1 = ({ navigation }) => {
       }
     );
   };
+
+  const handleOnline = async () => {
+    const token = await getToken();
+    const dataBody = new FormData();
+    dataBody.append('cool', 1);
+    request.postUserOnline(token, dataBody).then((res) => console.log('Online Done!!'))
+  }
 
   const centerMap = () => {
     mapRef?.animateToRegion(
@@ -382,7 +391,10 @@ const Home1 = ({ navigation }) => {
         <View style={styles.input}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Pickup')}>
+            onPress={() => {
+              getLocation()
+              navigation.navigate('Pickup')
+            }}>
             <Text style={{ fontSize: 10, color: '#001' }}>
               Depuis: votre position actuelle!
             </Text>

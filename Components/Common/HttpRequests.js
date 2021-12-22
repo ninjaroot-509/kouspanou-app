@@ -170,6 +170,36 @@ const getDriverInfo = (token, biddetail_driver) =>
       { withCredentials: true }
     )
     .then((res) => res.data);
+
+const getTransaction = (token) =>
+    axios
+      .get(
+        `${url}user-transactions/`,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        },
+        { withCredentials: true }
+      )
+      .then((res) => res.data);
+
+const getTrips = (token) =>
+      axios
+        .get(
+          `${url}user-trips/`,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          },
+          { withCredentials: true }
+        )
+        .then((res) => res.data);
 //parti POST
 const postHandleLogin = (dataBody) =>
   axios
@@ -200,19 +230,18 @@ const postHandleSignup = (dataBody) =>
     )
     .then((res) => res.data);
 
-const postUserOnline = (token) =>
+const postUserOnline = (token, dataBody) =>
   axios.post(
-    `${url}onlines/`,
-    {
-      headers: {
-        authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+      `${url}onlines/`, dataBody,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
       },
-    },
-    { withCredentials: true },
-    { withCredentials: true }
-  );
+      { withCredentials: true }
+    );
 
 const postUserInfoStart = (token, dataBody) =>
   axios
@@ -472,4 +501,6 @@ export default {
   getClientInfo,
   getDriverBidChoose,
   getDriverInfo,
+  getTransaction,
+  getTrips
 };

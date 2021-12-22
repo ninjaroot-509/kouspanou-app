@@ -11,6 +11,7 @@ import Recharge from '../Views/Recharge';
 import AddKous from '../Views/AddKous';
 import Retrait from '../Views/Retrait';
 import RecentTrip from '../Views/RecentTrip';
+import Transaction from '../Views/Transaction';
 import BidRider from '../screens/Rider/BidRider';
 import BidRiderTrafic from '../screens/Rider/BidRiderTrafic';
 import DestRider from '../screens/Rider/DestRider';
@@ -256,6 +257,11 @@ const AppStart = () => {
         <Stack.Screen
           name="Retrait"
           component={Retrait}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Transaction"
+          component={Transaction}
           options={{ headerShown: false }}
         />
         <Stack.Screen

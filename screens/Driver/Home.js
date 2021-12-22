@@ -114,7 +114,7 @@ const Home = ({ navigation }) => {
                   "une erreur, Impossible d'envoyer les donnees require!"
                 );
               });
-            // request.postUserOnline(token);
+              handleOnline()
             // setLatLng( latitudeInfo,longitudeInfo );
           });
         }
@@ -129,6 +129,14 @@ const Home = ({ navigation }) => {
       }
     );
   };
+
+  const handleOnline = async () => {
+    const token = await getToken();
+    const dataBody = new FormData();
+    dataBody.append('cool', 1);
+    request.postUserOnline(token, dataBody).then((res) => console.log('Online Done!!'))
+  }
+
   const renderFooter = () => {
     if (demande.length != 0) {
       return (

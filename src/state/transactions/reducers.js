@@ -1,4 +1,4 @@
-const LIST_MESSAGEGROUP = 'messageGroup/LIST_MESSAGEGROUP';
+const LIST_TRANSACTIONS = 'transactions/LIST_TRANSACTIONS';
 
 export const INITIAL_STATE = {
   list: null,
@@ -6,7 +6,7 @@ export const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case LIST_MESSAGEGROUP:
+    case LIST_TRANSACTIONS:
       return {
         ...state,
         list: action.payload,

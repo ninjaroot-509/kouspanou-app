@@ -22,11 +22,13 @@ import axios from 'axios';
 import request from '../Components/Common/HttpRequests';
 
 import useUsers from '../src/state/user/hooks/useUsers';
+import useWallets from '../src/state/wallet/hooks/useWallets';
 
 const AddKous = ({ navigation }) => {
   const [montantInput, setMontantInput] = useState('');
   const [load, setLoad] = useState(false);
   const [user, isLoading, setUsers] = useUsers();
+  const [wallet, isLoadingW, setWallets] = useWallets();
 
   useEffect(() => {
     if (!user.details || user.details.length === 0) {
@@ -53,6 +55,7 @@ const AddKous = ({ navigation }) => {
                   text: 'Ok',
                   onPress: () => {
                     setUsers()
+                    setWallets()
                     setLoad(false)
                     navigation.navigate('SplashScreen')
                   },

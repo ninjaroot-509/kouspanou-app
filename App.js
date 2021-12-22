@@ -13,21 +13,10 @@ import { INITIAL_STATE as DRIVERONLINE_INITIAL_STATE } from './src/state/drivero
 import { INITIAL_STATE as DEMANDE_INITIAL_STATE } from './src/state/demande/reducers';
 import { INITIAL_STATE as WALLET_INITIAL_STATE } from './src/state/wallet/reducers';
 import { INITIAL_STATE as BIDDETAIL_INITIAL_STATE } from './src/state/biddetail/reducers';
+import { INITIAL_STATE as TRIPS_INITIAL_STATE } from './src/state/trips/reducers';
+import { INITIAL_STATE as TRANSACTIONS_INITIAL_STATE } from './src/state/transactions/reducers';
 import reducers from './src/state/reducers';
 import 'moment/locale/fr';
-
-import {
-  SafeAreaView,
-  View,
-  StatusBar,
-  StyleSheet,
-  ActivityIndicator,
-  Animated,
-  Dimensions,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
 
 const App = (props) => {
   const initialState = {
@@ -35,7 +24,9 @@ const App = (props) => {
     driveronline: DRIVERONLINE_INITIAL_STATE,
     demande: DEMANDE_INITIAL_STATE,
     wallet: WALLET_INITIAL_STATE,
-    biddetail: BIDDETAIL_INITIAL_STATE
+    biddetail: BIDDETAIL_INITIAL_STATE,
+    trips: TRIPS_INITIAL_STATE,
+    transactions: TRANSACTIONS_INITIAL_STATE,
   };
   const [fontsLoaded] = useFonts({
     OpenSans_400Regular,

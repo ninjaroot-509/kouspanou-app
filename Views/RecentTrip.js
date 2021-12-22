@@ -26,33 +26,21 @@ import { AntDesign } from 'react-native-vector-icons';
 import Constants from 'expo-constants';
 import { FontAwesome5 } from 'react-native-vector-icons';
 import { Ionicons } from 'react-native-vector-icons';
+import moment from 'moment';
 import { Entypo } from 'react-native-vector-icons';
 // or any pure javascript modules available in npm
 import { Card } from 'react-native-paper';
+import useTrips from '../src/state/trips/hooks/useTrips';
 const {width, height} = Dimensions.get('window');
 
 const RecentTripScreen = ({ navigation }) => {
-  const SlideHome = [
-    { id: 1, picture: 'https://i.pravatar.cc/309', title: 'lorem' },
-    { id: 2, picture: 'https://i.pravatar.cc/306', title: 'Test' },
-    { id: 3, picture: 'https://i.pravatar.cc/303', title: 'lorem' },
-    { id: 4, picture: 'https://i.pravatar.cc/304', title: 'lorem' },
-    { id: 5, picture: 'https://i.pravatar.cc/305', title: 'lorem' },
-    { id: 6, picture: 'https://i.pravatar.cc/306', title: 'lorem' },
-    { id: 7, picture: 'https://i.pravatar.cc/307', title: 'lorem' },
-    { id: 8, picture: 'https://i.pravatar.cc/308', title: 'lorem' },
-  ];
+  const [trips, isLoading, setTrips] = useTrips();
 
-  const Activity = [
-    { id: 1, price: '200', date: '03/12/21' },
-    { id: 2, price: '200', date: '03/12/21' },
-    { id: 3, price: '200', date: '03/12/21' },
-    { id: 4, price: '200', date: '03/12/21' },
-    { id: 5, price: '200', date: '03/12/21' },
-    { id: 6, price: '200', date: '03/12/21' },
-    { id: 7, price: '200', date: '03/12/21' },
-    { id: 8, price: '200', date: '03/12/21' },
-  ];
+  useEffect(() => {
+    if (!trips?.list || trips?.list?.length === 0) {
+      setTrips();
+    }
+  }, [setTrips, trips]);
 
   const itemWidth = (width - 15) / 2;
   const carouselRef = useRef(null);
@@ -68,7 +56,7 @@ const RecentTripScreen = ({ navigation }) => {
                 <Ionicons
                   name="arrow-back"
                   size={22}
-                  style={{ color: '#003' }}
+                  style={{ color: '#009' }}
                 />
               </TouchableOpacity>
         </View>
@@ -78,8 +66,8 @@ const RecentTripScreen = ({ navigation }) => {
             }}>
             <Text 
             style={{
-                color: '#003',
-                fontSize: 18,
+                color: '#001',
+                fontSize: 17,
                 fontWeight: '700',
             }}>Voyage récent</Text>
         </View>
@@ -88,15 +76,16 @@ const RecentTripScreen = ({ navigation }) => {
         <ScrollView style={{flex: 1}}>
           <View style={{paddingVertical: 15}}>
               <View style={{}}>
+              {trips?.list?.length !== 0?
                 <FlatList
                   style={{paddingHorizontal: 14}}
                     horizontal={false}
-                    data={Activity}
+                    data={trips?.list}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={({ id }, index) => id}
                     renderItem={({ item }) => {
                       return (
-                        <TouchableOpacity onPress={() => navigation.navigate('TransactionDetail')} style={{ borderBottomWidth: 0.7, borderColor: '#cacaca', justifyContent: 'center' }}> 
+                        <TouchableOpacity style={{ borderBottomWidth: 0.7, borderColor: '#cacaca', justifyContent: 'center' }}> 
                           <View
                             style={{
                               flexDirection: 'row',
@@ -107,11 +96,11 @@ const RecentTripScreen = ({ navigation }) => {
                                 <Text
                                   style={{
                                     fontWeight: '700',
-                                    color: '#A1A3B0',
+                                    color: '#ff8612',
                                     fontSize: 16,
                                     textAlign: 'left',
                                   }}>
-                                  Delmas 75, port-au-prince
+                                  {item.destination_place_name}
                                 </Text>
                                 <Text
                                   style={{
@@ -120,18 +109,29 @@ const RecentTripScreen = ({ navigation }) => {
                                     fontSize: 14,
                                     textAlign: 'left',
                                   }}>
-                                  5/21/2021
+                                    {moment(item.created_on).fromNow()}
                                 </Text>
                               </View>
                             <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                              {item.prix && (
+                                <Text
+                                  style={{
+                                      fontWeight: '700',
+                                      color: '#ff861290',
+                                      fontSize: 16,
+                                      textAlign: 'left',
+                                  }}>
+                                  {item.prix} HTG
+                                </Text>
+                              )}
                                 <Text
                                 style={{
                                     fontWeight: '700',
-                                    color: '#ff8612',
-                                    fontSize: 16,
+                                    color: item.is_complete === true? 'green' : '#A1A3B070',
+                                    fontSize: 14,
                                     textAlign: 'left',
                                 }}>
-                                500 HTG
+                                  {item.is_complete === true? 'Succès' : 'En cours'}
                                 </Text>
                             </View>
                           </View>
@@ -139,6 +139,20 @@ const RecentTripScreen = ({ navigation }) => {
                       );
                     }}
                 />
+                :
+                  <View style={{alignItems: 'center'}}>
+                    <View style={{backgroundColor: '#cacaca', padding: 11, borderRadius: 12}}>
+                      <Text
+                        style={{
+                            fontWeight: '700',
+                            color: 'red',
+                            fontSize: 14,
+                        }}>
+                        pas encore de voyage
+                      </Text>
+                    </View>
+                  </View>
+              }
               </View>
           </View>
         </ScrollView>
